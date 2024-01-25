@@ -1,0 +1,239 @@
+.app-left-block-hierarchy-tree
+{
+  background-color: transparent;
+  color: #fff;
+  font-size: 12px;
+  overflow-x: hidden;
+  
+}
+
+.scenesBox
+{
+  display: flex;
+  position:relative;
+  width:90%;
+  margin-top: 10px;
+  margin-left:auto;
+  margin-right:auto;
+  flex-direction: column;
+  border-bottom: solid 2px #000000f5;
+  padding-bottom: 5px;
+  transition: all ease 0.2s;
+
+}
+.scenes-container
+{
+  display: flex;
+  position: relative;
+  width: 100%;
+  align-items: center;
+  /* flex-direction: column; */
+  /* margin-top: 15px;
+  padding: 5px; */
+}
+
+.scenesTag
+{
+  width: auto;
+  margin-right: 5px;
+}
+
+
+.scenesSelect
+{
+    width: 100%;
+    margin-left: 5px;
+    text-indent: 0px !important;
+    background-color: #1b1d22 !important;
+    border: solid 1px #ffffff55 !important;
+    height: 22px !important;
+    font-size: 12px !important;
+    margin-top: 1px;
+
+}
+
+.sceneBtn
+{
+    /* margin: 0px 2px; */
+    /* margin-top: px; */
+    height: 24px;
+    border: solid 1px #fff;
+    padding: 2px 4px;
+    cursor: pointer;
+    border-radius: 1px;
+    color: #fff;
+    background-color: #ffffff2d;
+}
+
+.sceneBtn
+{
+   transform: scale(0.85);
+}
+
+.BtnDisabled
+{
+    pointer-events: none;
+    opacity: 0.3; 
+}
+
+.ant-tree
+{
+  border-radius: 0px;
+}
+.ant-tree-treenode
+{
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+
+}
+
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected, .ant-tree .ant-tree-checkbox+span.ant-tree-node-selected {
+  
+  width: 100%;
+  background-color: transparent;
+  border-radius: 0px;
+}
+
+.ant-tree-treenode.ant-tree-treenode-switcher-close,
+.ant-tree-treenode.ant-tree-treenode-switcher-open
+{
+  width: 100% !important;
+}
+
+ 
+.ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected,
+.ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
+{
+  background-color: #747c9066;
+}
+
+.ant-tree-treenode.ant-tree-treenode-switcher-close:hover,
+.ant-tree-treenode.ant-tree-treenode-switcher-open:hover
+{
+  background-color: #747c9066;
+}
+
+.ant-tree .ant-tree-node-content-wrapper 
+{
+  /* width: 14ch; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected
+{
+  background-color: yellow;
+} */
+
+span.ant-tree-draggable-icon
+{
+  display: none;
+}
+
+.ant-tree-switcher.ant-tree-switcher_close
+{
+  width: 14px;
+  /* margin-right: -10px; */
+}
+
+.ant-tree-switcher.ant-tree-switcher_open
+{
+  width: 14px;
+  /* margin-right: -10px; */
+}
+
+.ant-tree-iconEle.ant-tree-icon__customize
+{
+  width: 24px !important;
+}
+/* .ant-tree-checkbox:hover
+{
+  background-color: #71788a;
+  border-radius: 0px;
+} */
+
+.ContextMenuTrigger {
+ 
+}
+
+.ContextMenuContent,
+.ContextMenuSubContent {
+  min-width: 200px;
+  background-color: #d7d8dd;
+  border-radius: 3px;
+  overflow: hidden;
+  padding: 5px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+}
+
+.ContextMenuItem,
+.ContextMenuCheckboxItem,
+.ContextMenuRadioItem,
+.ContextMenuSubTrigger {
+  font-size: 12px;
+  line-height: 1;
+  color: #000;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 5px;
+  position: relative;
+  padding-left: 25px;
+  user-select: none;
+  outline: none;
+}
+.ContextMenuSubTrigger[data-state='open'] {
+  background-color: #fff;
+  outline: solid 1px #1b1d22;
+  color: #000;
+}
+.ContextMenuItem[data-disabled],
+.ContextMenuCheckboxItem[data-disabled],
+.ContextMenuRadioItem[data-disabled],
+.ContextMenuSubTrigger[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: 'none';
+}
+.ContextMenuItem[data-highlighted],
+.ContextMenuCheckboxItem[data-highlighted],
+.ContextMenuRadioItem[data-highlighted],
+.ContextMenuSubTrigger[data-highlighted] {
+  background-color: #1b1d22;
+  color: var(--violet-1);
+}
+
+.ContextMenuLabel {
+  padding-left: 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--mauve-11);
+}
+
+.ContextMenuSeparator {
+  height: 1px;
+  background-color: var(--violet-6);
+  margin: 5px;
+}
+
+.ContextMenuItemIndicator {
+  position: absolute;
+  left: 0;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.RightSlot {
+  margin-left: auto;
+  padding-left: 20px;
+  color: var(--mauve-11);
+}
+[data-highlighted] > .RightSlot {
+  color: white;
+}
+[data-disabled] .RightSlot {
+  color: var(--mauve-8);
+}

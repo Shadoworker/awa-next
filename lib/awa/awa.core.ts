@@ -1,0 +1,1990 @@
+// Dependencies
+import SVG from "../assets/vendors/svg";
+import anime from "../assets/vendors/anime";
+import Loonk from "../assets/vendors/loonk";
+import awaEvents, { awaEventEmitter } from "./awa.events";
+import { createNewTween, getTimelineItems } from "./awa.anime.utils";
+import {
+  AWA_ELEMENT_CLASS,
+  BASE_FLOW_ID,
+  BASE_INTERACTION_ID,
+  BASE_SCENE_ID,
+  CLIP_ID_BODY,
+  CONNECTORS_GROUP_CLASS,
+  CONTAINER_ID_BODY,
+  GROUP_ID_BODY,
+  IGNORE_PREVIEW_CLASS,
+  INTERACTION_ACTION_REF,
+  INTERACTION_TARGET_REF,
+  MAIN_ANIM_ID,
+  PREVIEW_DATA_KEYS,
+  PREVIEW_TYPES,
+  RERENDER_SEEK_TIMELINE_DELAY,
+  SCENE_CLASS,
+} from "./awa.constants";
+import { isCanvas } from "./awa.common.utils";
+import localDatabaseService from "../../services/localdatabase.service";
+
+// DEFS
+export const SCENE_BLOCK_CLASS = ".app-scene-block";
+export const MAINSVGID = "#main-loonk-svg";
+export const TIMELINE_MAX_DURATION = 8000;
+export const ANIMATABLE_PROPERTIES = {
+  x: "translateX",
+  y: "translateY",
+  scale: "scale",
+  rotation: "rotate",
+  fill: "fill",
+  stroke: "stroke",
+  strokeWidth: "strokeWidth",
+  opacity: "opacity",
+  scaleX: "scaleX",
+  strokeDasharray: "strokeDasharray",
+  strokeDashoffset: "strokeDashoffset",
+  d: "d",
+  followPath: "followPath",
+  morphTo: "morphTo",
+
+  // Effect properties
+  dx: "dx",
+  dy: "dy",
+  flood: "flood",
+  blur: "blur",
+  depth: "depth",
+};
+
+export const ELEMENT_PROPERTIES = {
+  default: "default",
+  ...ANIMATABLE_PROPERTIES,
+};
+
+export const ELEMENT_EFFECTS = {
+  // This order is important for effects rendering
+
+  dropShadow: "Drop Shadow",
+  inset: "Inset",
+  innerShadow: "Inner Shadow",
+  blur: "Blur",
+};
+
+export const APP_MODE = {
+  DESIGN: "DESIGN",
+  ANIME: "ANIME",
+  PREVIEW: "PREVIEW",
+};
+
+
+export const APP_MODE_CONTEXT = {
+    NONE: "NONE",
+    PROTOTYPE: "PROTOTYPE",
+    DEVELOPER: "DEVELOPER"
+  };
+
+// User Action States
+export const USER_ACTION_STATE = {
+  SELECT: "SELECT", // Select any object bbox
+  CREATE: "CREATE", // Create an object (rect, circle, text ...)
+  DRAW: "DRAW", // Draw a path
+  MODIFY: "MODIFY", // Modify a path (Dragging/Deleting/Inserting a point)
+};
+
+export const USER_MENU_SELECT_CONTEXT = {
+  NONE: "NONE", //
+  SELECT_FOLLOW_PATH: "SELECT_FOLLOW_PATH",
+  SELECT_MORPHTO_PATH: "SELECT_MORPHTO_PATH",
+};
+
+// User Menu Context
+export const USER_MENU_CREATE_CONTEXT = {
+  NONE: "NONE", //
+  CREATE_RECT: "CREATE_RECT", //
+  CREATE_CIRCLE: "CREATE_CIRCLE", //
+  CREATE_POLYGON: "CREATE_POLYGON", //
+  CREATE_TEXT: "CREATE_TEXT", //
+  CREATE_MEDIA: "CREATE_MEDIA", //
+  CREATE_CANVAS: "CREATE_CANVAS", //
+};
+
+export const USER_MENU_MODIFY_CONTEXT = {
+  MOVE_POINT: "MOVE_POINT", //
+  INSERT_POINT: "INSERT_POINT", //
+};
+
+export const ELEMENT_DRAGGING_STATE = {
+  DRAGGING: "DRAGGING", //
+  PAUSED: "PAUSED",
+  ENDED: "ENDED"
+};
+
+export const UNIQUE_EVENTS =  
+[
+  awaEvents.CANVAS_EVENTS.click,
+  awaEvents.CANVAS_EVENTS.dblclick,
+  awaEvents.CANVAS_EVENTS.hover,
+  awaEvents.CANVAS_EVENTS.press,
+  awaEvents.CANVAS_EVENTS.release,
+  awaEvents.CANVAS_EVENTS.mouseout
+]
+
+/* awa core class */
+
+class awa {
+  m_svgInstance: any;
+  m_loonkInstance: Loonk;
+  m_timeline:  any;
+  m_timelineItems: any[];
+  m_timelineCurrentTime: number;
+  m_timelineMaxTime: number;
+  m_reduxInstance: any;
+  m_reduxState: any;
+  m_selectedElement: null;
+  project: any;
+  m_scenes: any[];
+  m_activeSceneId: null;
+  m_awaElementsIds: any[];
+  m_appMode: string;
+  m_appModeContext: string;
+  m_userActionState: string;
+  m_userMenuSelectContext: string;
+  m_userMenuCreateContext: string;
+  m_userMenuModifyContext: string;
+  m_selectedAnimation: string;
+  m_elementDraggingState: string;
+  m_flows: any[];
+  m_interactions: any[];
+
+  m_scenesCounter: number;
+  m_flowsCounter: number;
+  m_interactionsCounter: number;
+  m_animations: any[];
+  m_awaElementsCounter: number;
+
+  m_activeTimeline: any;
+  constructor(_reduxInstance, _reduxState) {
+    // Instances___________________________
+
+    this.m_svgInstance = SVG(MAINSVGID)
+      .addTo(SCENE_BLOCK_CLASS)
+      .size("100%", "100%");
+    this.m_loonkInstance = new Loonk(MAINSVGID, this.m_svgInstance);
+
+    this.initInfiniteView(this.m_svgInstance);
+
+    /* Timeline props */
+    this.m_timeline = anime.timeline({
+      easing: "linear",
+      duration: TIMELINE_MAX_DURATION,
+      autoplay: false,
+    });
+
+    this.m_timelineItems = [];
+    this.m_timelineCurrentTime = 0;
+    this.m_timelineMaxTime = TIMELINE_MAX_DURATION;
+
+    this.setActiveTimeline(this.m_timeline);
+
+    /* ****************************************** */
+
+    this.m_reduxInstance = _reduxInstance;
+    this.m_reduxState = _reduxState;
+
+    this.m_selectedElement = null;
+    this.m_svgInstance._awa = this;
+    this.m_loonkInstance._awa = this;
+    this.m_timeline._awa = this;
+
+    // TODO : All the data structures must be taken from an data storage source
+
+    this.project = {}; // The main object of the file/project
+
+    this.m_scenes = [];
+    this.m_scenesCounter = 0;
+    this.m_activeSceneId = null;
+
+
+
+    this.m_awaElementsIds = [];
+    this.m_awaElementsCounter = 0;
+
+    this.m_appMode = APP_MODE.DESIGN;
+    this.m_appModeContext = APP_MODE_CONTEXT.NONE;
+    this.m_userActionState = USER_ACTION_STATE.SELECT;
+    this.m_userMenuSelectContext = USER_MENU_SELECT_CONTEXT.NONE;
+    this.m_userMenuCreateContext = USER_MENU_CREATE_CONTEXT.NONE;
+    this.m_userMenuModifyContext = USER_MENU_MODIFY_CONTEXT.MOVE_POINT;
+
+    this.m_selectedAnimation = MAIN_ANIM_ID;
+
+    this.m_elementDraggingState = ELEMENT_DRAGGING_STATE.ENDED;
+
+    // Proto Objects
+    
+    // this.m_previewType = PREVIEW_TYPES.scene;
+    this.m_flows = [];
+    this.m_interactions = [];
+    this.m_flowsCounter = 0;
+    this.m_interactionsCounter = 0;
+    this.m_animations = [];
+
+    // -------------------------------
+
+    // Listeners --------------------------------
+    /* DESIGN */
+    this.onRequestCreateShape();
+    this.onRequestDrawPath();
+    this.onRequestQuitDrawPath();
+    this.onRequestModifyPath();
+    this.onRequestCreateCanvas();
+
+    this.onRequestUpdateSelectedElementProperty();
+    this.onrequestAddEffectToSelectedElement();
+
+    this.onRequestDeleteElement();
+    /* ANIMATION */
+
+    this.onRequestResetTimelineItems();
+    this.onRequestAddNewKeyframe();
+
+    this.initializator();
+
+    //-------------------------------------------
+
+
+  }
+
+  initializator()
+  {
+    // Group connectors-------------------------------------------------------------------
+    var connectorsGroup = this.getSvgInstance().group().attr({id:CONNECTORS_GROUP_CLASS})
+    //------------------------------------------------------------------------------------
+
+    // Plug
+    var plugRefGroup = this.getSvgInstance().group().attr({id:'awa--plug--ref'})
+    var plugRef = this.getSvgInstance().circle(12,12).attr({cx:4, cy:4,fill:"#fff"}).stroke({width:2, color:'#50B5AD'}).addClass("--plug--");
+    var plugPlusRef = this.getSvgInstance().path("M5 0V3H8V5H5V7.99C5 7.99 3.01 8 3 7.99V5H0C0 5 0.01 3.01 0 3H3V0H5Z").fill("#50B5AD");
+
+    plugRefGroup.add(plugRef)
+    plugRefGroup.add(plugPlusRef)
+
+    var defs = this.getSvgInstance().defs()
+    defs.add(plugRefGroup)
+
+    //-------------------------
+
+    // Scenes initializator
+    this.createScene();
+
+    // Flows initializator
+    var defaultFlow =  {
+      id:'default',
+      name:'default',
+      canvas: null, //
+      default:true, // whether it is the default/global flow or not
+    };
+
+    this.addFlow(defaultFlow);
+
+    // Project file definition
+
+    localDatabaseService.getProject()
+    .then(project=>{
+      console.log(project)
+    })
+    .catch(e=>{
+      console.log(e)
+    })
+
+   
+
+    
+
+
+    this.initProjectFile();
+
+  }
+
+  initProjectFile(){
+
+    this.getScenes()[0].flows = this.getFlows();
+
+    this.project = {
+      id : 'project 1',
+      name : 'project 1',
+      scenes : this.getScenes()
+    }; // The main object of the file/project
+
+    // Test second scene
+    this.createScene();
+
+    
+    this.setActiveSceneId(this.getScenes()[0].id)
+
+    // console.log(this.project)
+
+  }
+
+  getSvgInstance() {
+    return this.m_svgInstance;
+  }
+
+  saveForPreview = async ()=>
+  {
+    var _svgInstance = this.m_svgInstance, 
+        _mainAnimations = getTimelineItems(this.m_svgInstance, this.m_timeline),
+        _flows = this.getFlows(),
+        _customAnimations = this.getAnimations(),
+        _interactions = this.getInteractions();
+
+ 
+    var svgExport = _svgInstance.svg()
+
+    // const db = await dbPromise;
+    // const transaction = db.transaction('awaStore', 'readwrite');
+    // const store = transaction.objectStore('awaStore');
+ 
+
+    // await store.clear();
+
+    // const savedSvg = await store.get(PREVIEW_DATA_KEYS.svg);
+    // // Add data to the store
+    // if(savedSvg == undefined)
+    // {
+    //   await store.add({ 
+    //     [PREVIEW_DATA_KEYS.svg]: svgExport, 
+        
+    //     [PREVIEW_DATA_KEYS.mainAnimations]: _mainAnimations,
+
+    //     [PREVIEW_DATA_KEYS.flows]: _flows,
+        
+    //     [PREVIEW_DATA_KEYS.interactions]: _interactions,
+        
+    //     [PREVIEW_DATA_KEYS.customAnimations]: _customAnimations,
+      
+    //   });
+
+      
+    // }
+
+  }
+
+  getLoonkInstance() {
+    return this.m_loonkInstance;
+  }
+  getTimelineInstance() {
+    return this.m_timeline;
+  }
+
+  getAppMode() {
+    return this.m_appMode;
+  }
+
+  getAppModeContext() {
+    return this.m_appModeContext;
+  }
+
+  setDesignAppMode() {
+    this.m_appMode = APP_MODE.DESIGN;
+
+    this.m_reduxInstance.setAppMode(this.m_appMode);
+  }
+
+  setAnimeAppMode() {
+    this.m_appMode = APP_MODE.ANIME;
+
+    // Update store
+    this.m_reduxInstance.setAppMode(this.m_appMode);
+    this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.SELECT);
+    this.m_reduxInstance.setUserMenuActiveContext(USER_ACTION_STATE.SELECT);
+  }
+
+  setNoneAppModeContext() {
+    this.m_appModeContext = APP_MODE_CONTEXT.NONE;
+    this.m_reduxInstance.setAppModeContext(this.m_appModeContext);
+  }
+
+  setPrototypeAppModeContext() {
+    this.m_appModeContext = APP_MODE_CONTEXT.PROTOTYPE;
+    this.m_reduxInstance.setAppModeContext(this.m_appModeContext);
+  }
+
+  setDeveloperAppModeContext() {
+    this.m_appModeContext = APP_MODE_CONTEXT.DEVELOPER;
+    this.m_reduxInstance.setAppModeContext(this.m_appModeContext);
+  }
+
+  isNoneAppModeContext() {
+    return this.getAppModeContext() == APP_MODE_CONTEXT.NONE;
+  }
+
+  isPrototypeAppModeContext() {
+    return this.getAppModeContext() == APP_MODE_CONTEXT.PROTOTYPE;
+  }
+
+  isDeveloperAppModeContext() {
+    return this.getAppModeContext() == APP_MODE_CONTEXT.DEVELOPER;
+  }
+
+  isDesignAppMode() {
+    return this.m_appMode == APP_MODE.DESIGN;
+  }
+
+  isAnimeAppMode() {
+    return this.m_appMode == APP_MODE.ANIME;
+  }
+
+  createAwaElementId(_type) {
+    this.m_awaElementsCounter++;
+
+    var idBody = AWA_ELEMENT_CLASS + _type.toLowerCase() + "--";
+
+    // var typeIndex = this.getTypeIndex(_type, idBody); // For the name
+    var id = idBody+ this.m_awaElementsCounter;
+ 
+    return (
+      id
+    );
+  }
+
+  getTypeIndex(_type, _idBody)
+  {
+    var tag = _type;
+    //map
+    switch (_type) {
+      case 'canvas':
+        tag = 'g';
+        break;
+    
+      default:
+        break;
+    }
+
+    var typeChildren = this.getSvgInstance().find(tag)
+    var needed = typeChildren.filter(e=>{
+      var id = e.attr("id") || "";
+      return id.includes(_idBody)
+    })
+
+
+
+  }
+
+  _setUserActionState(_state) {
+    this.m_userActionState = _state;
+    // Update store
+    this.m_reduxInstance.setUserMenuActiveContext(_state);
+  }
+
+  setTimelineTime(_t) {
+    this.m_timelineCurrentTime = _t;
+    // Update store
+    this.m_reduxInstance.setTimelineTime(_t);
+  }
+
+
+
+  updateTimelineItems(_items : any, _nodeItems : any = null) {
+    
+    var selectedAnimation = this.getSelectedAnimation();
+
+    if(selectedAnimation == MAIN_ANIM_ID)
+    {
+      let elementId = _nodeItems.targets;
+      let element = _nodeItems;
+
+      var elementIndex = this.m_timelineItems.findIndex(e=>e.targets == elementId);
+
+      if(elementIndex != -1) 
+      {
+        this.m_timelineItems[elementIndex] = {
+          ...this.m_timelineItems[elementIndex],
+          ...element,
+        };
+
+      }
+      else
+      {
+        this.m_timelineItems.push(element);
+      } 
+ 
+      // Dispatch timelineItems
+      this.dispatchUpdateTimelineItems(this.m_timelineItems)
+      
+    }
+    else // Custom animation
+    {
+      let selectedAnimation = this.getSelectedAnimation();
+      let element = _nodeItems;
+
+      var elementIndex = this.m_animations.findIndex(e=>e.name == selectedAnimation);
+
+      if(elementIndex != -1) 
+      {
+        var thisAnimation = this.m_animations[elementIndex];
+
+        thisAnimation.animation = {
+          ...thisAnimation.animation,
+          ...element,
+        };
+      }
+      else
+      {
+        thisAnimation.animation = element;
+      } 
+ 
+      // Update the animation
+      this.updateAnimation(selectedAnimation, thisAnimation);
+      // Dispatch timelineItems
+      var animationTimelineItems = [thisAnimation.animation];
+      this.dispatchUpdateTimelineItems(animationTimelineItems);
+
+    }
+    
+    // console.log(_items)
+    // console.log(_nodeItems)
+
+    this.saveForPreview();
+
+  }
+
+  // setPreviewType(_type)
+  // {
+  //   this.m_previewType = _type;
+  // }
+
+  // getPreviewType()
+  // {
+  //   return this.m_previewType;
+  // }
+
+  resetTimelineItems(_newItems = []) {
+    this.m_timelineItems = _newItems;
+  }
+
+  getTimelineItems(){
+    return this.m_timelineItems;
+  }
+
+  setActiveSceneId(_id) {
+
+    this.activateScene(_id);
+
+    this.m_activeSceneId = _id;
+  }
+
+  activateScene(_id)
+  {
+    var currentScene = this.getSvgInstance().findOne("#"+this.m_activeSceneId);
+    var nextScene = this.getSvgInstance().findOne("#"+_id);
+
+    if(currentScene)
+      currentScene.hide();
+    if(nextScene)
+      nextScene.show();
+
+  }
+
+  getActiveSceneId() {
+    return this.m_activeSceneId;
+  }
+
+  getActiveSceneContainer() {
+    var activeSceneId = this.getActiveSceneId();
+    var selector = "#"+activeSceneId;
+    return this.getSvgInstance().findOne(selector);
+  }
+
+  setSelectedElement(_elem) {
+    this.m_selectedElement = _elem;
+
+    // Update store : selectedElementId
+    var selectedElementId = _elem.attr("id");
+    // console.log("request update ...")
+    this.m_reduxInstance.setSelectedElementId(selectedElementId);
+    this.dispatchUpdateSelectedElement();
+
+    // console.log(_elem);
+  }
+
+  getSelectedElement() : any {
+    if (!this.m_selectedElement) {
+      var elementId = "#" + this.m_reduxState.selectedElementId;
+      this.m_selectedElement = this.getSvgInstance().find(elementId)[0];
+    }
+
+    return this.m_selectedElement;
+  }
+
+  setSelectedAnimation(_anim) {
+    this.m_selectedAnimation = _anim;
+ 
+    // this.dispatchUpdateSelectedElement();
+
+  }
+
+  getSelectedAnimation() {
+    if (!this.m_selectedAnimation) {
+      this.setSelectedAnimation(MAIN_ANIM_ID)
+    }
+
+    return this.m_selectedAnimation;
+  }
+
+  setActiveTimeline(_timeline)
+  {
+    this.m_activeTimeline = _timeline;
+  }
+
+  getActiveTimeline()
+  {
+    return this.m_activeTimeline;
+  }
+
+  getActiveTimelineItems()
+  {
+    var selectedAnimation = this.getSelectedAnimation();
+
+    var timelineItems = this.m_timelineItems; // the main
+
+    if(selectedAnimation != MAIN_ANIM_ID)
+    {
+      timelineItems = getTimelineItems(this.m_svgInstance, this.getActiveTimeline())
+    }
+
+    return timelineItems;
+  }
+
+  setElementDraggingStateDragging() {
+    this.m_elementDraggingState = ELEMENT_DRAGGING_STATE.DRAGGING;
+  }
+  setElementDraggingStatePaused() {
+    this.m_elementDraggingState = ELEMENT_DRAGGING_STATE.PAUSED;
+  }
+  setElementDraggingStateEnded() {
+    this.m_elementDraggingState = ELEMENT_DRAGGING_STATE.ENDED;
+  }
+  getElementDraggingState() {
+    return this.m_elementDraggingState;
+  }
+  isElementDraggingStateDragging() {
+    return this.m_elementDraggingState == ELEMENT_DRAGGING_STATE.DRAGGING;
+  }
+  
+
+  setFollowPath(_elem) {
+    var selectedPathId = _elem.attr("id");
+    var selector = "#" + selectedPathId;
+    // console.log(_elem)
+    var property = ANIMATABLE_PROPERTIES.followPath;
+    var value = anime.path(selector, 0);
+
+    var initialValue = null;
+    var isLineDraw = false;
+    awaEventEmitter.emit(awaEvents.ADD_NEW_KEYFRAME, {
+      property,
+      value,
+      initialValue,
+      isLineDraw,
+    });
+  }
+
+  setMorphToPath(_elem) {
+    var selectedPathId = _elem.attr("id");
+    var selector = "#" + selectedPathId;
+
+    var currentSelectedPathId = this.getSelectedElement().attr("id");
+    var currentSelectedElementSelector = "#" + currentSelectedPathId;
+
+    // console.log(_elem)
+    var property = ANIMATABLE_PROPERTIES.morphTo;
+    var value = /* _elem.attr("d") */ anime.path(selector, 0);
+    var initialValue = /* this.getSelectedElement().attr("d") */ anime.path(
+      currentSelectedElementSelector,
+      0
+    );
+
+    var isLineDraw = false;
+    awaEventEmitter.emit(awaEvents.ADD_NEW_KEYFRAME, {
+      property,
+      value,
+      initialValue,
+      isLineDraw,
+    });
+  }
+
+  setUserSelectActionState() {
+    this._setUserActionState(USER_ACTION_STATE.SELECT);
+  }
+
+  setUserCreateActionState() {
+    this._setUserActionState(USER_ACTION_STATE.CREATE);
+  }
+
+  setUserDrawActionState() {
+    this._setUserActionState(USER_ACTION_STATE.DRAW);
+  }
+
+  setUserModifyActionState() {
+    this._setUserActionState(USER_ACTION_STATE.MODIFY);
+  }
+
+  getUserActionState() {
+    return this.m_userActionState;
+  }
+
+  getUserMenuSelectContext() {
+    return this.m_userMenuSelectContext;
+  }
+
+  getUserMenuModifyContext() {
+    return this.m_userMenuModifyContext;
+  }
+
+  setUserMenuSelectContextFollowPath() {
+    this.m_userMenuSelectContext = USER_MENU_SELECT_CONTEXT.SELECT_FOLLOW_PATH;
+  }
+
+  setUserMenuSelectContextMorphToPath() {
+    this.m_userMenuSelectContext = USER_MENU_SELECT_CONTEXT.SELECT_MORPHTO_PATH;
+  }
+
+  resetUserMenuSelectContext() {
+    this.m_userMenuSelectContext = USER_MENU_SELECT_CONTEXT.NONE;
+  }
+
+  setUserMenuModifyContextMovePoint() {
+    this.m_userMenuModifyContext = USER_MENU_MODIFY_CONTEXT.MOVE_POINT;
+  }
+
+  setUserMenuModifyContextInsertPoint() {
+    this.m_userMenuModifyContext = USER_MENU_MODIFY_CONTEXT.INSERT_POINT;
+  }
+
+  isUserActionStateSelect() {
+    return this.getUserActionState() == USER_ACTION_STATE.SELECT;
+  }
+
+  isUserActionStateCreate() {
+    return this.getUserActionState() == USER_ACTION_STATE.CREATE;
+  }
+
+  isUserActionStateDraw() {
+    return this.getUserActionState() == USER_ACTION_STATE.DRAW;
+  }
+
+  isUserActionStateModify() {
+    return this.getUserActionState() == USER_ACTION_STATE.MODIFY;
+  }
+
+  // Select Context
+  isUserMenuSelectContextSelectDefault() {
+    return this.getUserMenuSelectContext() == USER_MENU_SELECT_CONTEXT.NONE;
+  }
+
+  isUserMenuSelectContextSelectFollowPath() {
+    return (
+      this.getUserMenuSelectContext() ==
+      USER_MENU_SELECT_CONTEXT.SELECT_FOLLOW_PATH
+    );
+  }
+
+  isUserMenuSelectContextSelectMorphToPath() {
+    return (
+      this.getUserMenuSelectContext() ==
+      USER_MENU_SELECT_CONTEXT.SELECT_MORPHTO_PATH
+    );
+  }
+
+  // Modify context
+  isUserMenuModifyContextMovePoint() {
+    return (
+      this.getUserMenuModifyContext() == USER_MENU_MODIFY_CONTEXT.MOVE_POINT
+    );
+  }
+
+  isUserMenuModifyContextInsertPoint() {
+    return (
+      this.getUserMenuModifyContext() == USER_MENU_MODIFY_CONTEXT.INSERT_POINT
+    );
+  }
+
+  // utils
+
+  quitCreateState() {
+    this.setUserSelectActionState();
+    this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.SELECT);
+    this.m_reduxInstance.setUserMenuActiveContext(USER_ACTION_STATE.SELECT);
+  }
+
+  quitDrawState() {
+    this.setUserSelectActionState();
+    this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.SELECT);
+    this.m_reduxInstance.setUserMenuActiveContext(USER_ACTION_STATE.SELECT);
+  }
+  // Dispatchers *************************************
+
+  dispatchRequestCreateShape(_data) {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.CREATE_SHAPE, { detail: { type: _data } });
+  }
+
+  dispatchRequestDrawPath() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.DRAW_PATH, {});
+
+    // Update store
+    this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.DRAW);
+  }
+
+  dispatchRequestQuitDrawPath() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.QUIT_DRAW_PATH, {});
+  }
+
+  dispatchRequestModifyPath() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.MODIFY_PATH, {});
+
+    // Update store
+    this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.MODIFY);
+  }
+
+  dispatchRequestCreateCanvas() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.CREATE_CANVAS, {});
+  }
+
+  dispatchUpdateSelectedElement() {
+    //Dispatch an event
+    var selectedElementId = this.getSelectedElement().attr("id");
+
+    awaEventEmitter.emit(awaEvents.UPDATE_SELECTED_ELEMENT, {
+      detail: { selectedElementId: selectedElementId },
+    });
+  }
+
+  dispatchUpdateTimelineItems(_timelineItems) {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.UPDATE_TIMELINE_ITEMS, {
+      detail: { timelineItems: _timelineItems },
+    });
+  }
+
+  dispatchUpdateSceneItems() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.UPDATE_SCENE_ITEMS, { detail: {} });
+  }
+
+  dispatchDeleteElement = (_id)=>{
+    awaEventEmitter.emit(awaEvents.DELETE_AWA_ELEMENT, {id:_id})
+  }
+
+  dispatchNewCustomAnimation(_newAnimationName) {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.NEW_CUSTOM_ANIMATION, {
+      detail: { newAnimationName: _newAnimationName },
+    });
+  }
+
+  // End of dispatchers ********************************
+
+  // Listeners ******************************************
+
+  onRequestCreateShape() {
+    awaEventEmitter.on(awaEvents.CREATE_SHAPE, (_data) => {
+      // TODO : Call following lines when shape creation (drag to create) ends
+      this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.SELECT);
+      this.m_reduxInstance.setUserMenuActiveContext(USER_ACTION_STATE.SELECT);
+
+
+      var _type = _data.detail.type;
+
+      var sceneEl;
+
+      switch (_type) {
+        case USER_MENU_CREATE_CONTEXT.CREATE_RECT:
+          var awaElementId = this.createAwaElementId("rect");
+          
+          this.m_awaElementsIds.push(awaElementId);
+
+          sceneEl = this.m_svgInstance
+            .rect(100, 70)
+            .attr({
+              id: awaElementId,
+              x: 25,
+              y: 25,
+              fill: "#fff",
+              stroke: "#000",
+              "stroke-width": 1, // Setting camelCase value override the tween property
+              class: "awa-element-rect",
+            })
+            .draggable(this.getLoonkInstance())
+            .selectable(this.getLoonkInstance());
+
+
+          break;
+
+        case USER_MENU_CREATE_CONTEXT.CREATE_CIRCLE:
+          var awaElementId = this.createAwaElementId("circle");
+
+          this.m_awaElementsIds.push(awaElementId);
+
+          sceneEl = this.m_svgInstance
+            .circle(80)
+            .attr({
+              id: awaElementId,
+              cx: 200,
+              cy: 200,
+              fill: "#fff",
+              stroke: "#000",
+              "stroke-width": 1,
+            })
+            .draggable(this.getLoonkInstance())
+            .selectable(this.getLoonkInstance());
+
+          break;
+      }
+
+      sceneEl.parentId(this.getActiveSceneId())
+
+      // Add to scene
+      if(sceneEl)
+      {
+        // Add to container
+        this.addElementToScene(sceneEl)
+
+      }
+
+      // Quit this state
+      this.quitCreateState();
+
+      // Save
+
+      this.saveForPreview();
+
+    });
+  }
+
+  onRequestDrawPath() {
+    awaEventEmitter.on(awaEvents.DRAW_PATH, (_data) => {
+      this.setUserDrawActionState();
+      this.getLoonkInstance().enterDrawState();
+    });
+  }
+
+  onRequestQuitDrawPath() {
+    awaEventEmitter.on(awaEvents.QUIT_DRAW_PATH, (_data) => {
+      this.getLoonkInstance().quitDrawState();
+    });
+  }
+
+  onRequestModifyPath() {
+    awaEventEmitter.on(awaEvents.MODIFY_PATH, (_data) => {
+      this.getLoonkInstance().enterEditState();
+    });
+  }
+
+  onRequestCreateCanvas() {
+    awaEventEmitter.on(awaEvents.CREATE_CANVAS, (_data) => {
+      // TODO : Call following lines when shape creation (drag to create) ends
+      this.m_reduxInstance.setUserActionState(USER_ACTION_STATE.SELECT);
+      this.m_reduxInstance.setUserMenuActiveContext(USER_ACTION_STATE.SELECT);
+
+      var awaElementId = this.createAwaElementId("canvas");
+      var mainCanvasId = awaElementId + GROUP_ID_BODY;
+      // Update m_awaElementsIds
+      this.m_awaElementsIds.push(mainCanvasId);
+
+      var canvasGroup = this.m_svgInstance.group(); //The root canvas element 
+      var canvasItemsGroup = this.m_svgInstance.group();
+
+      canvasGroup.attr({ id: mainCanvasId });
+      var canvasName = "canvas "+this.m_awaElementsCounter;
+      canvasGroup.m_name = canvasName;
+      canvasGroup._isCanvas = true; // Helper to verify canvas elements
+
+      canvasItemsGroup.addClass(CLIP_ID_BODY + GROUP_ID_BODY);
+
+
+      var canvasTitleItem = this.m_svgInstance.text(canvasName)
+        .attr({ id: awaElementId + "--title" })
+        .font({family:'Montserrat', size:11.5, color:'#000'})
+        .move(425, 60)
+      canvasTitleItem.addClass(IGNORE_PREVIEW_CLASS)
+
+      var canvasClipper = this.m_svgInstance
+        .clip()
+        .attr({ id: awaElementId + CLIP_ID_BODY })
+
+        var rwidths = [200, 270]
+        var rheights = [250, 200]
+
+        var rw = rwidths[Math.floor(Math.random() * rwidths.length)]
+        var rh = rheights[Math.floor(Math.random() * rheights.length)]
+
+      var canvasClipRect = this.m_svgInstance.rect(rw, rh).attr({
+        id: awaElementId + CONTAINER_ID_BODY,
+        x: 425,
+        y: 85,
+        fill: "#fff",
+        opacity: 0,
+        stroke: "#1a1a1a",
+        "stroke-width": 1, // Setting camelCase value override the tween property
+        class: "awa-element-canvas",
+      });
+
+
+      var canvasClipRectClone = canvasClipRect.clone().attr({ opacity: 1 });
+
+      var canvasClipRectUse = this.m_svgInstance.use(canvasClipRect);
+
+      // canvasClipRect.node.style.pointerEvents = "none";
+
+      // Use the use element to set the clip rect : like so when the original is moved,
+      // the use element is also moved without glitching effect
+      canvasClipper.add(canvasClipRectUse);
+
+      canvasItemsGroup.clipWith(canvasClipper);
+
+      canvasGroup.add(canvasClipRectClone); // add clone for background
+      canvasGroup.add(canvasClipRect); // add real rect for clipPath movement ref
+      canvasGroup.add(canvasItemsGroup); // add itemsGroup to be moved with the canvas ... without custom calculations
+
+      canvasGroup.add(canvasTitleItem); // add title block : To keep it at top
+
+      canvasGroup.draggable(this.getLoonkInstance());
+      canvasGroup.selectable(this.getLoonkInstance());
+
+      // Quit this state
+      this.quitCreateState();
+
+      // Update default Flow
+      if(this.m_flows[0].canvas == null) this.m_flows[0].canvas = mainCanvasId;
+
+      // Add to scene
+      var sceneEl = canvasGroup;
+      if(sceneEl)
+      {
+        // Add to container
+        this.addElementToScene(sceneEl)
+
+      }
+
+      // Save
+      this.saveForPreview();
+
+    });
+  }
+
+  onRequestUpdateSelectedElementProperty() {
+    awaEventEmitter.on(awaEvents.UPDATE_SELECTED_ELEMENT_PROPERTY, (_data) => {
+      var propertyName = _data.property;
+      var value = _data.value;
+
+      if (!this.getSelectedElement()) return;
+      // console.log(this.getSelectedElement())
+
+      switch (propertyName) {
+        case "x":
+          this.getSelectedElement().x(value);
+          break;
+
+        case "y":
+          this.getSelectedElement().y(value);
+          break;
+
+        case "fill":
+          this.getSelectedElement().fill(value);
+          break;
+
+        case "stroke":
+          this.getSelectedElement().stroke({ color: value });
+          break;
+
+        case "opacity":
+          this.getSelectedElement().opacity(value);
+          break;
+
+        case "strokeWidth":
+          this.getSelectedElement().stroke({ width: value });
+          break;
+
+        case "rotation":
+          this.getSelectedElement().transform({ rotate: value });
+          break;
+
+        case "scale":
+          this.getSelectedElement().transform({ scale: value });
+          break;
+
+        case "strokeDasharray":
+          this.getSelectedElement().stroke({ dasharray: value });
+          break;
+
+        case "strokeDashoffset":
+          this.getSelectedElement().stroke({ dashoffset: value });
+          break;
+
+        case "effects":
+          var removedEffectId = _data.removedEffectId;
+
+          this.getSelectedElement().effects(value);
+          // Rerender new effects
+          if (removedEffectId)
+            this.getSelectedElement().removeEffect(removedEffectId);
+
+          break;
+
+        default:
+          break;
+      }
+
+
+      // Save
+      this.saveForPreview();
+
+    });
+  }
+
+  onrequestAddEffectToSelectedElement() {
+    awaEventEmitter.on(awaEvents.ADD_EFFECT_TO_SELECTED_ELEMENT, (_data) => {
+      var effect = _data.effect;
+
+      if (!this.getSelectedElement()) return;
+
+      var effects = this.getSelectedElement().effects();
+      var newEffect = this.createEffect(effect);
+      effects.push(newEffect);
+      // Render effects
+      this.getSelectedElement().effector().chainEffects(effects);
+
+      // Save
+      this.saveForPreview();
+
+    });
+  }
+
+  createEffect(_effect) {
+    var effect = _effect;
+
+    switch (_effect.name) {
+      case ELEMENT_EFFECTS.dropShadow:
+        effect.properties = {
+          x: 5,
+          y: 5,
+          blur: 0,
+          spread: 0,
+          color: "#000000",
+        };
+        break;
+
+      case ELEMENT_EFFECTS.blur:
+        effect.properties = { blur: 5 };
+        break;
+
+      case ELEMENT_EFFECTS.innerShadow:
+        effect.properties = {
+          x: 5,
+          y: 5,
+          blur: 0,
+          spread: 0,
+          color: "#000000",
+        };
+        break;
+
+      case ELEMENT_EFFECTS.inset:
+        effect.properties = { depth: 0, color: "#000000" };
+        break;
+
+      default:
+        break;
+    }
+
+    return effect;
+  }
+
+
+  onRequestDeleteElement() {
+    awaEventEmitter.on(awaEvents.DELETE_AWA_ELEMENT, (_data) => {
+
+      var id = _data.id;
+      var selector = "#"+id;
+      var element = this.getSvgInstance().findOne(selector)
+
+      if(element)
+        element.remove();
+
+    })
+
+  }
+
+  //--------------------- ANIMATIONS ----------------------
+
+  onRequestAddNewKeyframe() {
+    awaEventEmitter.on(awaEvents.ADD_NEW_KEYFRAME, (_data) => {
+      var anim = _data;
+      var animTarget = "#" + this.getSelectedElement().attr("id");
+      var _animProperty = anim.property;
+      /* Get the real corresponding animatable property */
+      var animProperty = ANIMATABLE_PROPERTIES[_animProperty];
+
+      var hasTwinProperty = false;
+      var twinPoperty : any = null;
+
+      if (_animProperty == "scale") {
+        hasTwinProperty = true;
+        twinPoperty = "scaleY";
+      }
+
+      var animValue = anim.value;
+      var animInitialValue = anim.initialValue;
+      var _animIsLineDraw = anim.isLineDraw;
+
+      // console.log(_data);
+      var timelineItems = this.getActiveTimelineItems();
+
+      var globalAnims = [...timelineItems];//[...this.m_timelineItems];
+      // Check if target exist : else create
+      var nodeAnims = globalAnims.find((i) => i.targets == animTarget) || {
+        targets: animTarget,
+        [animProperty]: [],
+      };
+
+      var currentAnims = { ...nodeAnims };
+
+      if (!currentAnims[animProperty]) currentAnims[animProperty] = []; // Initialize empty array
+
+      var currentAnimsIndex = globalAnims.findIndex(
+        (i) => i.targets == animTarget
+      );
+
+      var targetedProperty = animProperty;
+      var keyTime = this.m_timelineCurrentTime;
+
+      var first = false;
+
+      if (currentAnims[targetedProperty].length == 0) {
+        // No present animation before
+        first = true;
+
+        var tween0 = {
+          value: _animIsLineDraw ? animValue : animInitialValue, // Reverse in the case of line draw
+          duration: 0,
+          delay: 0,
+          keyTime: 0,
+        };
+
+        var tween1 = {
+          value: _animIsLineDraw ? animInitialValue : animValue, // Reverse in the case of line draw
+          duration: keyTime,
+          delay: 0,
+          keyTime: keyTime,
+        };
+
+        currentAnims[targetedProperty].push(tween0, tween1);
+
+        if (hasTwinProperty) {
+          currentAnims[twinPoperty] = [];
+
+          var _tween0 = {
+            value: animInitialValue,
+            duration: 0,
+            delay: 0,
+            keyTime: 0,
+          };
+
+          var _tween1 = {
+            value: animValue,
+            duration: keyTime,
+            delay: 0,
+            keyTime: keyTime,
+          };
+
+          currentAnims[twinPoperty].push(_tween0, _tween1);
+        }
+      } // Add Or Update existing tween
+      else {
+        // Get currentAnims index in timelineItems
+        currentAnimsIndex = this.m_timelineItems.indexOf(currentAnims);
+
+        var newTweens = createNewTween(
+          currentAnims,
+          keyTime,
+          targetedProperty,
+          animValue
+        );
+        currentAnims[targetedProperty] = newTweens;
+
+        if (hasTwinProperty) {
+          // currentAnims[twinPoperty] = [];
+
+          var newTweens = createNewTween(
+            currentAnims,
+            keyTime,
+            twinPoperty,
+            animValue
+          );
+          currentAnims[twinPoperty] = newTweens;
+        }
+      }
+
+      // Update globalAnims
+      if (currentAnimsIndex == -1) globalAnims.push(currentAnims);
+      else globalAnims[currentAnimsIndex] = currentAnims;
+
+       
+      // Rerender by removing and then add - Seek the same keyTime to avoid frame jump
+      this.reRenderNodeAnims(
+        globalAnims,
+        currentAnims,
+        animTarget,
+        keyTime,
+        first
+      );
+    });
+  }
+
+  onRequestResetTimelineItems() {
+    awaEventEmitter.on(awaEvents.RESET_TIMELINE_ITEMS, (_data) => {
+      this.resetTimelineItems(_data);
+    });
+  }
+
+  // ******************************************************
+
+  // CONNECTORS
+
+  createConnector(source, target, interactionId, init=false){
+
+    var conn = source.connectable({
+      targetAttach: 'perifery',
+      sourceAttach: 'perifery',
+      type: 'curved',
+      loonk:this.getLoonkInstance(),
+      interactionId : interactionId,
+      init:init
+      }, target);
+
+    return conn;
+  }
+
+
+  /* ANIMATION METHODS */
+
+  reRenderNodeAnims(
+    _globalAnims,
+    _nodeAnims,
+    _targetedId,
+    _newKeyTime,
+    _first = false
+  ) {
+    if (!_first) this.getActiveTimeline().remove(_targetedId);
+
+    // Rerender - Seek pos
+    setTimeout(() => {
+      this.getActiveTimeline().add(_nodeAnims, 0);
+      // Seek added keyTime
+      this.getActiveTimeline().seek(_newKeyTime);
+
+      // console.log(_nodeAnims)
+
+      // update timelineItems from timeline instance
+      //   this.updateTimelineItemsFromTimeline(this.m_timeline);
+      this.updateTimelineItems(_globalAnims, _nodeAnims);
+
+      // Set the element as animated
+      this.updateElementAnimatedStatus();
+    }, RERENDER_SEEK_TIMELINE_DELAY);
+  }
+
+  updateTimelineItemsFromTimeline(_timeline) {
+    var timelineItems = getTimelineItems(_timeline);
+
+    this.updateTimelineItems(timelineItems);
+  }
+
+  updateElementAnimatedStatus(_status = true) {
+    this.getSelectedElement().m_isAnimated = _status;
+  }
+
+  /* ******************************************************* */
+
+  // FLOWS - INTERACTIONS - SAVED ANIMATIONS
+
+  getScenes()
+  {
+    return this.m_scenes;
+  }
+
+  getFlows()
+  {
+    return this.m_flows;
+  }
+
+  getInteractions()
+  {
+    return this.m_interactions;
+  }
+
+  getElementInteractions(_target)
+  {
+    var interactions = this.getInteractions();
+
+    var elementInteractions = interactions.filter(i=>i.basedOn.target == _target);
+
+    return elementInteractions;
+
+  }
+
+  getAnimations()
+  {
+    return this.m_animations;
+  }
+
+  generateSceneId()
+  {
+    return SCENE_CLASS+(this.m_scenesCounter+1);
+  }
+
+  generateFlowId()
+  {
+    return BASE_FLOW_ID+" "+(this.m_flowsCounter+1);
+  }
+
+  // create the scene object with its "g" (group) element associated
+  createScene()
+  {
+    var sceneId = this.generateSceneId();
+
+    var scene = {
+      id:sceneId,
+      name : BASE_SCENE_ID+" "+(this.m_scenesCounter+1),
+      flows : [],
+      interactions : [],
+      animations : {
+          main : [],
+          custom : []
+      },
+      items : []
+    }
+
+    if(!this.m_scenes.find(f=>f.id == scene.id))
+    {
+      this.m_scenes.push(scene);
+
+      // this.saveForPreview();
+      this.m_scenesCounter++;
+
+      this.createSceneContainer(sceneId)
+
+      return true;
+    }
+
+    return false;
+
+  }
+
+  // Create the g associated element for a scene
+  createSceneContainer(sceneId)
+  {
+    this.m_svgInstance
+      .group()
+      .attr({
+        id: sceneId,
+        class: SCENE_CLASS,
+      })
+  }
+
+
+  deleteScene(_id)
+  {
+    var thisSceneIndex = this.m_scenes.findIndex(f=>f.id == _id);
+    if(thisSceneIndex != -1)
+    {
+      this.m_scenes.splice(thisSceneIndex, 1);
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+  
+  
+  updateSceneName(_sceneId, _newName)
+  {
+    var thisSceneIndex = this.m_scenes.findIndex(f=>f.id == _sceneId);
+    if(thisSceneIndex != -1)
+    {
+      this.m_scenes[thisSceneIndex].name = _newName;
+
+      // this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  addElementToScene(sceneEl, parent : any = null) // Adds or Update if exist
+  {
+   
+    if(!parent)
+      parent = this.getActiveSceneContainer();
+
+    parent.add(sceneEl);
+
+    // Add this element object to scene items
+    var elObject = this.elementToObject(sceneEl);
+
+
+    this.updateSceneItems(elObject)
+
+    this.dispatchUpdateSceneItems();
+
+  }
+
+  updateSceneItems(elObject)
+  {
+    var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
+
+    var sceneItems = scene.items;
+    var thisElIndex = sceneItems.findIndex(e=>e.id == elObject.id);
+
+    if(thisElIndex != -1)
+    {
+      sceneItems[thisElIndex] = elObject;
+    }
+    else
+    {
+      sceneItems.push(elObject);
+    }
+
+  }
+
+  elementToObject(sceneEl)
+  {
+    var elObject = {
+
+      id : sceneEl.attr('id'),
+      type : sceneEl.type,
+      name: sceneEl.m_name,
+      parent : sceneEl.parentId() || this.getActiveSceneId(), // if null get the active scene as parent
+      canvasOwner : sceneEl.node._canvasOwnerId,
+      path: sceneEl.path,
+      pathString: sceneEl.pathString,
+      node : {
+        anchor : sceneEl.node.anchor,
+        effects : sceneEl.node.effects
+      },
+      options : {visible : true, locked : false},
+      events : sceneEl.events,
+
+    }
+
+    return elObject;
+    
+  }
+
+  deleteElementFromScene(_id)
+  {
+    var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
+
+    var sceneItems = scene.items;
+ 
+    // Remove the element
+    var thisElIndex = sceneItems.findIndex(e=>e.id == _id);
+    sceneItems.splice(thisElIndex, 1);
+
+    // Recursive deletion
+    this.deleteRecursivelySceneItem(sceneItems, _id);
+    
+    // Delete from DOM
+    this.dispatchDeleteElement(_id);
+
+    // dispatchUpdateSceneItems
+    this.dispatchUpdateSceneItems();
+
+  }
+
+  deleteRecursivelySceneItem(sceneItems, id)
+  {
+    var thisElChildren = sceneItems.filter(e=>e.parent == id)
+
+    thisElChildren.forEach(child => {
+      
+      var childId = child.id;
+      var thisChildIndex = sceneItems.findIndex(e=>e.id == childId);
+      if(thisChildIndex != -1)
+      {
+        sceneItems.splice(thisChildIndex, 1);
+
+        this.deleteRecursivelySceneItem(sceneItems, childId)
+      }
+
+    });
+  }
+
+  createFlow(_canvas)
+  {
+    var flowName = this.generateFlowId();
+    var flow =  {
+      id : flowName,
+      name: flowName,
+      canvas: _canvas, //
+      default:false, // 
+    };
+
+    this.addFlow(flow);
+
+  }
+
+  deleteFlow(_id)
+  {
+    var thisFlowIndex = this.m_flows.findIndex(f=>f.id == _id);
+    if(thisFlowIndex != -1)
+    {
+      this.m_flows.splice(thisFlowIndex, 1);
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+  
+
+  getElementFlow(_canvas)
+  {
+    var flow = this.m_flows.find(f=>f.canvas == _canvas && f.id != "default");
+
+    return flow;
+  }
+
+  addFlow(_flow)
+  {
+    if(!this.m_flows.find(f=>f.name == _flow.name))
+    {
+      this.m_flows.push(_flow);
+
+      this.saveForPreview();
+
+      this.m_flowsCounter++;
+      return true;
+    }
+
+    return false;
+
+  }
+
+  updateFlowName(_FlowId, _newName)
+  {
+    var thisFlowIndex = this.m_flows.findIndex(f=>f.id == _FlowId);
+    if(thisFlowIndex != -1)
+    {
+      this.m_flows[thisFlowIndex].name = _newName;
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  isStartingFlow(_id)
+  {
+    var flows = this.getFlows();
+
+    return flows.includes(_id);
+  }
+
+  createInteraction(interactionId, basedOnTarget, basedOnTargetCanvas, actionTarget, actionTargetCanvas)
+  {
+    var interaction = 
+    {
+      id:interactionId,
+      active : true,
+      name:interactionId,
+      basedOn:{target:basedOnTarget, canvas: basedOnTargetCanvas, event:awaEvents.CANVAS_EVENTS.none},
+      action:{type:"animate" ,target: actionTarget, canvas: actionTargetCanvas, animation:null, options:{}},
+    }
+
+    this.saveForPreview();
+
+    return interaction;
+  }
+
+  addInteraction(_interaction)
+  {
+    var basedOnTarget = _interaction.basedOn.target;
+    var basedOnEvent = _interaction.basedOn.event;
+    var actionTarget = _interaction.action.target;
+ 
+    // Check creation possibility
+    if(this.m_interactions.find(i=>(i.basedOn.target == basedOnTarget) && (i.action.target == actionTarget) && (i.basedOn.event == basedOnEvent) ))
+    {
+      if(UNIQUE_EVENTS.includes(basedOnEvent))
+        return false;
+    }
+
+    this.m_interactions.push(_interaction);
+    this.m_interactionsCounter++;
+
+    this.saveForPreview();
+
+    return true;
+
+  }
+
+  deleteInteraction(_id)
+  {
+    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _id);
+    if(thisInteractionIndex != -1)
+    {
+      this.m_interactions.splice(thisInteractionIndex, 1);
+      
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  updateInteractionName(_interactionId, _newName)
+  {
+    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _interactionId);
+    if(thisInteractionIndex != -1)
+    {
+      this.m_interactions[thisInteractionIndex].name = _newName;
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  updateInteractionStatus(_interactionId, _status)
+  {
+    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _interactionId);
+    if(thisInteractionIndex != -1)
+    {
+      this.m_interactions[thisInteractionIndex].active = _status;
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  updateInteraction(id, root, target, value)
+  {
+    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == id);
+    if(thisInteractionIndex != -1)
+    {
+      this.m_interactions[thisInteractionIndex][root][target] = value;
+
+      // Action Target case : Update connection
+      if(root == INTERACTION_ACTION_REF && target == INTERACTION_TARGET_REF) // {... action : {target: ...}}
+      {
+        var basedOnTarget = this.m_interactions[thisInteractionIndex].basedOn.target; 
+
+        var connectorSource = this.getSvgInstance().findOne("#"+basedOnTarget);
+        var connectorTarget = this.getSvgInstance().findOne("#"+value);
+
+        // Find the current connection
+        var sourceConnectors = connectorSource.cons;
+        var targetedConnector = sourceConnectors.find(c=>c.interactionId == id);
+
+        // Unconnect existing connector
+        targetedConnector.unconnect();
+        targetedConnector = null;
+
+        if(basedOnTarget != value) // Don't create connector for the item itself
+          // Create new connector
+          this.createConnector(connectorSource, connectorTarget, id) 
+
+      }
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+
+  }
+
+
+  generateInteractionId(_targetId="")
+  {
+    return BASE_INTERACTION_ID+" "+(this.m_interactionsCounter+1);
+  }
+
+  getElementAnimations(_target)
+  {
+    var animations = this.m_animations.filter(f=>f.animation.targets == _target);
+    return animations;
+  }
+
+  getAnimationByName(_animationName)
+  {
+    var animation = this.m_animations.find(f=>f.name == _animationName);
+    return animation;
+  }
+
+  getElementAnimation(_target, _animationName)
+  {
+    var animations = this.getElementAnimations(_target);
+
+    var animation = animations.find(f=>f.name == _animationName);
+
+    return animation;
+
+  }
+
+  addAnimation(_animation)
+  {
+    if(!this.m_animations.find(f=>f.name == _animation.name))
+    {
+      this.m_animations.push(_animation);
+
+      this.dispatchNewCustomAnimation(_animation.name);
+
+      this.saveForPreview();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  deleteAnimation(_animationName)
+  {
+    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _animationName);
+    if(thisAnimIndex != -1)
+    {
+      this.m_animations.splice(thisAnimIndex, 1);
+
+      this.dispatchNewCustomAnimation(_animationName);
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  
+  updateAnimation(_animationName, _updatedAnimation)
+  {
+    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _animationName);
+    if(thisAnimIndex != -1)
+    {
+      this.m_animations[thisAnimIndex] = _updatedAnimation;
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+  updateAnimationName(_currentName, _newName)
+  {
+    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _currentName);
+    if(thisAnimIndex != -1)
+    {
+      this.m_animations[thisAnimIndex].name = _newName;
+
+      this.saveForPreview();
+
+      return true;
+    }
+    return false;
+  }
+
+
+
+  /* ******************************************************* */
+
+
+  initInfiniteView(_svgInstance : any) {
+    if (_svgInstance) {
+      var SvgContainer : any = document.querySelector(SCENE_BLOCK_CLASS);
+
+      let viewBox = {
+        x: 0,
+        y: 0,
+        width: SvgContainer.getBoundingClientRect().width,
+        height: SvgContainer.getBoundingClientRect().height,
+      };
+
+      _svgInstance.attr(
+        "viewBox",
+        `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
+      );
+
+      // Handle mouse or touch events for panning
+      let isDragging = false;
+      let startDragX = 0;
+      let startDragY = 0;
+
+      let _self = this;
+
+      _svgInstance.on("mousedown", (e)=>startDrag(e));
+      _svgInstance.on("touchstart", (e)=>startDrag(e));
+
+      _svgInstance.on("mousemove", (e)=>drag(e));
+      _svgInstance.on("touchmove", (e)=>drag(e));
+
+      _svgInstance.on("mouseup", ()=>stopDrag());
+      _svgInstance.on("touchend", ()=>stopDrag());
+
+      const startDrag = function (e) {
+        var el = e.target;
+        if (el.instance && el.instance.type != "svg") return;
+
+
+        e.preventDefault();
+
+        awaEventEmitter.emit(awaEvents.UPDATE_SELECTED_ELEMENT, {
+          detail: { selectedElementId: null },
+        });
+
+
+        if (_self.isUserActionStateSelect()) {
+          isDragging = true;
+          startDragX = e.clientX || e.touches[0].clientX;
+          startDragY = e.clientY || e.touches[0].clientY;
+        }
+      }
+
+      const drag = function (e) {
+        e.preventDefault();
+
+        if (!isDragging) return;
+
+        const currentX = e.clientX || e.touches[0].clientX;
+        const currentY = e.clientY || e.touches[0].clientY;
+
+        viewBox.x -= currentX - startDragX;
+        viewBox.y -= currentY - startDragY;
+
+        _svgInstance.attr(
+          "viewBox",
+          `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
+        );
+
+        startDragX = currentX;
+        startDragY = currentY;
+      }
+
+      const stopDrag = function () {
+        if (_self.isUserActionStateSelect()) isDragging = false;
+      }
+    }
+  }
+
+  //end of class
+}
+
+export default awa;

@@ -1,0 +1,218 @@
+@import '@radix-ui/colors/black-alpha.css';
+@import '@radix-ui/colors/mauve.css';
+@import '@radix-ui/colors/violet.css';
+
+/* reset */
+a,
+button {
+  all: unset;
+}
+
+.ToolbarRoot {
+  display: flex;
+  /* padding: 3px; */
+  /* width: 100%; */
+  /* min-width: max-content; */
+  /* align-self: center; */
+  border-radius: 6px;
+  /* background-color: white; */
+  /* box-shadow: 0 2px 10px var(--black-a7); */
+}
+
+.ToolbarToggleItem,
+.ToolbarLink,
+.ToolbarButton {
+  flex: 0 0 auto;
+  color: var(--mauve-11);
+  height: 25px;
+  padding: 0 5px;
+  border-radius: 4px;
+  display: inline-flex;
+  font-size: 13px;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+}
+.ToolbarToggleItem:hover,
+.ToolbarLink:hover,
+.ToolbarButton:hover {
+  background-color: var(--violet-3);
+  color: var(--violet-11);
+}
+.ToolbarToggleItem:focus,
+.ToolbarLink:focus,
+.ToolbarButton:focus {
+  position: relative;
+  box-shadow: 0 0 0 2px var(--violet-7);
+}
+
+.ToolbarToggleItem {
+  background-color: white;
+  margin-left: 2px;
+}
+.ToolbarToggleItem:first-child {
+  margin-left: 0;
+}
+.ToolbarToggleItem[data-state='on'] {
+  background-color: var(--violet-5);
+  color: var(--violet-11);
+}
+
+.ToolbarSeparator {
+  width: 1px;
+  background-color: var(--mauve-6);
+  margin: 0 10px;
+}
+
+.ToolbarLink {
+  background-color: transparent;
+  color: var(--mauve-11);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.ToolbarLink:hover {
+  background-color: transparent;
+  cursor: pointer;
+}
+@media (min-width: 520px) {
+  .ToolbarLink {
+    display: inline-flex;
+  }
+}
+
+.ToolbarButton {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;
+  background-color: var(--violet-9);
+}
+.ToolbarButton:hover {
+  background-color: var(--violet-10);
+  color: white;
+}
+
+  
+  .Label {
+    color: white;
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  
+.ToggleGroup {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    /* border-radius: 4px; */
+    /* box-shadow: 0 2px 10px var(--black-a7); */
+  }
+  
+  .ToggleGroupItem {
+    background-color: transparent;
+    color: #fff;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    font-size: 15px;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1px;
+  }
+  .ToggleGroupItem:first-child {
+    border-radius : 4px;
+  }
+  .ToggleGroupItem {
+    border-radius : 4px;
+    margin: 5px 5px;
+  }
+  .ToggleGroupItem:last-child {
+    border-radius: 4px;
+  }
+  .ToggleGroupItem:hover {
+    background-color: var(--violet-3);
+    color: #242730;
+  }
+
+  .ToggleGroupItem[data-state='on'] {
+    background-color: #fff;
+  }
+
+  
+  .ToggleGroupItem[data-state='on'] div.MenubarRoot{
+    background-color: #fff;
+  }
+
+  .ToggleGroupItem[data-state='on'] svg>path {
+    color: #DA2F74;
+    /* stroke-width: 0.25px; */
+    fill: #DA2F74;
+  }
+  /* .ToggleGroupItem[data-state='on'] :last-child {
+    color: #fff;
+    stroke: #fff;
+  } */
+  .ToggleGroupItem:focus {
+    position: relative;
+    box-shadow: 0 0 0 2px black;
+  }
+
+  .MenubarContent,
+.MenubarSubContent {
+  min-width: 120px;
+  background-color: #c8cad1;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  font-family: 'Montserrat';
+
+
+}
+
+
+.MenubarTrigger.MenubarTriggerToolbar[data-highlighted],
+.MenubarTrigger.MenubarTriggerToolbar[data-state='open'] {
+  background-color: #fff/* var(--violet-4); */;
+  color: #DA2F74 !important;
+  fill: #DA2F74 !important;
+
+}
+
+.MenubarTrigger.MenubarTriggerToolbar[data-highlighted] svg path,
+.MenubarTrigger.MenubarTriggerToolbar[data-state='open'] svg path{
+  background-color: #fff;
+  fill: #DA2F74 !important;
+}
+
+
+.submenu-item-name
+{
+    margin-left: 10px;
+}
+
+.RightSlot.submenu-item-slot
+{
+    padding-left: 50px;
+}
+
+.MenubarTrigger.menuTriggerToolbar{
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.MenubarTrigger.menuTriggerToolbar:hover{
+    background-color: #fff;
+    color: #242730;
+}
+
+.MenubarTrigger.menuTriggerToolbar:hover svg path {
+    /* background-color: red; */
+    fill: #242730;
+}
+  /* MENU TRIGGER DROPAUTO */
+
+  

@@ -1,0 +1,211 @@
+@import '@radix-ui/colors/black-alpha.css';
+@import '@radix-ui/colors/mauve.css';
+@import '@radix-ui/colors/violet.css';
+
+/* reset */
+button {
+  all: unset;
+}
+
+.MenubarRoot {
+  display: flex;
+  height: inherit;
+  justify-content: space-between;
+  /* background-color: #242730; */
+  /* padding: 3px; */
+  border-radius: 6px;
+  /* box-shadow: 0 2px 10px var(--black-a7); */
+}
+
+.menutools-container{
+  display: flex;
+  align-items: center;
+}
+
+.MenubarTrigger {
+  padding: 8px 12px;
+  outline: none;
+  user-select: none;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 4px;
+  /* color: var(--violet-11); */
+  color: #fff;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  font-family: 'Montserrat';
+  /* font-weight: bold; */
+}
+
+.MenubarTrigger[data-highlighted],
+.MenubarTrigger[data-state='open'] {
+  background-color: #767b88/* var(--violet-4); */
+}
+
+.MenubarContent,
+.MenubarSubContent {
+  min-width: 220px;
+  background-color: #c8cad1;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  font-family: 'Montserrat';
+
+
+}
+
+.MenubarItem,
+.MenubarSubTrigger,
+.MenubarCheckboxItem,
+.MenubarRadioItem {
+  all: unset;
+  font-size: 12px;
+  line-height: 1;
+  /* color: var(--violet-11); */
+  color: #000;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 10px;
+  position: relative;
+  user-select: none;
+  font-family: 'Montserrat';
+}
+
+.MenubarItem.inset,
+.MenubarSubTrigger.inset,
+.MenubarCheckboxItem.inset,
+.MenubarRadioItem.inset {
+  padding-left: 20px;
+}
+
+.MenubarItem[data-state='open'],
+.MenubarSubTrigger[data-state='open'] {
+  background-color: var(--violet-4);
+  color: var(--violet-11);
+}
+
+.MenubarItem[data-highlighted],
+.MenubarSubTrigger[data-highlighted],
+.MenubarCheckboxItem[data-highlighted],
+.MenubarRadioItem[data-highlighted] {
+  background-color: #242730 /* linear-gradient(135deg, var(--violet-9) 0%, var(--violet-10) 100%) */;
+  color: var(--violet-1);
+}
+
+.MenubarItem[data-disabled],
+.MenubarSubTrigger[data-disabled],
+.MenubarCheckboxItem[data-disabled],
+.MenubarRadioItem[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: none;
+}
+
+.MenubarItemIndicator {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.MenubarSeparator {
+  height: 1px;
+  background-color: var(--violet-6);
+  margin: 5px;
+}
+
+
+.SwitchRoot {
+  width: 42px;
+  height: 25px;
+  justify-self: center;
+  background-color: transparent;
+  border: solid 3px #50B5AD;
+  border-radius: 9999px;
+  position: relative;
+  /* box-shadow: 0 2px 10px var(--black-a7); */
+  -webkit-tap-highlight-color: rgba(16, 13, 13, 0);
+}
+.SwitchRoot:focus {
+  /* box-shadow: 0 0 0 2px black; */
+}
+.SwitchRoot[data-state='checked'] {
+  background-color: #DA2F7442;
+  border: solid 3px #DA2F74;
+}
+
+.SwitchThumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  /* box-shadow: 0 2px 2px var(--black-a7); */
+  transition: transform 100ms;
+  transform: translateX(3px);
+  will-change: transform;
+}
+.SwitchThumb[data-state='checked'] {
+  transform: translateX(18px);
+}
+
+.AppModeSwitcher
+{
+  transform: scale(0.70);
+}
+
+.RightSlot {
+  margin-left: auto;
+  padding-left: 20px;
+  color: var(--mauve-9);
+}
+
+[data-highlighted] > .RightSlot {
+  color: white;
+}
+
+[data-disabled] > .RightSlot {
+  color: var(--mauve-8);
+}
+
+.Input.PlayModeSelect
+{
+  text-indent: 0px;
+  text-align: left;
+  font-size: 12px;
+  -webkit-appearance: none !important;
+
+}
+
+.PlayModeBtnLink
+{
+  position: absolute;
+  right: 0px;
+}
+.PlayModeBtn
+{
+  position: relative;
+  height: 100%;
+  background-color: rgba(216, 213, 213, 0.234);
+  border-radius: 0px 2px 2px 0px;
+  padding: 0px 4px;
+  cursor: pointer;
+}
+
+.inputIcon.PlayModeInputIcon
+{
+  position: relative;
+  /* right: 5px; */
+  color: #fff;
+  font-size: 18px;
+  margin-left: 0px;
+}
