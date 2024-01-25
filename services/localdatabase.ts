@@ -15,7 +15,6 @@ export interface Project {
   interactionsCounter:number; 	
   animationsCounter:number; 	
   generatedSvg:string;
-
 }
 
 export class AwaDexie extends Dexie {
