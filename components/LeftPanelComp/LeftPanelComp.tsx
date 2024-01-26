@@ -45,7 +45,7 @@ class LeftPanelComp extends Component<any,any> {
     {
       setTimeout(() => { // Wait for awa props to be available
         this.getScenes();
-      }, 100);
+      }, 1000);
 
         this.onUpdateSceneItems();
       }
@@ -63,6 +63,9 @@ class LeftPanelComp extends Component<any,any> {
       if(this.props.awa)
       {
         var scenes = this.props.awa.getScenes();
+        console.log("scenes")
+        console.log(scenes)
+
         this.setState({scenes : this.props.awa.getScenes()},
         ()=>{
           
@@ -70,7 +73,6 @@ class LeftPanelComp extends Component<any,any> {
           
           var activeSceneId = this.state.activeSceneId || scenes[0].id;
           this.activateScene(activeSceneId);
-
 
         });
 
@@ -84,7 +86,7 @@ class LeftPanelComp extends Component<any,any> {
       this.props.awa.setActiveSceneId(_id);
 
       var scene = this.state.scenes.find(s=>s.id == _id);
-      var sceneItems = scene.items;
+      var sceneItems = scene.items.items;
 
       var treeData = this.mapSceneItemsToTreeData(sceneItems)
 

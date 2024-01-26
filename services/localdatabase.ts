@@ -7,7 +7,7 @@ export interface Project {
   name: string;
   creator: string;
   team: string;
-  scenes: object;
+  scenes: any[];
   awaElementsCounter:number; 	
   awaCanvasesCounter:number; 	
   scenesCounter:number; 	

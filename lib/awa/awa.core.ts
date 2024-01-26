@@ -272,52 +272,81 @@ class awa {
     //-------------------------
 
     // Scenes initializator
-    this.createScene();
+    // this.createScene();
 
     // Flows initializator
-    var defaultFlow =  {
-      id:'default',
-      name:'default',
-      canvas: null, //
-      default:true, // whether it is the default/global flow or not
-    };
+    // var defaultFlow =  {
+    //   id:'default',
+    //   name:'default',
+    //   canvas: null, //
+    //   default:true, // whether it is the default/global flow or not
+    // };
 
-    this.addFlow(defaultFlow);
+    // this.addFlow(defaultFlow);
 
     // Project file definition
 
-    localDatabaseService.getProject()
-    .then(project=>{
-      console.log(project)
-    })
-    .catch(e=>{
-      console.log(e)
-    })
-
-   
-
-    
-
-
+     
     this.initProjectFile();
 
   }
 
   initProjectFile(){
 
-    this.getScenes()[0].flows = this.getFlows();
+    // this.getScenes()[0].flows = this.getFlows();
 
-    this.project = {
-      id : 'project 1',
-      name : 'project 1',
-      scenes : this.getScenes()
-    }; // The main object of the file/project
+    // this.project = {
+    //   id : 'project 1',
+    //   name : 'project 1',
+    //   scenes : this.getScenes()
+    // }; // The main object of the file/project
 
-    // Test second scene
-    this.createScene();
+    // // Test second scene
+    // this.createScene();
 
     
-    this.setActiveSceneId(this.getScenes()[0].id)
+    var setDefaultScene = false;
+
+    localDatabaseService.getProject()
+    .then(project=>{
+
+      var scenes = project.scenes;
+
+      this.m_scenesCounter = project.scenesCounter;
+
+      for (let i = 0; i < scenes.length; i++) 
+      {
+        const scene = scenes[i];
+
+        this.m_scenes.push(scene);
+
+        var sceneId = scene.id;
+
+        this.createSceneContainer(sceneId)
+
+        // Set flows
+        var flows = scene.items.flows;
+        for (let j = 0; j < flows.length; j++) {
+          const flow = flows[j];
+
+          this.addFlow(flow);
+          
+        }
+
+        // Set default active scene
+        if(!setDefaultScene)
+        {
+          this.setActiveSceneId(sceneId)
+          setDefaultScene = true;
+        }
+        
+      }
+      
+    })
+    .catch(e=>{
+      console.log(e)
+    })
+
 
     // console.log(this.project)
 
@@ -1546,7 +1575,8 @@ class awa {
   {
     var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
 
-    var sceneItems = scene.items;
+    var sceneItems = scene.items.items;
+
     var thisElIndex = sceneItems.findIndex(e=>e.id == elObject.id);
 
     if(thisElIndex != -1)
@@ -1588,7 +1618,7 @@ class awa {
   {
     var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
 
-    var sceneItems = scene.items;
+    var sceneItems = scene.items.items;
  
     // Remove the element
     var thisElIndex = sceneItems.findIndex(e=>e.id == _id);
