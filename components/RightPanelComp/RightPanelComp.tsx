@@ -619,6 +619,8 @@ class RightPanelComp extends Component<any,any> {
       e.preventDefault();
       e.stopPropagation();
 
+      console.log("name---")
+
       e.target.style.userSelect = "auto";
 
       e.target.setAttribute("contentEditable", status)
@@ -632,6 +634,33 @@ class RightPanelComp extends Component<any,any> {
         e.target.classList.remove("interaction-edit-name")
         e.target.style.userSelect = "none";
         window.getSelection()?.removeAllRanges();
+      }
+
+    }
+
+    editInteractionNameBlur = (e,status, interactionId)=>{
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      var newName = e.target.textContent;
+
+      e.target.style.userSelect = "auto";
+
+      e.target.setAttribute("contentEditable", status)
+
+      if(status)
+      {
+        e.target.classList.add("interaction-edit-name")
+      }
+      else
+      {
+        e.target.classList.remove("interaction-edit-name")
+        e.target.style.userSelect = "none";
+        window.getSelection()?.removeAllRanges();
+
+        this.props.awa.updateInteractionName(interactionId, newName)
+
       }
 
     }
@@ -669,9 +698,7 @@ class RightPanelComp extends Component<any,any> {
     }
 
     updateInteraction = (id, root, target, value) =>{
-      
       this.props.awa.updateInteraction(id, root, target, value);
-       
     }
 
     requestCustomAnimations =()=>{
@@ -1150,7 +1177,7 @@ class RightPanelComp extends Component<any,any> {
                           
                       <div className='AccordionHeaderBox'>
                         <Cross2Icon className="AccordionDeleteInteraction" onClick={()=>this.deleteInteraction(int.id)} aria-hidden />
-                        <span className='interaction-editable' onDoubleClick={(e)=>this.editInteractionName(e,true)} onBlur={(e)=>this.editInteractionName(e,false)} onKeyDown={(e)=>this.interactionNameEditionHandler(e,int.id)} >{int.name}</span>
+                        <span className='interaction-editable' defaultValue={int.name} onDoubleClick={(e)=>this.editInteractionName(e,true)} onBlur={(e)=>this.editInteractionNameBlur(e,false, int.id)} onKeyDown={(e)=>this.interactionNameEditionHandler(e,int.id)} >{int.name}</span>
                       </div>
 
                       <div className='AccordionOptionsBox'>

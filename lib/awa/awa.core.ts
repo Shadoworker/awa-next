@@ -358,7 +358,7 @@ class awa {
     
 
 
-
+    console.log(this.project)
 
 
     // const db = await dbPromise;
@@ -1638,7 +1638,7 @@ class awa {
 
     this.project.awaElementsCounter++;
 
-    console.log(this.project)
+    this.saveProjectChanges();
 
   }
 
@@ -1833,7 +1833,7 @@ class awa {
 
   updateInteractionName(_interactionId, _newName)
   {
-    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId) || -1;
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId);
     if(thisInteractionIndex != -1)
     {
       var interactions : any[] = this.getInteractions() || [];
@@ -1848,7 +1848,7 @@ class awa {
 
   updateInteractionStatus(_interactionId, _status)
   {
-    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId) || -1;
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId);
     if(thisInteractionIndex != -1)
     {
       var interactions : any[] = this.getInteractions() || [];
@@ -1865,7 +1865,7 @@ class awa {
 
   updateInteraction(id, root, target, value)
   {
-    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == id) || -1;
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == id);
     if(thisInteractionIndex != -1)
     {
       var interactions : any[] = this.getInteractions() || [];
@@ -1966,10 +1966,10 @@ class awa {
   
   updateAnimation(_animationName, _updatedAnimation)
   {
-    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _animationName);
+    var thisAnimIndex = this.getAnimations().findIndex(f=>f.name == _animationName);
     if(thisAnimIndex != -1)
     {
-      this.m_animations[thisAnimIndex] = _updatedAnimation;
+      this.getAnimations()[thisAnimIndex] = _updatedAnimation;
 
       this.saveProjectChanges();
 
@@ -1980,10 +1980,10 @@ class awa {
 
   updateAnimationName(_currentName, _newName)
   {
-    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _currentName);
+    var thisAnimIndex = this.getAnimations().findIndex(f=>f.name == _currentName);
     if(thisAnimIndex != -1)
     {
-      this.m_animations[thisAnimIndex].name = _newName;
+      this.getAnimations()[thisAnimIndex].name = _newName;
 
       this.saveProjectChanges();
 
