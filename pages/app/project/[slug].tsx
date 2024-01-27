@@ -30,8 +30,7 @@ import awaEvents, { awaEventEmitter } from '../../../lib/awa/awa.events';
 import anime from '../../../lib/assets/vendors/anime';
 import { EFFECT_ID_BODY, TIMELINE_STEP } from '../../../lib/awa/awa.constants';
 import { withRouter } from 'next/router';
-import { Project, db } from '../../../services/localdatabase';
-
+import { AwaTypes } from '../../../lib/awa/awa.types';
 
 class AppPage extends Component<any, any> {
 
@@ -54,33 +53,7 @@ class AppPage extends Component<any, any> {
  
   componentDidMount(){
 
-    db.open()
-    // .then(function(){
-    //   var project : Project = {
-    //     name: 'project1', 
-    //     uuid: '478-7841-452',
-    //     creator: '',
-    //     team: '',
-    //     scenes: {},
-    //     awaElementsCounter: 0,
-    //     awaCanvasesCounter: 0,
-    //     scenesCounter: 0,
-    //     flowsCounter: 0,
-    //     interactionsCounter: 0,
-    //     animationsCounter: 0,
-    //     generatedSvg: ''
-    //   };
 
-    //   return db.projects.add(project);
-    // })
-    .then(function(){
-      return db.projects.toArray();
-    })
-    .then(function(projects){
-
-      console.log(projects);
-    })
-    
     // Body height
     var awaBody : any = document.querySelector('.awa-body');
     awaBody.style.height = (window.innerHeight - 47)+"px";
@@ -515,7 +488,7 @@ class AppPage extends Component<any, any> {
 
     this.setTimeline(m_timeline);
 
-    awaInstance.saveForPreview();
+    // awaInstance.saveProjectChanges();
 
     this.updateTimelineItems(awaInstance, m_svgInstance, m_timeline)
 

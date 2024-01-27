@@ -1,26 +1,13 @@
 // database.js
 import Dexie, { Table } from 'dexie';
+import { AwaTypes } from '../lib/awa/awa.types';
 
-export interface Project {
-  id?: number;
-  uuid: string;
-  name: string;
-  creator: string;
-  team: string;
-  scenes: any[];
-  awaElementsCounter:number; 	
-  awaCanvasesCounter:number; 	
-  scenesCounter:number; 	
-  flowsCounter:number; 	
-  interactionsCounter:number; 	
-  animationsCounter:number; 	
-  generatedSvg:string;
-}
+
 
 export class AwaDexie extends Dexie {
   // 'projects' is added by dexie when declaring the stores()
   // We just tell the typing system this is the case
-  projects!: Table<Project>;
+  projects!: Table<AwaTypes.T_AwaProject>;
 
   constructor() {
     super('awaLocalDatabase');

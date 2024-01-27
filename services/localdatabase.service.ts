@@ -1,4 +1,5 @@
-import { Project, db } from "./localdatabase";
+import { AwaTypes } from "../lib/awa/awa.types";
+import { db } from "./localdatabase";
 
 const localDatabaseService = {
  
@@ -11,7 +12,7 @@ const localDatabaseService = {
 /**
  * updateProject method
  *
- * @param {Project} payload
+ * @param {AwaTypes.T_AwaProject} payload
  * @returns
  */
 function updateProject(payload) {
@@ -24,12 +25,12 @@ function updateProject(payload) {
     if(projects[0])
     {
       var existingId = projects[0].id || 1;
-      var project : Project = payload;
+      var project : AwaTypes.T_AwaProject = payload;
       return db.projects.update(existingId, payload);
     }
     else
     {
-      var project : Project = payload;
+      var project : AwaTypes.T_AwaProject = payload;
       return db.projects.add(project);
     }
   })

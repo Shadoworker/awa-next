@@ -63,8 +63,6 @@ class LeftPanelComp extends Component<any,any> {
       if(this.props.awa)
       {
         var scenes = this.props.awa.getScenes();
-        console.log("scenes")
-        console.log(scenes)
 
         this.setState({scenes : this.props.awa.getScenes()},
         ()=>{

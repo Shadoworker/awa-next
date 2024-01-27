@@ -24,6 +24,7 @@ import {
 } from "./awa.constants";
 import { isCanvas } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
+import { AwaTypes } from "./awa.types";
 
 // DEFS
 export const SCENE_BLOCK_CLASS = ".app-scene-block";
@@ -138,7 +139,7 @@ class awa {
   m_reduxInstance: any;
   m_reduxState: any;
   m_selectedElement: null;
-  project: any;
+  project: AwaTypes.T_AwaProject;
   m_scenes: any[];
   m_activeSceneId: null;
   m_awaElementsIds: any[];
@@ -195,7 +196,7 @@ class awa {
 
     // TODO : All the data structures must be taken from an data storage source
 
-    this.project = {}; // The main object of the file/project
+    // this.project; // The main object of the file/project
 
     this.m_scenes = [];
     this.m_scenesCounter = 0;
@@ -270,23 +271,8 @@ class awa {
     defs.add(plugRefGroup)
 
     //-------------------------
-
-    // Scenes initializator
-    // this.createScene();
-
-    // Flows initializator
-    // var defaultFlow =  {
-    //   id:'default',
-    //   name:'default',
-    //   canvas: null, //
-    //   default:true, // whether it is the default/global flow or not
-    // };
-
-    // this.addFlow(defaultFlow);
-
+ 
     // Project file definition
-
-     
     this.initProjectFile();
 
   }
@@ -310,6 +296,8 @@ class awa {
     localDatabaseService.getProject()
     .then(project=>{
 
+      this.setProject(project);
+
       var scenes = project.scenes;
 
       this.m_scenesCounter = project.scenesCounter;
@@ -325,13 +313,13 @@ class awa {
         this.createSceneContainer(sceneId)
 
         // Set flows
-        var flows = scene.items.flows;
-        for (let j = 0; j < flows.length; j++) {
-          const flow = flows[j];
+        // var flows = scene.items.flows;
+        // for (let j = 0; j < flows.length; j++) {
+        //   const flow = flows[j];
 
-          this.addFlow(flow);
+        //   this.addFlow(flow);
           
-        }
+        // }
 
         // Set default active scene
         if(!setDefaultScene)
@@ -356,7 +344,7 @@ class awa {
     return this.m_svgInstance;
   }
 
-  saveForPreview = async ()=>
+  saveProjectChanges = async ()=>
   {
     var _svgInstance = this.m_svgInstance, 
         _mainAnimations = getTimelineItems(this.m_svgInstance, this.m_timeline),
@@ -364,8 +352,14 @@ class awa {
         _customAnimations = this.getAnimations(),
         _interactions = this.getInteractions();
 
- 
     var svgExport = _svgInstance.svg()
+
+    // Get current scene and update its properties
+    
+
+
+
+
 
     // const db = await dbPromise;
     // const transaction = db.transaction('awaStore', 'readwrite');
@@ -544,11 +538,11 @@ class awa {
       let selectedAnimation = this.getSelectedAnimation();
       let element = _nodeItems;
 
-      var elementIndex = this.m_animations.findIndex(e=>e.name == selectedAnimation);
+      var animationIndex = this.getAnimations().findIndex(e=>e.name == selectedAnimation);
 
-      if(elementIndex != -1) 
+      if(animationIndex != -1) 
       {
-        var thisAnimation = this.m_animations[elementIndex];
+        var thisAnimation = this.getAnimations()[animationIndex];
 
         thisAnimation.animation = {
           ...thisAnimation.animation,
@@ -571,7 +565,7 @@ class awa {
     // console.log(_items)
     // console.log(_nodeItems)
 
-    this.saveForPreview();
+    this.saveProjectChanges();
 
   }
 
@@ -621,6 +615,36 @@ class awa {
     var selector = "#"+activeSceneId;
     return this.getSvgInstance().findOne(selector);
   }
+
+  // Set or update
+  setSceneElement(_elem)
+  {
+    // var _elemId = _elem.attr("id");
+
+    // var scenes = this.getScenes();
+    // var activeScene = this.getActiveSceneId();
+
+    // var scene = scenes.find(s=>s.id == activeScene);
+    // // Get scene items
+    // var sceneItems : any[] = scene?.items.elements || [];
+    // // Check if the element exist : UPDATE, else ADD
+    // var thisElIndex : number = sceneItems?.findIndex(e=>e.id == _elemId) || -1;
+
+    // var newSceneElement = this.mapElementToAwaObject(_elem);
+
+    // if(thisElIndex == -1) // Add
+    // {
+    //   sceneItems?.push(newSceneElement)
+    // }
+    // else                  // Update
+    // {
+    //   var oldSceneElement = sceneItems.at(thisElIndex);
+    //   var mergedElement = {...oldSceneElement, ...newSceneElement};
+    //   sceneItems.splice(thisElIndex, mergedElement)
+    // }
+
+  }
+
 
   setSelectedElement(_elem) {
     this.m_selectedElement = _elem;
@@ -898,7 +922,7 @@ class awa {
     });
   }
 
-  dispatchUpdateSceneItems() {
+  dispatchUpdateSceneElements() {
     //Dispatch an event
     awaEventEmitter.emit(awaEvents.UPDATE_SCENE_ITEMS, { detail: {} });
   }
@@ -988,7 +1012,7 @@ class awa {
 
       // Save
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
     });
   }
@@ -1087,7 +1111,7 @@ class awa {
       this.quitCreateState();
 
       // Update default Flow
-      if(this.m_flows[0].canvas == null) this.m_flows[0].canvas = mainCanvasId;
+      if(this.getFlows()[0].canvas == null) this.getFlows()[0].canvas = mainCanvasId;
 
       // Add to scene
       var sceneEl = canvasGroup;
@@ -1099,7 +1123,7 @@ class awa {
       }
 
       // Save
-      this.saveForPreview();
+      this.saveProjectChanges();
 
     });
   }
@@ -1169,7 +1193,7 @@ class awa {
 
 
       // Save
-      this.saveForPreview();
+      this.saveProjectChanges();
 
     });
   }
@@ -1187,7 +1211,7 @@ class awa {
       this.getSelectedElement().effector().chainEffects(effects);
 
       // Save
-      this.saveForPreview();
+      this.saveProjectChanges();
 
     });
   }
@@ -1439,26 +1463,43 @@ class awa {
 
   // FLOWS - INTERACTIONS - SAVED ANIMATIONS
 
+  setProject(_project)
+  {
+    this.project = _project;
+  }
+
   getScenes()
   {
-    return this.m_scenes;
+    var scenes : AwaTypes.T_AwaProjectScene[] = this.project.scenes;
+    return scenes;
+  }
+
+  getActiveScene()
+  {
+    // Get current scene
+    var scene : any = this.getScenes().find(s=>s.id == this.getActiveSceneId());
+    return scene;
   }
 
   getFlows()
   {
-    return this.m_flows;
+    // Get current scene
+    var scene = this.getActiveScene();
+    return scene?.items.flows;
   }
 
   getInteractions()
   {
-    return this.m_interactions;
+    // Get current scene
+    var scene = this.getActiveScene();
+    return scene?.items.interactions;
   }
 
   getElementInteractions(_target)
   {
     var interactions = this.getInteractions();
 
-    var elementInteractions = interactions.filter(i=>i.basedOn.target == _target);
+    var elementInteractions = interactions?.filter(i=>i.basedOn.target == _target);
 
     return elementInteractions;
 
@@ -1466,17 +1507,20 @@ class awa {
 
   getAnimations()
   {
-    return this.m_animations;
+    // Get current scene
+    var scene = this.getActiveScene();
+    return scene?.items.animations.custom;
+    // return this.m_animations;
   }
 
   generateSceneId()
   {
-    return SCENE_CLASS+(this.m_scenesCounter+1);
+    return SCENE_CLASS+(this.project.scenesCounter+1);
   }
 
   generateFlowId()
   {
-    return BASE_FLOW_ID+" "+(this.m_flowsCounter+1);
+    return BASE_FLOW_ID+" "+(this.project.flowsCounter+1);
   }
 
   // create the scene object with its "g" (group) element associated
@@ -1484,23 +1528,26 @@ class awa {
   {
     var sceneId = this.generateSceneId();
 
-    var scene = {
+    var scene : AwaTypes.T_AwaProjectScene = {
       id:sceneId,
-      name : BASE_SCENE_ID+" "+(this.m_scenesCounter+1),
-      flows : [],
-      interactions : [],
-      animations : {
+      name : BASE_SCENE_ID+" "+(this.project.scenesCounter+1),
+      items : {
+        flows : [],
+        interactions : [],
+        animations : {
           main : [],
           custom : []
-      },
-      items : []
+        },
+        elements : []
+      }
+      
     }
 
     if(!this.m_scenes.find(f=>f.id == scene.id))
     {
       this.m_scenes.push(scene);
 
-      // this.saveForPreview();
+      // this.saveProjectChanges();
       this.m_scenesCounter++;
 
       this.createSceneContainer(sceneId)
@@ -1531,7 +1578,7 @@ class awa {
     {
       this.m_scenes.splice(thisSceneIndex, 1);
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1546,7 +1593,7 @@ class awa {
     {
       this.m_scenes[thisSceneIndex].name = _newName;
 
-      // this.saveForPreview();
+      // this.saveProjectChanges();
 
       return true;
     }
@@ -1561,23 +1608,24 @@ class awa {
 
     parent.add(sceneEl);
 
+    console.log(sceneEl)
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl);
 
 
-    this.updateSceneItems(elObject)
+    this.updateSceneElements(elObject)
 
-    this.dispatchUpdateSceneItems();
+    this.dispatchUpdateSceneElements();
 
   }
 
-  updateSceneItems(elObject)
+  updateSceneElements(elObject)
   {
-    var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
+    var scene = this.getActiveScene();
 
-    var sceneItems = scene.items.items;
+    var sceneItems = scene.items.elements;
 
-    var thisElIndex = sceneItems.findIndex(e=>e.id == elObject.id);
+    var thisElIndex = sceneItems?.findIndex(e=>e.id == elObject.id);
 
     if(thisElIndex != -1)
     {
@@ -1588,20 +1636,25 @@ class awa {
       sceneItems.push(elObject);
     }
 
+    this.project.awaElementsCounter++;
+
+    console.log(this.project)
+
   }
 
   elementToObject(sceneEl)
   {
-    var elObject = {
+    var elObject : AwaTypes.T_AwaEl = {
 
       id : sceneEl.attr('id'),
       type : sceneEl.type,
       name: sceneEl.m_name,
       parent : sceneEl.parentId() || this.getActiveSceneId(), // if null get the active scene as parent
-      canvasOwner : sceneEl.node._canvasOwnerId,
+      canvasOwnerId : sceneEl.node._canvasOwnerId,
       path: sceneEl.path,
       pathString: sceneEl.pathString,
       node : {
+        attributes : sceneEl.attr(),
         anchor : sceneEl.node.anchor,
         effects : sceneEl.node.effects
       },
@@ -1616,13 +1669,13 @@ class awa {
 
   deleteElementFromScene(_id)
   {
-    var scene = this.getScenes().find(s=>s.id == this.getActiveSceneId());
+    var scene = this.getActiveScene();
 
-    var sceneItems = scene.items.items;
+    var sceneItems = scene?.items.elements;
  
     // Remove the element
-    var thisElIndex = sceneItems.findIndex(e=>e.id == _id);
-    sceneItems.splice(thisElIndex, 1);
+    var thisElIndex : number = sceneItems?.findIndex(e=>e.id == _id) || -1;
+    sceneItems?.splice(thisElIndex, 1);
 
     // Recursive deletion
     this.deleteRecursivelySceneItem(sceneItems, _id);
@@ -1630,8 +1683,8 @@ class awa {
     // Delete from DOM
     this.dispatchDeleteElement(_id);
 
-    // dispatchUpdateSceneItems
-    this.dispatchUpdateSceneItems();
+    // dispatchUpdateSceneElements
+    this.dispatchUpdateSceneElements();
 
   }
 
@@ -1669,12 +1722,12 @@ class awa {
 
   deleteFlow(_id)
   {
-    var thisFlowIndex = this.m_flows.findIndex(f=>f.id == _id);
+    var thisFlowIndex = this.getFlows().findIndex(f=>f.id == _id);
     if(thisFlowIndex != -1)
     {
-      this.m_flows.splice(thisFlowIndex, 1);
+      this.getFlows().splice(thisFlowIndex, 1);
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1684,20 +1737,20 @@ class awa {
 
   getElementFlow(_canvas)
   {
-    var flow = this.m_flows.find(f=>f.canvas == _canvas && f.id != "default");
+    var flow = this.getFlows().find(f=>f.canvas == _canvas && f.id != "default");
 
     return flow;
   }
 
   addFlow(_flow)
   {
-    if(!this.m_flows.find(f=>f.name == _flow.name))
+    if(!this.getFlows().find(f=>f.name == _flow.name))
     {
-      this.m_flows.push(_flow);
+      this.getFlows().push(_flow);
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
-      this.m_flowsCounter++;
+      this.project.flowsCounter++;
       return true;
     }
 
@@ -1707,12 +1760,12 @@ class awa {
 
   updateFlowName(_FlowId, _newName)
   {
-    var thisFlowIndex = this.m_flows.findIndex(f=>f.id == _FlowId);
+    var thisFlowIndex = this.getFlows().findIndex(f=>f.id == _FlowId);
     if(thisFlowIndex != -1)
     {
-      this.m_flows[thisFlowIndex].name = _newName;
+      this.getFlows()[thisFlowIndex].name = _newName;
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1723,7 +1776,7 @@ class awa {
   {
     var flows = this.getFlows();
 
-    return flows.includes(_id);
+    return flows?.includes(_id);
   }
 
   createInteraction(interactionId, basedOnTarget, basedOnTargetCanvas, actionTarget, actionTargetCanvas)
@@ -1737,7 +1790,7 @@ class awa {
       action:{type:"animate" ,target: actionTarget, canvas: actionTargetCanvas, animation:null, options:{}},
     }
 
-    this.saveForPreview();
+    this.saveProjectChanges();
 
     return interaction;
   }
@@ -1749,16 +1802,16 @@ class awa {
     var actionTarget = _interaction.action.target;
  
     // Check creation possibility
-    if(this.m_interactions.find(i=>(i.basedOn.target == basedOnTarget) && (i.action.target == actionTarget) && (i.basedOn.event == basedOnEvent) ))
+    if(this.getInteractions()?.find(i=>(i.basedOn.target == basedOnTarget) && (i.action.target == actionTarget) && (i.basedOn.event == basedOnEvent) ))
     {
       if(UNIQUE_EVENTS.includes(basedOnEvent))
         return false;
     }
 
-    this.m_interactions.push(_interaction);
-    this.m_interactionsCounter++;
+    this.getInteractions()?.push(_interaction);
+    this.project.interactionsCounter++;
 
-    this.saveForPreview();
+    this.saveProjectChanges();
 
     return true;
 
@@ -1766,12 +1819,12 @@ class awa {
 
   deleteInteraction(_id)
   {
-    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _id);
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _id) || -1;
     if(thisInteractionIndex != -1)
     {
-      this.m_interactions.splice(thisInteractionIndex, 1);
+      this.getInteractions()?.splice(thisInteractionIndex, 1);
       
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1780,12 +1833,13 @@ class awa {
 
   updateInteractionName(_interactionId, _newName)
   {
-    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _interactionId);
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId) || -1;
     if(thisInteractionIndex != -1)
     {
-      this.m_interactions[thisInteractionIndex].name = _newName;
+      var interactions : any[] = this.getInteractions() || [];
+      interactions[thisInteractionIndex].name = _newName;
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1794,12 +1848,15 @@ class awa {
 
   updateInteractionStatus(_interactionId, _status)
   {
-    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == _interactionId);
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == _interactionId) || -1;
     if(thisInteractionIndex != -1)
     {
-      this.m_interactions[thisInteractionIndex].active = _status;
+      var interactions : any[] = this.getInteractions() || [];
+      interactions[thisInteractionIndex].status = _status;
 
-      this.saveForPreview();
+      interactions[thisInteractionIndex].active = _status;
+
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1808,15 +1865,17 @@ class awa {
 
   updateInteraction(id, root, target, value)
   {
-    var thisInteractionIndex = this.m_interactions.findIndex(f=>f.id == id);
+    var thisInteractionIndex = this.getInteractions()?.findIndex(f=>f.id == id) || -1;
     if(thisInteractionIndex != -1)
     {
-      this.m_interactions[thisInteractionIndex][root][target] = value;
+      var interactions : any[] = this.getInteractions() || [];
+
+      interactions[thisInteractionIndex][root][target] = value;
 
       // Action Target case : Update connection
       if(root == INTERACTION_ACTION_REF && target == INTERACTION_TARGET_REF) // {... action : {target: ...}}
       {
-        var basedOnTarget = this.m_interactions[thisInteractionIndex].basedOn.target; 
+        var basedOnTarget = interactions[thisInteractionIndex].basedOn.target; 
 
         var connectorSource = this.getSvgInstance().findOne("#"+basedOnTarget);
         var connectorTarget = this.getSvgInstance().findOne("#"+value);
@@ -1835,7 +1894,7 @@ class awa {
 
       }
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1846,18 +1905,18 @@ class awa {
 
   generateInteractionId(_targetId="")
   {
-    return BASE_INTERACTION_ID+" "+(this.m_interactionsCounter+1);
+    return BASE_INTERACTION_ID+" "+(this.project.interactionsCounter+1);
   }
 
   getElementAnimations(_target)
   {
-    var animations = this.m_animations.filter(f=>f.animation.targets == _target);
+    var animations = this.getAnimations().filter(f=>f.animation.targets == _target);
     return animations;
   }
 
   getAnimationByName(_animationName)
   {
-    var animation = this.m_animations.find(f=>f.name == _animationName);
+    var animation = this.getAnimations().find(f=>f.name == _animationName);
     return animation;
   }
 
@@ -1873,13 +1932,14 @@ class awa {
 
   addAnimation(_animation)
   {
-    if(!this.m_animations.find(f=>f.name == _animation.name))
+    if(!this.getAnimations().find(f=>f.name == _animation.name))
     {
-      this.m_animations.push(_animation);
+    
+      this.getAnimations().push(_animation);
 
       this.dispatchNewCustomAnimation(_animation.name);
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1896,7 +1956,7 @@ class awa {
 
       this.dispatchNewCustomAnimation(_animationName);
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1911,7 +1971,7 @@ class awa {
     {
       this.m_animations[thisAnimIndex] = _updatedAnimation;
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
@@ -1925,7 +1985,7 @@ class awa {
     {
       this.m_animations[thisAnimIndex].name = _newName;
 
-      this.saveForPreview();
+      this.saveProjectChanges();
 
       return true;
     }
