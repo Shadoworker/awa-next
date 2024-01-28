@@ -56,9 +56,12 @@
 {
     /* margin: 0px 2px; */
     /* margin-top: px; */
+    display: flex;
+    align-items: center;
+    width: 27px;
     height: 24px;
     border: solid 1px #fff;
-    padding: 2px 4px;
+    padding: 0px 0px;
     cursor: pointer;
     border-radius: 1px;
     color: #fff;
@@ -68,6 +71,11 @@
 .sceneBtn
 {
    transform: scale(0.85);
+}
+
+.sceneBtn *
+{
+   transform: scale(1.1);
 }
 
 .BtnDisabled

@@ -922,6 +922,13 @@ class awa {
     });
   }
 
+  dispatchUpdateScenes(_newSceneId : any = null) {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.UPDATE_SCENES, {
+      detail: { newSceneId: _newSceneId },
+    });
+  }
+
   dispatchUpdateSceneElements() {
     //Dispatch an event
     awaEventEmitter.emit(awaEvents.UPDATE_SCENE_ITEMS, { detail: {} });
@@ -1543,14 +1550,19 @@ class awa {
       
     }
 
-    if(!this.m_scenes.find(f=>f.id == scene.id))
+    if(!this.getScenes().find(f=>f.id == scene.id))
     {
-      this.m_scenes.push(scene);
+      this.getScenes().push(scene);
 
-      // this.saveProjectChanges();
-      this.m_scenesCounter++;
+      this.project.scenesCounter++;
 
       this.createSceneContainer(sceneId)
+
+      // Save project object
+      this.saveProjectChanges();
+
+      // Dispatch scene creation for left panel (and scene)
+      this.dispatchUpdateScenes(sceneId)
 
       return true;
     }
@@ -1573,10 +1585,13 @@ class awa {
 
   deleteScene(_id)
   {
-    var thisSceneIndex = this.m_scenes.findIndex(f=>f.id == _id);
+    var thisSceneIndex = this.getScenes().findIndex(f=>f.id == _id);
     if(thisSceneIndex != -1)
     {
-      this.m_scenes.splice(thisSceneIndex, 1);
+      this.getScenes().splice(thisSceneIndex, 1);
+
+      // Dispatch scene creation for left panel (and scene)
+      this.dispatchUpdateScenes();
 
       this.saveProjectChanges();
 
@@ -1588,12 +1603,16 @@ class awa {
   
   updateSceneName(_sceneId, _newName)
   {
-    var thisSceneIndex = this.m_scenes.findIndex(f=>f.id == _sceneId);
+    var thisSceneIndex = this.getScenes().findIndex(f=>f.id == _sceneId);
+    console.log(_newName)
     if(thisSceneIndex != -1)
     {
-      this.m_scenes[thisSceneIndex].name = _newName;
+      this.getScenes()[thisSceneIndex].name = _newName;
 
-      // this.saveProjectChanges();
+      // Dispatch scene creation for left panel (and scene)
+      this.dispatchUpdateScenes(_sceneId);
+      
+      this.saveProjectChanges();
 
       return true;
     }

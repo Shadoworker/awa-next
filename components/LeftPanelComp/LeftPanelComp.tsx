@@ -33,8 +33,13 @@ class LeftPanelComp extends Component<any,any> {
           loaded : false,
           scenes : [],
           activeSceneId : null,
+          activeSceneName : null,
+          activeSceneSiblingId : null,
           treeData : [],
           activeNodeId : null,
+
+
+          sceneOptDropdownOpened : false,
 
           
       }
@@ -47,15 +52,26 @@ class LeftPanelComp extends Component<any,any> {
         this.getScenes();
       }, 1000);
 
-        this.onUpdateSceneItems();
-      }
+      this.onUpdateScenes();
+      this.onUpdateSceneItems();
+    }
 
-      onUpdateSceneItems = ()=>{
+    onUpdateSceneItems = ()=>{
 
         awaEventEmitter.on(awaEvents.UPDATE_SCENE_ITEMS, (_data)=>{
           this.getScenes();
         })
-    
+    }
+
+    onUpdateScenes = ()=>{
+
+      awaEventEmitter.on(awaEvents.UPDATE_SCENES, (_data)=>{
+        var newSceneId = _data.detail.newSceneId;
+        if(newSceneId)
+          this.setState({activeSceneId : newSceneId});
+
+        this.getScenes();
+      })
     }
 
     getScenes = ()=>{
@@ -78,17 +94,75 @@ class LeftPanelComp extends Component<any,any> {
       }
     }
 
-    activateScene = (_id)=>{
+    createScene = ()=>{
+      this.props.awa.createScene();
+    }
+
+    deleteScene = ()=>{
+      if(this.state.scenes.length < 2) return; // more than on scene
       
+      var thisSceneId = this.state.activeSceneId;
+
+      var thisSceneIndex = this.state.scenes.findIndex(s=>s.id == this.state.activeSceneId)
+
+      var sceneSiblingIndex = (thisSceneIndex-1) != -1 ? (thisSceneIndex-1) : (thisSceneIndex+1);
+
+      var sceneSiblingId = this.state.scenes[sceneSiblingIndex].id;
+
+      this.setState({activeSceneId : sceneSiblingId});
+
+      this.props.awa.deleteScene(thisSceneId)
+
+    }
+
+
+    sceneNameOnKeydownHandler = (evt)=>{
+
+      evt.stopPropagation();
+      var newName = evt.target.value;
+
+      if (evt.key === 'Enter') 
+      {
+        this.sceneOptOnOpenChange();
+      }
+    }
+
+
+    sceneNameOnChangeHandler = (evt)=>{
+
+      evt.stopPropagation();
+      var newName = evt.target.value;
+
+      if(newName != this.state.activeSceneName && newName.trim() != "")
+      {
+        this.setState({activeSceneName : newName})
+      }
+
+    }
+
+    sceneOptOnOpenChange = ()=>{
+
+      if(this.state.sceneOptDropdownOpened)
+      {
+        this.props.awa.updateSceneName(this.state.activeSceneId, this.state.activeSceneName)
+      }
+
+      this.setState({sceneOptDropdownOpened : !this.state.sceneOptDropdownOpened})
+    }
+
+    activateScene = (_id)=>{
+       
       // Update selected scene id in awa
       this.props.awa.setActiveSceneId(_id);
 
       var scene = this.state.scenes.find(s=>s.id == _id);
-      var sceneItems = scene.items.items;
+      var sceneItems = scene.items.elements;
+
+      var sceneName = scene.name;
 
       var treeData = this.mapSceneItemsToTreeData(sceneItems)
 
-      this.setState({activeSceneId : _id, treeData : treeData});
+      this.setState({activeSceneId : _id, activeSceneName : sceneName, treeData : treeData});
 
     }
 
@@ -188,26 +262,25 @@ class LeftPanelComp extends Component<any,any> {
               <div className='' style={{width:'100%'}}>
                 <fieldset className="Fieldset" style={{flex:1, height:30}}>
                     <div style={{display:'flex', alignItems:'flex-start', width:'100%'}}>
-                    <select className='Input basicSelect scenesSelect' onChange={(evt)=>this.activateScene(evt.target.value)} >
+                    <select value={this.state.activeSceneId} className='Input basicSelect scenesSelect' onChange={(evt)=>this.activateScene(evt.target.value)} >
                       {this.state.scenes.map((s,i)=>
                         <option key={i} value={s.id} >{s.name}</option>
-                      )
-                      }
+                      )}
                     </select>
 
-                    <DropdownMenu.Root >
+                    <DropdownMenu.Root open={this.state.sceneOptDropdownOpened} onOpenChange={()=>this.sceneOptOnOpenChange()}  >
                       <DropdownMenu.Trigger asChild >
-                        <Ant.Button className={`sceneBtn BtnDisabled`} size="small">
+                        <Ant.Button className={`sceneBtn`} size="small">
                           <DotsVerticalIcon />
                         </Ant.Button>
                       </DropdownMenu.Trigger>
 
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content side='top' className="DropdownMenuContent" sideOffset={5}>
-                          <DropdownMenu.Item className="DropdownMenuItem" >New scene</DropdownMenu.Item>
+                          <DropdownMenu.Item className="DropdownMenuItem" onClick={()=>this.createScene()} >New scene</DropdownMenu.Item>
                           
                           <DropdownMenu.Sub>
-                            <DropdownMenu.SubTrigger className="DropdownMenuSubTrigger">
+                            <DropdownMenu.SubTrigger className={`DropdownMenuSubTrigger ${this.state.scenes.length > 1 ? "" : "BtnDisabled" }`} >
                               Delete
                               <div className="RightSlot">
                                 <ChevronRightIcon />
@@ -219,11 +292,11 @@ class LeftPanelComp extends Component<any,any> {
                                 sideOffset={3}
                                 alignOffset={-5}
                               >
-                                <DropdownMenu.Item className="DropdownMenuItem DropdownMenuItemConfirmDelete" >Confirm</DropdownMenu.Item>
+                                <DropdownMenu.Item className={`DropdownMenuItem DropdownMenuItemConfirmDelete`}  onClick={()=>this.deleteScene()} >Confirm</DropdownMenu.Item>
                               </DropdownMenu.SubContent>
                             </DropdownMenu.Portal>
                           </DropdownMenu.Sub>
-                          
+
                           <DropdownMenu.Sub>
                             <DropdownMenu.SubTrigger className="DropdownMenuSubTrigger">
                               Rename
@@ -235,9 +308,9 @@ class LeftPanelComp extends Component<any,any> {
                               <DropdownMenu.SubContent
                                 className="DropdownMenuSubContent"
                                 sideOffset={3}
-                                alignOffset={-5}
+                                alignOffset={-1}
                               >
-                                <input className={`animationEditInput`}  onKeyDown={(e)=>e.stopPropagation()} type="text" />
+                                <input className={`animationEditInput`} defaultValue={this.state.activeSceneName} onChange={(e)=>this.sceneNameOnChangeHandler(e)} onKeyDown={(e)=>this.sceneNameOnKeydownHandler(e)}  type="text" />
                               </DropdownMenu.SubContent>
                             </DropdownMenu.Portal>
                           </DropdownMenu.Sub>
@@ -313,9 +386,7 @@ class LeftPanelComp extends Component<any,any> {
             </ContextMenu.Content>
           </ContextMenu.Portal>
         </ContextMenu.Root>
-
-
-
+ 
         </Box>
         <Box  className='block app-left-block-tools'>
           <ToolbarComp awa={this.props.awa}  />

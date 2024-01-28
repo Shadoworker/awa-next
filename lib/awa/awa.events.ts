@@ -31,6 +31,7 @@ const USER_ACTION_EVENTS = {
 
     // SCENE
 
+    UPDATE_SCENES: "EVENT_UPDATE_SCENES", // Create / Delete / Update name
     UPDATE_SCENE_ITEMS: "EVENT_UPDATE_SCENE_ITEMS", //
 
 
