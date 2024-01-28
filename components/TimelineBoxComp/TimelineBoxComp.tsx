@@ -204,7 +204,6 @@ class TimelineBoxComp extends Component<any,any> {
       if(_data.detail.selectedElementId == null)
       {
         this.setState({selectedElementId : null, selectedElementAnimations : []})
-
         return;
       }
       // if(!selectedElement) return;
@@ -237,7 +236,7 @@ class TimelineBoxComp extends Component<any,any> {
 
     awaEventEmitter.on(awaEvents.NEW_CUSTOM_ANIMATION, (_data)=>{
 
-      var newAnimationName = _data.newAnimationName;
+      var newAnimationName = _data.detail.newAnimationName;
       // Rerender
       this.rerenderAnimation(newAnimationName)
 
@@ -293,9 +292,33 @@ class TimelineBoxComp extends Component<any,any> {
     }
     else
     {
-      this.setState({timelineItems : this.props.awa.getTimelineItems()})
-    }
 
+      // Get main animations for the active scene
+      var mainAnimations = this.props.awa.getMainAnimations(); 
+      var mainTimeline = this.props.awa.getTimelineInstance();
+      
+      // Remove existing
+      for (let i = 0; i < mainAnimations.length; i++) {
+        const anim = mainAnimations[i];
+        var target = anim.targets;
+        
+        mainTimeline.remove(target);
+      }
+
+      // Add new keyframes
+      for (let j = 0; j < mainAnimations.length; j++) {
+        const animation = mainAnimations[j];
+        mainTimeline.add(animation, 0)
+      }
+
+      // console.log(mainTimeline)
+      var timelineItems = getTimelineItems(this.props.awa.getSvgInstance(), mainTimeline);
+
+      this.setState({timelineItems : timelineItems});
+
+      timeline = mainTimeline;
+
+    }
 
     this.setTimeline(timeline);
 
@@ -353,8 +376,7 @@ class TimelineBoxComp extends Component<any,any> {
   }
 
   rerenderAnimation = (newAnimationName)=>{
-
-
+ 
     var elementSelectorId = "#"+this.state.selectedElementId;
     // Re-render
     setTimeout(() => {

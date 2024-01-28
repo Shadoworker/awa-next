@@ -279,17 +279,7 @@ class awa {
 
   initProjectFile(){
 
-    // this.getScenes()[0].flows = this.getFlows();
-
-    // this.project = {
-    //   id : 'project 1',
-    //   name : 'project 1',
-    //   scenes : this.getScenes()
-    // }; // The main object of the file/project
-
-    // // Test second scene
-    // this.createScene();
-
+    
     
     var setDefaultScene = false;
 
@@ -311,16 +301,7 @@ class awa {
         var sceneId = scene.id;
 
         this.createSceneContainer(sceneId)
-
-        // Set flows
-        // var flows = scene.items.flows;
-        // for (let j = 0; j < flows.length; j++) {
-        //   const flow = flows[j];
-
-        //   this.addFlow(flow);
-          
-        // }
-
+ 
         // Set default active scene
         if(!setDefaultScene)
         {
@@ -514,19 +495,19 @@ class awa {
       let elementId = _nodeItems.targets;
       let element = _nodeItems;
 
-      var elementIndex = this.m_timelineItems.findIndex(e=>e.targets == elementId);
+      var elementIndex = this.getMainAnimations().findIndex(e=>e.targets == elementId);
 
       if(elementIndex != -1) 
       {
-        this.m_timelineItems[elementIndex] = {
-          ...this.m_timelineItems[elementIndex],
+        this.getMainAnimations()[elementIndex] = {
+          ...this.getMainAnimations()[elementIndex],
           ...element,
         };
 
       }
       else
       {
-        this.m_timelineItems.push(element);
+        this.getMainAnimations().push(element);
       } 
  
       // Dispatch timelineItems
@@ -1512,6 +1493,14 @@ class awa {
 
   }
 
+  getMainAnimations()
+  {
+    // Get current scene
+    var scene = this.getActiveScene();
+    return scene?.items.animations.main;
+    // return this.m_animations;
+  }
+
   getAnimations()
   {
     // Get current scene
@@ -1520,6 +1509,7 @@ class awa {
     // return this.m_animations;
   }
 
+  
   generateSceneId()
   {
     return SCENE_CLASS+(this.project.scenesCounter+1);
@@ -1968,10 +1958,10 @@ class awa {
 
   deleteAnimation(_animationName)
   {
-    var thisAnimIndex = this.m_animations.findIndex(f=>f.name == _animationName);
+    var thisAnimIndex = this.getAnimations().findIndex(f=>f.name == _animationName);
     if(thisAnimIndex != -1)
     {
-      this.m_animations.splice(thisAnimIndex, 1);
+      this.getAnimations().splice(thisAnimIndex, 1);
 
       this.dispatchNewCustomAnimation(_animationName);
 
