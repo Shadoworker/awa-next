@@ -119,7 +119,6 @@ class LeftPanelComp extends Component<any,any> {
     sceneNameOnKeydownHandler = (evt)=>{
 
       evt.stopPropagation();
-      var newName = evt.target.value;
 
       if (evt.key === 'Enter') 
       {
@@ -163,6 +162,9 @@ class LeftPanelComp extends Component<any,any> {
       var treeData = this.mapSceneItemsToTreeData(sceneItems)
 
       this.setState({activeSceneId : _id, activeSceneName : sceneName, treeData : treeData});
+
+      // Dispatching scene switch
+      this.props.awa.dispatchSwitchScene();
 
     }
 

@@ -903,6 +903,13 @@ class awa {
     });
   }
 
+  dispatchSwitchScene() {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.SWITCH_SCENE, {
+      detail: { },
+    });
+  }
+
   dispatchUpdateScenes(_newSceneId : any = null) {
     //Dispatch an event
     awaEventEmitter.emit(awaEvents.UPDATE_SCENES, {

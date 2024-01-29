@@ -46,7 +46,7 @@ class TimelineBoxComp extends Component<any,any> {
  
     setTimeout(() => { // Wait for awa props to be available
   
-      this.setState({timeline : this.props.timeline, timelineItems : this.props.awa.getTimelineItems()},() => {
+      this.setState({timeline : this.props.awa.getTimelineInstance(), timelineItems : this.props.awa.getTimelineItems()},() => {
         this.setState({loaded : true})
       })
 
@@ -188,12 +188,21 @@ class TimelineBoxComp extends Component<any,any> {
     }
 
 
+    this.onSwitchScene();
     this.onUpdateSelectedElement();
     this.onUpdateTimelineItems();
     this.onNewCustomAnimation();
 
   }
 
+  onSwitchScene = ()=>{
+    awaEventEmitter.on(awaEvents.SWITCH_SCENE, (_data)=>{
+
+      var timeline = this.activateMainTimeline();
+      console.log(timeline)
+      this.setTimeline(timeline);
+    })
+  }
   // isAnimatableProperty()
   
   /* When an element is selected, moved etc... to be notified and update its visual props */
@@ -275,6 +284,7 @@ class TimelineBoxComp extends Component<any,any> {
         timeline.remove(elementSelectorId);
 
         timeline.add(animation, 0)
+        
         //update method : Timeline Slider
         var timelineSlider = document.querySelector('.timeline-handle');
         var timelineProgressbarLength = document.querySelector('.timelineProgressbar')?.getBoundingClientRect().width;
@@ -293,35 +303,55 @@ class TimelineBoxComp extends Component<any,any> {
     else
     {
 
+      timeline = this.activateMainTimeline();
+
+    }
+
+    this.setTimeline(timeline);
+
+  }
+
+
+  activateMainTimeline()
+  {
       // Get main animations for the active scene
+      var element = this.props.awa.getActiveSceneContainer();
       var mainAnimations = this.props.awa.getMainAnimations(); 
-      var mainTimeline = this.props.awa.getTimelineInstance();
+      
+      var timeline = element.animationTimeline();
+
       
       // Remove existing
       for (let i = 0; i < mainAnimations.length; i++) {
         const anim = mainAnimations[i];
         var target = anim.targets;
         
-        mainTimeline.remove(target);
+        timeline.remove(target);
       }
 
       // Add new keyframes
       for (let j = 0; j < mainAnimations.length; j++) {
         const animation = mainAnimations[j];
-        mainTimeline.add(animation, 0)
+        timeline.add(animation, 0)
       }
 
-      // console.log(mainTimeline)
-      var timelineItems = getTimelineItems(this.props.awa.getSvgInstance(), mainTimeline);
+
+      //update method : Timeline Slider
+      var timelineSlider = document.querySelector('.timeline-handle');
+      var timelineProgressbarLength = document.querySelector('.timelineProgressbar')?.getBoundingClientRect().width;
+
+      timeline.update = (anim)=>{this.timelineOnUpdate(anim, timeline, timelineSlider, timelineProgressbarLength)}
+
+      // Update active timeline
+      this.props.awa.setActiveTimeline(timeline);
+
+      
+      // console.log(timeline)
+      var timelineItems = getTimelineItems(this.props.awa.getSvgInstance(), timeline);
 
       this.setState({timelineItems : timelineItems});
 
-      timeline = mainTimeline;
-
-    }
-
-    this.setTimeline(timeline);
-
+      return timeline;
   }
 
 
