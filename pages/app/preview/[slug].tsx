@@ -14,6 +14,8 @@ import MenubarPreviewComp from '../../../components/MenubarPreviewComp/MenubarPr
 import * as Ant from 'antd';
 import { withRouter } from 'next/router';
 import contentService from '../../../services/content.service';
+import localDatabaseService from '../../../services/localdatabase.service';
+import { AwaTypes } from '../../../lib/awa/awa.types';
 
 
 function PreviewPage(props) {
@@ -42,14 +44,20 @@ function PreviewPage(props) {
     setWindW(windW);
     setWindH(windH);
  
-    const {router} = props;
 
-    const _projectUUID = router.slug;
-    const _sceneId = router.query.sceneId;
-    const _previewType = router.query.type;
-    
+    setTimeout(() => {
 
-    setProjectPreviewData(_projectUUID, _sceneId, _previewType);
+       
+      var _projectUUID = window.location.pathname.split('/').slice(3)[0];
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      
+      const _sceneId = urlParams.get('sceneId') || '';
+      const _previewType = urlParams.get('type') || '';
+      
+      setProjectPreviewData(_projectUUID, _sceneId, _previewType);
+      
+    }, 100);
 
 
   },[])
@@ -881,25 +889,23 @@ function PreviewPage(props) {
   }
 
 
-  const setProjectPreviewData = (_projectUUID, _sceneId : string, _previewType : string)=>{
+  const setProjectPreviewData = (_projectUUID : string, _sceneId : string, _previewType : string)=>{
 
-    contentService.getProject(_projectUUID)
-    .then((projects:any)=>{
-      
-      var project = projects.data[0] ? projects.data[0] : null;
-      console.log(project)
+    localDatabaseService.getProject()
+    .then(project=>{
       if(project)
       {
 
           // Get entities content (data)
-          var _svg = project.attributes[PREVIEW_DATA_KEYS.svg];
-          var _scene = project.attributes.scenes.find(s=>s.id == _sceneId);
+          var _svg = project[PREVIEW_DATA_KEYS.svg];
+          var scenes = project.scenes;
+          var _scene = scenes.find(s=>s.id == _sceneId);
+ 
+          var _mainAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.mainAnimations];
+          var _customAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.customAnimations];
 
-          var _mainAnimations = _scene.items.animations[PREVIEW_DATA_KEYS.mainAnimations];
-          var _customAnimations = _scene.items.animations[PREVIEW_DATA_KEYS.customAnimations];
-
-          var _flows = _scene.items[PREVIEW_DATA_KEYS.flows];
-          var _interactions = _scene.items[PREVIEW_DATA_KEYS.interactions];
+          var _flows = _scene?.items[PREVIEW_DATA_KEYS.flows];
+          var _interactions = _scene?.items[PREVIEW_DATA_KEYS.interactions];
           
           // console.log(_flows)
           // console.log(savedInteractions)

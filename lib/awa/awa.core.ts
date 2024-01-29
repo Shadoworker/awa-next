@@ -332,7 +332,9 @@ class awa {
   {
     var _project = this.project;
 
-    console.log(_project)
+    // Generate svg data
+    var svgData = this.getSvgInstance().svg();
+    _project.generatedSvg = svgData;
     // Update local project file
     localDatabaseService.updateProject(_project)
 
@@ -1433,6 +1435,11 @@ class awa {
   setProject(_project)
   {
     this.project = _project;
+  }
+  
+  getProject()
+  {
+    return this.project;
   }
 
   getScenes()

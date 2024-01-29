@@ -23,11 +23,26 @@ class MenubarComp extends Component<any,any> {
   constructor(props) {
       super(props);
       this.state = {
+        project : null,
+        projectId : null,
+        activeSceneId : null,
         checkedSelection : [CHECK_ITEMS[1]],
         previewType : PREVIEW_TYPES.scene,
       }
     }
  
+
+    componentDidMount(){
+ 
+      setTimeout(() => { // 
+    
+        this.setState({project : this.props.awa.getProject()},() => {
+          var projectId =  this.state.project.uuid;
+          this.setState({projectId : projectId, activeSceneId : this.props.awa.getActiveSceneId()});
+        })
+      }, 500);
+
+    }
 
     onAppModeChanged = (_isAnimeMode) =>{
 
@@ -162,7 +177,7 @@ class MenubarComp extends Component<any,any> {
                 )}
               </select>
               
-              <Link className='PlayModeBtnLink' href={`preview?type=${this.state.previewType}`} target='_blank'>
+              <Link className='PlayModeBtnLink' href={`/app/preview/${this.state.projectId}?type=${this.state.previewType}&sceneId=${this.state.activeSceneId}`} target='_blank'>
                 <div className='PlayModeBtn' title='preview'>
                   <i className="inputIcon PlayModeInputIcon bi bi-play-fill" style={{transform:'scale(1)'}}></i>
                 </div>
