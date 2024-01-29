@@ -197,9 +197,7 @@ class TimelineBoxComp extends Component<any,any> {
 
   onSwitchScene = ()=>{
     awaEventEmitter.on(awaEvents.SWITCH_SCENE, (_data)=>{
-
       var timeline = this.activateMainTimeline();
-      console.log(timeline)
       this.setTimeline(timeline);
     })
   }
@@ -344,7 +342,6 @@ class TimelineBoxComp extends Component<any,any> {
 
       // Update active timeline
       this.props.awa.setActiveTimeline(timeline);
-
       
       // console.log(timeline)
       var timelineItems = getTimelineItems(this.props.awa.getSvgInstance(), timeline);

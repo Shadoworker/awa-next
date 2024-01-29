@@ -999,14 +999,12 @@ class awa {
       {
         // Add to container
         this.addElementToScene(sceneEl)
-
       }
 
       // Quit this state
       this.quitCreateState();
 
       // Save
-
       this.saveProjectChanges();
 
     });
@@ -1186,6 +1184,12 @@ class awa {
           break;
       }
 
+      // 
+      if(this.getSelectedElement())
+      {
+        // Update scene's element
+        this.updateSceneElementObject(this.getSelectedElement())
+      }
 
       // Save
       this.saveProjectChanges();
@@ -1624,15 +1628,19 @@ class awa {
 
     parent.add(sceneEl);
 
-    console.log(sceneEl)
+    this.updateSceneElementObject(sceneEl);
+
+  }
+  
+  updateSceneElementObject(sceneEl)
+  {
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl);
-
 
     this.updateSceneElements(elObject)
 
     this.dispatchUpdateSceneElements();
-
+    
   }
 
   updateSceneElements(elObject)
