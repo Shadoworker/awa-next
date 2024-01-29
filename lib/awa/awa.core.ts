@@ -25,6 +25,7 @@ import {
 import { isCanvas } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
 import { AwaTypes } from "./awa.types";
+import userService from "../../services/user.service";
 
 // DEFS
 export const SCENE_BLOCK_CLASS = ".app-scene-block";
@@ -280,7 +281,6 @@ class awa {
   initProjectFile(){
 
     
-    
     var setDefaultScene = false;
 
     localDatabaseService.getProject()
@@ -302,6 +302,9 @@ class awa {
 
         this.createSceneContainer(sceneId)
  
+        // Instantiate scene elements 
+        // ........
+
         // Set default active scene
         if(!setDefaultScene)
         {
@@ -327,48 +330,17 @@ class awa {
 
   saveProjectChanges = async ()=>
   {
-    var _svgInstance = this.m_svgInstance, 
-        _mainAnimations = getTimelineItems(this.m_svgInstance, this.m_timeline),
-        _flows = this.getFlows(),
-        _customAnimations = this.getAnimations(),
-        _interactions = this.getInteractions();
+    var _project = this.project;
 
-    var svgExport = _svgInstance.svg()
+    console.log(_project)
+    // Update local project file
+    localDatabaseService.updateProject(_project)
 
-    // Get current scene and update its properties
+    // Update distant project file
+    // var data = {data : _project}
+    // userService.updateProject(_project.id, data);
+   
     
-
-
-    console.log(this.project)
-
-
-    // const db = await dbPromise;
-    // const transaction = db.transaction('awaStore', 'readwrite');
-    // const store = transaction.objectStore('awaStore');
- 
-
-    // await store.clear();
-
-    // const savedSvg = await store.get(PREVIEW_DATA_KEYS.svg);
-    // // Add data to the store
-    // if(savedSvg == undefined)
-    // {
-    //   await store.add({ 
-    //     [PREVIEW_DATA_KEYS.svg]: svgExport, 
-        
-    //     [PREVIEW_DATA_KEYS.mainAnimations]: _mainAnimations,
-
-    //     [PREVIEW_DATA_KEYS.flows]: _flows,
-        
-    //     [PREVIEW_DATA_KEYS.interactions]: _interactions,
-        
-    //     [PREVIEW_DATA_KEYS.customAnimations]: _customAnimations,
-      
-    //   });
-
-      
-    // }
-
   }
 
   getLoonkInstance() {
@@ -1003,9 +975,7 @@ class awa {
 
       // Quit this state
       this.quitCreateState();
-
-      // Save
-      this.saveProjectChanges();
+ 
 
     });
   }
@@ -1049,7 +1019,6 @@ class awa {
       canvasGroup._isCanvas = true; // Helper to verify canvas elements
 
       canvasItemsGroup.addClass(CLIP_ID_BODY + GROUP_ID_BODY);
-
 
       var canvasTitleItem = this.m_svgInstance.text(canvasName)
         .attr({ id: awaElementId + "--title" })
@@ -1110,13 +1079,14 @@ class awa {
       var sceneEl = canvasGroup;
       if(sceneEl)
       {
+        
+        var canvasAttributes = canvasGroup.attr();
+        var containerAttributes = canvasClipRect.attr();
+        sceneEl.path = null; // canvas path turns to be a function
         // Add to container
-        this.addElementToScene(sceneEl)
+        this.addCanvasToScene(sceneEl, {...containerAttributes, ...canvasAttributes})
 
       }
-
-      // Save
-      this.saveProjectChanges();
 
     });
   }
@@ -1190,9 +1160,7 @@ class awa {
         // Update scene's element
         this.updateSceneElementObject(this.getSelectedElement())
       }
-
-      // Save
-      this.saveProjectChanges();
+ 
 
     });
   }
@@ -1620,7 +1588,20 @@ class awa {
     return false;
   }
 
-  addElementToScene(sceneEl, parent : any = null) // Adds or Update if exist
+  
+  addCanvasToScene(sceneEl, attributes, parent : any = null) // Adds or Update if exist
+  {
+   
+    if(!parent)
+      parent = this.getActiveSceneContainer();
+
+    parent.add(sceneEl);
+
+    this.updateSceneElementObject(sceneEl, attributes);
+
+  }
+
+  addElementToScene(sceneEl, parent:any = null) // Adds or Update if exist
   {
    
     if(!parent)
@@ -1632,10 +1613,10 @@ class awa {
 
   }
   
-  updateSceneElementObject(sceneEl)
+  updateSceneElementObject(sceneEl, attributes = null)
   {
     // Add this element object to scene items
-    var elObject = this.elementToObject(sceneEl);
+    var elObject = this.elementToObject(sceneEl, attributes);
 
     this.updateSceneElements(elObject)
 
@@ -1666,7 +1647,7 @@ class awa {
 
   }
 
-  elementToObject(sceneEl)
+  elementToObject(sceneEl, attributes=null)
   {
     var elObject : AwaTypes.T_AwaEl = {
 
@@ -1678,12 +1659,12 @@ class awa {
       path: sceneEl.path,
       pathString: sceneEl.pathString,
       node : {
-        attributes : sceneEl.attr(),
+        attributes : attributes ? attributes : sceneEl.attr(),
         anchor : sceneEl.node.anchor,
         effects : sceneEl.node.effects
       },
       options : {visible : true, locked : false},
-      events : sceneEl.events,
+      events : []//sceneEl.events, events used ?
 
     }
 

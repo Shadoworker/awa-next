@@ -5,10 +5,13 @@ const userService = {
 
   createProject,
   getUserProjects,
+  updateProject,
  
+
+
+  //-----------
   createUser,
   authUser,
-  updateUser,
   getUser,
   getUserByMail,
   getUserByUsername,
@@ -63,14 +66,14 @@ function authUser(payload) {
 
 
 /**
- * updateUser method
+ * updateProject method
  *
  * @param {number} id
  * @param {Object} payload
  * @returns
  */
-function updateUser(id, payload) {
-  return api.putData(resource + "/users/"+id, payload);
+function updateProject(id, payload) {
+  return api.putData(resource + "/projects/"+id, payload);
 }
 
 

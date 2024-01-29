@@ -4,7 +4,8 @@ import { db } from "./localdatabase";
 const localDatabaseService = {
  
   updateProject,
-  getProject
+  getProject,
+  getProjects
   
 };
 
@@ -26,7 +27,7 @@ function updateProject(payload) {
     {
       var existingId = projects[0].id || 1;
       var project : AwaTypes.T_AwaProject = payload;
-      return db.projects.update(existingId, payload);
+      return db.projects.update(existingId, project);
     }
     else
     {
@@ -49,6 +50,22 @@ function getProject() {
   })
   .then(function(projects){
     return projects[0]; // the one and unique project
+  })
+ 
+}
+
+
+/**
+ * getProjects method
+ * @returns
+ */
+function getProjects() {
+  return db.open()
+  .then(function(){
+    return db.projects.toArray();
+  })
+  .then(function(projects){
+    return projects; // all projects
   })
  
 }

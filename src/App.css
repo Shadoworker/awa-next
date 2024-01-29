@@ -747,9 +747,9 @@ opacity: 1;
 
 .createNewProjectBtn:hover
 {
-  background-color: #fff;
-  border: solid 1px #50B5AD !important;
-  color: #50B5AD !important;
+  background-color: #242730;
+  border: solid 1px #408e87 !important;
+  color: #408e87 !important;
   transition: ease all 0.2s;
 
 }
