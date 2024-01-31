@@ -243,7 +243,7 @@ function PreviewPage(props) {
         // Prev presets
 
         /* Calcultate the offset initial translation */
-        var canvasToPrev = document.querySelector(currentCanvasId)
+        var canvasToPrev : any = document.querySelector(`#`+currentCanvasId)
         var currentTranslationStringPrev = canvasToPrev.getAttribute("transform");
         var currentTranslationPrev = {x:0,y:0};
         if(currentTranslationStringPrev)
@@ -906,8 +906,7 @@ function PreviewPage(props) {
           var _flows = _scene?.items[PREVIEW_DATA_KEYS.flows];
           var _interactions = _scene?.items[PREVIEW_DATA_KEYS.interactions];
           
-          // console.log(_flows)
-          // console.log(savedInteractions)
+          // console.log(_interactions)
           // If at least one canvas in sent data
           setHasCanvas(_flows[0].canvas != null)
           setPreviewType(_previewType)
