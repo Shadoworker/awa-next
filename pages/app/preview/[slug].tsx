@@ -209,7 +209,9 @@ function PreviewPage(props) {
       // for prev canvas
       var currentCanvas : any = document.querySelector(`#div-${currentCanvasId}`)
       var currentCanvasSvg : any = document.querySelector(`#svg-${currentCanvasId}`)
-      // var nextCanvasSvg = document.querySelector(`#svg-${actionTargetId}`)
+      
+      var nextCanvas : any = document.querySelector(`#div-${actionTargetId}`)
+      var nextCanvasSvg : any = document.querySelector(`#svg-${actionTargetId}`)
       
       var animatePrev = false;
 
@@ -270,7 +272,7 @@ function PreviewPage(props) {
       {
         animatePrev = true;
         /* Calcultate the offset initial translation */
-        var canvasToPreview = document.querySelector(actionTargetId)
+        var canvasToPreview : any = document.querySelector(`#`+actionTargetId)
         var currentTranslationString = canvasToPreview.getAttribute("transform");
         var currentTranslation = {x:0,y:0};
         if(currentTranslationString)
@@ -284,7 +286,7 @@ function PreviewPage(props) {
         }
 
         var canvasRectId = actionTargetId.split(GROUP_ID_BODY)[0] + CONTAINER_ID_BODY;
-        var canvasRect : any = document.querySelector(canvasRectId);
+        var canvasRect : any = document.querySelector(`#`+canvasRectId);
         var canvasToPreviewSize = canvasRect.getBoundingClientRect()
 
         animationKeyframes.translateX[0].value = canvasToPreviewSize.width;
@@ -293,7 +295,7 @@ function PreviewPage(props) {
         // Prev presets
 
         /* Calcultate the offset initial translation */
-        var canvasToPrev = document.querySelector(currentCanvasId)
+        var canvasToPrev : any = document.querySelector(`#`+currentCanvasId)
         var currentTranslationStringPrev = canvasToPrev.getAttribute("transform");
         var currentTranslationPrev = {x:0,y:0};
         if(currentTranslationStringPrev)
@@ -307,7 +309,7 @@ function PreviewPage(props) {
         }
 
         var canvasRectIdPrev = currentCanvasId.split(GROUP_ID_BODY)[0] + CONTAINER_ID_BODY;
-        var canvasRectPrev : any = document.querySelector(canvasRectIdPrev);
+        var canvasRectPrev : any = document.querySelector(`#`+canvasRectIdPrev);
         var canvasToPreviewSizePrev = canvasRectPrev.getBoundingClientRect()
 
         animationKeyframesPrev.translateX[0].value = 0;
@@ -348,10 +350,11 @@ function PreviewPage(props) {
 
       // --------------------------------------------------------------------------------
 
-
-
       if(actionTargetId.includes(CANVAS_ID_BODY) && actionTargetId.includes(GROUP_ID_BODY))
         actionTargetId = '#svg-'+actionTargetId;
+
+
+      nextCanvas.style.display = "block"; 
 
       /* Prev--------------------- */
       if(animatePrev)
@@ -359,7 +362,7 @@ function PreviewPage(props) {
         var _currentCanvasId = '#svg-'+currentCanvasId;
         var animParamsPrev =
         {
-          targets : "#"+_currentCanvasId,
+          targets : _currentCanvasId,
           easing : 'linear',
           ...animationKeyframesPrev,
           complete: function(anim) {
@@ -381,19 +384,16 @@ function PreviewPage(props) {
       }
 
 
-
       /* ------------------------- */
 
       var animParams =
       {
-        targets : "#"+actionTargetId,
+        targets : actionTargetId,
         easing : 'linear',
         ...animationKeyframes
       }
 
       anime(animParams)
-
-
 
     }
 
@@ -412,7 +412,6 @@ function PreviewPage(props) {
 
     function switchCanvas(actionType, actionTargetId, actionAnimation, actionOptions)
     {
-      
       var currentCanvas : any = document.querySelector(`#div-${currentCanvasId}`)
       var nextCanvas : any = document.querySelector(`#div-${actionTargetId}`)
 
@@ -899,7 +898,7 @@ function PreviewPage(props) {
           // Get entities content (data)
           var _svg = project[PREVIEW_DATA_KEYS.svg];
           var scenes = project.scenes;
-          var _scene = scenes.find(s=>s.id == _sceneId);
+          var _scene = scenes.find((s:any)=>s.id == _sceneId);
  
           var _mainAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.mainAnimations];
           var _customAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.customAnimations];
