@@ -351,10 +351,17 @@ function PreviewPage(props) {
       // --------------------------------------------------------------------------------
 
       if(actionTargetId.includes(CANVAS_ID_BODY) && actionTargetId.includes(GROUP_ID_BODY))
+      {
         actionTargetId = '#svg-'+actionTargetId;
+      }
+      else
+      {
+        actionTargetId = '#'+actionTargetId;
+      }
 
 
-      nextCanvas.style.display = "block"; 
+      if(nextCanvas)
+        nextCanvas.style.display = "block"; 
 
       /* Prev--------------------- */
       if(animatePrev)
@@ -385,6 +392,7 @@ function PreviewPage(props) {
 
 
       /* ------------------------- */
+
 
       var animParams =
       {
@@ -894,72 +902,71 @@ function PreviewPage(props) {
     .then(project=>{
       if(project)
       {
+        // Get entities content (data)
+        var _svg = project[PREVIEW_DATA_KEYS.svg];
+        var scenes = project.scenes;
+        var _scene = scenes.find((s:any)=>s.id == _sceneId);
 
-          // Get entities content (data)
-          var _svg = project[PREVIEW_DATA_KEYS.svg];
-          var scenes = project.scenes;
-          var _scene = scenes.find((s:any)=>s.id == _sceneId);
- 
-          var _mainAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.mainAnimations];
-          var _customAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.customAnimations];
+        var _mainAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.mainAnimations];
+        var _customAnimations = _scene?.items.animations[PREVIEW_DATA_KEYS.customAnimations];
 
-          var _flows = _scene?.items[PREVIEW_DATA_KEYS.flows];
-          var _interactions = _scene?.items[PREVIEW_DATA_KEYS.interactions];
-          
-          // console.log(_interactions)
-          // If at least one canvas in sent data
-          setHasCanvas(_flows[0].canvas != null)
-          setPreviewType(_previewType)
-
-          setCustomAnimations(_customAnimations)
-
-          var nativeAnimationModels = getNativeAnimationModels();
-          var customAnimationModels = mapCustomAnimationsToAnimationModel(_customAnimations);
-
-          // console.log(customAnimationModels)
-
-          var animationModels : any[] = [...nativeAnimationModels, ...customAnimationModels];
-
-          setCustomAnimations(animationModels)
-
-          // --------------------------------------------------------------------
-
-          // Svg ----------------------------------------------------------------
-
-          var svgInstance = SVG(MAINSVGID)
-          .addTo(SCENE_BLOCK_CLASS)
-          .size("100%", "100%");
-          
-          svgInstance.svg(_svg, true)
+        var _flows = _scene?.items[PREVIEW_DATA_KEYS.flows];
+        var _interactions = _scene?.items[PREVIEW_DATA_KEYS.interactions];
         
-          // Get Flows list
-          var flowsList : any[] = []
-          for (let i = 0; i < _flows.length; i++) {
-            const f = _flows[i];
-            flowsList.push({label : f.name, key : f.name})
-          }
+        // console.log(_interactions)
+        // If at least one canvas in sent data
+        setHasCanvas(_flows[0].canvas != null)
+        setPreviewType(_previewType)
 
-          setFlowsList(flowsList);
+        setCustomAnimations(_customAnimations)
 
-          // Render flow if there is atleast one canvas ------------------------------
+        var nativeAnimationModels = getNativeAnimationModels();
+        var customAnimationModels = mapCustomAnimationsToAnimationModel(_customAnimations);
 
-          if(_flows[0].canvas != null && _previewType == 'flow') // If type flow and hasCanvas
-            renderFlow(_flows[0], _flows[1], _interactions, animationModels, null);
+        // console.log(customAnimationModels)
 
-          // -------------------------------------------------------------------------
+        var animationModels : any[] = [...nativeAnimationModels, ...customAnimationModels];
 
-          // Animation
-          var timeline = anime.timeline({
-            easing: "linear",
-            duration: TIMELINE_MAX_DURATION,
-            // autoplay: true,
-          });
+        setCustomAnimations(animationModels)
 
-          _mainAnimations.forEach(anim => {
-            timeline.add(anim, 0);
-          });
+        // --------------------------------------------------------------------
 
-          setTimeline(timeline);
+        // Svg ----------------------------------------------------------------
+
+        var svgInstance = SVG(MAINSVGID)
+        .addTo(SCENE_BLOCK_CLASS)
+        .size("100%", "100%");
+        
+        svgInstance.svg(_svg, true)
+      
+        // Get Flows list
+        var flowsList : any[] = []
+        for (let i = 0; i < _flows.length; i++) {
+          const f = _flows[i];
+          flowsList.push({label : f.name, key : f.name})
+        }
+
+        setFlowsList(flowsList);
+
+        // Render flow if there is atleast one canvas ------------------------------
+
+        if(_flows[0].canvas != null && _previewType == 'flow') // If type flow and hasCanvas
+          renderFlow(_flows[0], _flows[1], _interactions, animationModels, null);
+
+        // -------------------------------------------------------------------------
+
+        // Animation
+        var timeline = anime.timeline({
+          easing: "linear",
+          duration: TIMELINE_MAX_DURATION,
+          // autoplay: true,
+        });
+
+        _mainAnimations.forEach(anim => {
+          timeline.add(anim, 0);
+        });
+
+        setTimeline(timeline);
             
       }
       else

@@ -28,6 +28,14 @@ export const INTERACTION_TYPE_REF = "type";
 export const INTERACTION_ANIMATION_REF = "animation";
 export const INTERACTION_OPTIONS_REF = "options";
 
+export const ELEMENTS_TYPES = 
+{
+    canvas : 'canvas',
+    rect : 'rect',
+    circle : 'circle',
+    text : 'text',
+}
+
 export const PREVIEW_TYPES = 
 {
     scene : 'scene',

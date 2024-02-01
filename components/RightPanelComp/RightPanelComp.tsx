@@ -845,7 +845,7 @@ class RightPanelComp extends Component<any,any> {
                                 </Popover.Trigger>
                                 <Popover.Portal>
                                   <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                    <ColorPicker className={{}} width={250} height={150} value={this.state.selectedElementProps.fill} onChange={(c)=>this.setFillColor(c)}  />
+                                    <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.fill} onChange={(c)=>this.setFillColor(c)}  />
                                   </Popover.Content>
                                 </Popover.Portal>
                               </Popover.Root>
@@ -876,7 +876,7 @@ class RightPanelComp extends Component<any,any> {
                                 </Popover.Trigger>
                                 <Popover.Portal>
                                   <Popover.Content id='PopoverContentColorPicker2' className="PopoverContent" sideOffset={5}>
-                                    <ColorPicker className={{}} width={250} height={150} value={this.state.selectedElementProps.stroke} onChange={(c)=>this.setStrokeColor(c)}  />
+                                    <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.stroke} onChange={(c)=>this.setStrokeColor(c)}  />
                                   </Popover.Content>
                                 </Popover.Portal>
                               </Popover.Root>

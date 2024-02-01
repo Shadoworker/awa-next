@@ -17,7 +17,7 @@ button {
   box-shadow: 0 2px 10px var(--black-a7);
 }
 
-.menutools-container{
+.menutools-container {
   display: flex;
   align-items: center;
 }
@@ -42,7 +42,8 @@ button {
 
 .MenubarTrigger[data-highlighted],
 .MenubarTrigger[data-state='open'] {
-  background-color: #767b88/* var(--violet-4); */
+  background-color: #767b88
+    /* var(--violet-4); */
 }
 
 .MenubarContent,
@@ -96,7 +97,9 @@ button {
 .MenubarSubTrigger[data-highlighted],
 .MenubarCheckboxItem[data-highlighted],
 .MenubarRadioItem[data-highlighted] {
-  background-color: #242730 /* linear-gradient(135deg, var(--violet-9) 0%, var(--violet-10) 100%) */;
+  background-color: #242730
+    /* linear-gradient(135deg, var(--violet-9) 0%, var(--violet-10) 100%) */
+  ;
   color: var(--violet-1);
 }
 
@@ -129,28 +132,26 @@ button {
   color: var(--mauve-9);
 }
 
-[data-highlighted] > .RightSlot {
+[data-highlighted]>.RightSlot {
   color: white;
 }
 
-[data-disabled] > .RightSlot {
+[data-disabled]>.RightSlot {
   color: var(--mauve-8);
 }
 
-.Input.PlayModeSelect
-{
+.Input.PlayModeSelect {
   text-indent: 0px;
   text-align: left;
   font-size: 12px;
 }
 
-.PlayModeBtnLink
-{
+.PlayModeBtnLink {
   position: absolute;
   right: 0px;
 }
-.PlayModeBtn
-{
+
+.PlayModeBtn {
   position: relative;
   height: 100%;
   background-color: rgba(216, 213, 213, 0.234);
@@ -159,11 +160,67 @@ button {
   cursor: pointer;
 }
 
-.inputIcon.PlayModeInputIcon
-{
+.inputIcon.PlayModeInputIcon {
   position: relative;
   /* right: 5px; */
   color: #fff;
   font-size: 18px;
   margin-left: 0px;
+}
+
+
+select {
+  /* -webkit-appearance: none !important; */
+}
+
+select option {
+  background-color: #101012;
+}
+
+select:focus>option:hover {
+  background: yellow !important;
+}
+
+option:not(:checked) {
+  background-color: #1b1d22;
+}
+
+
+fieldset,
+input {
+  all: unset;
+}
+
+.Input {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 15px;
+  color: white;
+  background-color: #c2c2c213;
+}
+
+.Input:hover,
+.Textarea:hover {
+  box-shadow: 0 0 0 1px #50B5AD;
+}
+
+.Input:focus,
+.Textarea:focus {
+  box-shadow: 0 0 0 1px black;
+}
+
+.Input::selection,
+.Textarea::selection {
+  background-color: var(--black-a9);
+  color: white;
+}
+
+.Input {
+  padding: 0 12px;
+  height: 27px;
+  line-height: 1;
 }

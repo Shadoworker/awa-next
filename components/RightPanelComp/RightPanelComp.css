@@ -507,15 +507,15 @@ input[type="range"]::-moz-range-progress {
   border-radius: 4px;
 }
 
-  select
-  {
-    /* -webkit-appearance: none !important; */
-  }
+select
+{
+  /* -webkit-appearance: none !important; */
+}
 
-  select option
-  {
-    background-color: #101012;
-  }
+select option
+{
+  background-color: #101012;
+}
 
   select:focus > option:hover { 
     background: yellow !important;

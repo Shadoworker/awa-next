@@ -12,6 +12,7 @@ import {
   CLIP_ID_BODY,
   CONNECTORS_GROUP_CLASS,
   CONTAINER_ID_BODY,
+  ELEMENTS_TYPES,
   GROUP_ID_BODY,
   IGNORE_PREVIEW_CLASS,
   INTERACTION_ACTION_REF,
@@ -22,7 +23,7 @@ import {
   RERENDER_SEEK_TIMELINE_DELAY,
   SCENE_CLASS,
 } from "./awa.constants";
-import { isCanvas } from "./awa.common.utils";
+import { isCanvas, isCanvasElement } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
 import { AwaTypes } from "./awa.types";
 import userService from "../../services/user.service";
@@ -304,6 +305,7 @@ class awa {
  
         // Instantiate scene elements 
         // ........
+        this.renderSceneElements(scene);
 
         // Set default active scene
         if(!setDefaultScene)
@@ -342,6 +344,7 @@ class awa {
     // var data = {data : _project}
     // userService.updateProject(_project.id, data);
    
+    console.log('moved')
     
   }
 
@@ -1013,7 +1016,11 @@ class awa {
       this.m_awaElementsIds.push(mainCanvasId);
 
       var canvasGroup = this.m_svgInstance.group(); //The root canvas element 
-      var canvasItemsGroup = this.m_svgInstance.group();
+      
+      var canvasItemsGroupId = awaElementId + CLIP_ID_BODY + GROUP_ID_BODY;
+      var canvasItemsGroup = this.m_svgInstance.group()
+      .attr({id : canvasItemsGroupId});
+
 
       canvasGroup.attr({ id: mainCanvasId });
       var canvasName = "canvas "+this.m_awaElementsCounter;
@@ -1081,9 +1088,12 @@ class awa {
       var sceneEl = canvasGroup;
       if(sceneEl)
       {
-        
         var canvasAttributes = canvasGroup.attr();
         var containerAttributes = canvasClipRect.attr();
+        
+        delete containerAttributes.x;
+        delete containerAttributes.y;
+
         sceneEl.path = null; // canvas path turns to be a function
         // Add to container
         this.addCanvasToScene(sceneEl, {...containerAttributes, ...canvasAttributes})
@@ -1558,6 +1568,152 @@ class awa {
       })
   }
 
+  renderSceneElements(scene)
+  {
+    var elements = scene.items.elements;
+
+    for (let i = 0; i < elements.length; i++) {
+      const el = elements[i];
+
+      if(isCanvasElement(el.id))
+      {
+        var parentId = el.parent;
+        var parent = this.m_svgInstance.findOne("#"+parentId)
+
+        var awaElementId = el.id.split(GROUP_ID_BODY)[0];
+        var mainCanvasId = awaElementId + GROUP_ID_BODY;
+
+        var canvasGroup = this.m_svgInstance.group()
+        .translate(el.node.attributes.x, el.node.attributes.y); //The root canvas element 
+        
+        var canvasItemsGroupId = awaElementId + CLIP_ID_BODY + GROUP_ID_BODY;
+        var canvasItemsGroup = this.m_svgInstance.group()
+        .attr({id : canvasItemsGroupId});
+
+        canvasGroup.attr({ id: mainCanvasId });
+        var canvasName = el.name;
+        canvasGroup.m_name = canvasName;
+        canvasGroup._isCanvas = true; // Helper to verify canvas elements
+
+        canvasItemsGroup.addClass(CLIP_ID_BODY + GROUP_ID_BODY);
+
+        var canvasTitleItem = this.m_svgInstance.text(canvasName)
+          .attr({ id: awaElementId + "--title" })
+          .font({family:'Montserrat', size:11.5, color:'#000'})
+          .move(0, -25)
+
+        canvasTitleItem.addClass(IGNORE_PREVIEW_CLASS)
+
+        var canvasClipper = this.m_svgInstance
+          .clip()
+          .attr({ id: awaElementId + CLIP_ID_BODY })
+
+        var rw = el.node.attributes.width
+        var rh = el.node.attributes.height
+
+        var canvasClipRect = this.m_svgInstance.rect(rw, rh).attr({
+          id: awaElementId + CONTAINER_ID_BODY,
+          x: 0,
+          y: 0,
+          fill: el.node.attributes.fill,
+          opacity: 0,
+          stroke: el.node.attributes.stroke,
+          "stroke-width": el.node.attributes.strokeWidth || 1, // Setting camelCase value override the tween property
+          class: "awa-element-canvas",
+        });
+
+
+        var canvasClipRectClone = canvasClipRect.clone().attr({ opacity: 1 });
+
+        var canvasClipRectUse = this.m_svgInstance.use(canvasClipRect);
+
+        // canvasClipRect.node.style.pointerEvents = "none";
+
+        // Use the use element to set the clip rect : like so when the original is moved,
+        // the use element is also moved without glitching effect
+        canvasClipper.add(canvasClipRectUse);
+
+        canvasItemsGroup.clipWith(canvasClipper);
+
+        canvasGroup.add(canvasClipRectClone); // add clone for background
+        canvasGroup.add(canvasClipRect); // add real rect for clipPath movement ref
+        canvasGroup.add(canvasItemsGroup); // add itemsGroup to be moved with the canvas ... without custom calculations
+
+        canvasGroup.add(canvasTitleItem); // add title block : To keep it at top
+
+        canvasGroup.draggable(this.getLoonkInstance());
+        canvasGroup.selectable(this.getLoonkInstance());
+
+
+        parent.add(canvasGroup)
+
+
+      }
+      else
+      {
+
+        var type = el.type;
+        var sceneEl;
+
+        switch (type) {
+          case ELEMENTS_TYPES.rect:
+
+            var awaElementId = el.id;
+            var parentId = el.parent;
+            var parent = this.m_svgInstance.findOne("#"+parentId)
+            console.log(parentId)
+            sceneEl = this.m_svgInstance
+              .rect(el.node.attributes.width, el.node.attributes.height)
+              .attr({
+                id: awaElementId,
+                x: el.node.attributes.x,
+                y: el.node.attributes.y,
+                fill: el.node.attributes.fill,
+                stroke: el.node.attributes.stroke,
+                "stroke-width": el.node.attributes.strokeWidth,
+                class: "awa-element-rect",
+              })
+              .draggable(this.getLoonkInstance())
+              .selectable(this.getLoonkInstance());
+  
+              parent.add(sceneEl)
+  
+            break;
+  
+          case ELEMENTS_TYPES.circle:
+            
+            var awaElementId = el.id;
+            var parentId = el.parent;
+            
+            console.log(parentId)
+
+            var parent = this.m_svgInstance.findOne("#"+parentId)
+    
+            sceneEl = this.m_svgInstance
+              .circle(80)
+              .attr({
+                id: awaElementId,
+                cx: el.node.attributes.cx,
+                cy: el.node.attributes.cy,
+                fill: el.node.attributes.fill,
+                stroke: el.node.attributes.stroke,
+                "stroke-width": el.node.attributes.strokeWidth,
+              })
+              .draggable(this.getLoonkInstance())
+              .selectable(this.getLoonkInstance());
+  
+              parent.add(sceneEl)
+              
+
+            break;
+        }
+  
+
+      }
+      
+    }
+
+  }
 
   deleteScene(_id)
   {
@@ -1620,18 +1776,60 @@ class awa {
 
   }
   
-  updateSceneElementObject(sceneEl, attributes = null)
+  updateSceneElementObject(sceneEl,  attributes:any = null)
   {
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl, attributes);
 
-    this.updateSceneElements(elObject)
+    this.updateSceneElements(elObject, attributes)
 
     this.dispatchUpdateSceneElements();
     
   }
+  
+  updateSceneElementAttributes(id, attributes)
+  {
+    var scene = this.getActiveScene();
 
-  updateSceneElements(elObject)
+    var sceneItems = scene.items.elements;
+    var thisElIndex = sceneItems?.findIndex(e=>e.id == id);
+
+    if(thisElIndex != -1)
+    {
+      var elObject = sceneItems[thisElIndex];
+
+      elObject.node.attributes = {...elObject.node.attributes, ...attributes}
+      
+      sceneItems[thisElIndex] = elObject;
+
+      this.saveProjectChanges();
+
+    }
+
+  }
+
+  updateSceneElementParent(id, newParentId)
+  {
+    var scene = this.getActiveScene();
+
+    var sceneItems = scene.items.elements;
+    var thisElIndex = sceneItems?.findIndex(e=>e.id == id);
+
+    if(thisElIndex != -1)
+    {
+      var elObject = sceneItems[thisElIndex];
+
+      elObject.parent = newParentId ? newParentId : scene.id;
+      
+      sceneItems[thisElIndex] = elObject;
+
+      this.saveProjectChanges();
+
+    }
+
+  }
+
+  updateSceneElements(elObject, attributes:any = null)
   {
     var scene = this.getActiveScene();
 
@@ -1641,6 +1839,7 @@ class awa {
 
     if(thisElIndex != -1)
     {
+      elObject.node.attributes = {...elObject.node.attributes, ...attributes}
       sceneItems[thisElIndex] = elObject;
     }
     else

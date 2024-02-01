@@ -37,7 +37,7 @@ class MenubarComp extends Component<any,any> {
       setTimeout(() => { // 
     
         this.setState({project : this.props.awa.getProject()},() => {
-          var projectId =  this.state.project.uuid;
+          var projectId : any =  this.state.project?.uuid;
           this.setState({projectId : projectId, activeSceneId : this.props.awa.getActiveSceneId()});
         })
       }, 500);

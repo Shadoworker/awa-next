@@ -7,6 +7,7 @@ import * as mainActions from '../../redux/main/mainActions'
 import { CheckIcon} from '@radix-ui/react-icons';
 import './MenubarPreviewComp.css';
 import { withRouter } from 'next/router';
+import Image from 'next/image';
 
 const CHECK_ITEMS = ['Always Show Bookmarks Bar', 'Always Show Full URLs'];
 
@@ -23,7 +24,7 @@ class MenubarPreviewComp extends Component<any, any> {
   render(){
     return <Menubar.Root className="MenubarRoot PreviewMenubarRoot">
       <Menubar.Menu>
-        <Menubar.Trigger className="MenubarTrigger"><img src={require('../../assets/icons/logo_colored_white.png')} style={{height:10, width:'auto'}} /> <span>&#x2022;</span></Menubar.Trigger>
+        <Menubar.Trigger className="MenubarTrigger"><Image src={require('../../assets/icons/logo_colored_white.png')} style={{height:10, width:'auto'}} alt='logo' /> <span>&#x2022;</span></Menubar.Trigger>
           <Menubar.Portal>
           <Menubar.Content className="MenubarContent" align="start" sideOffset={5} alignOffset={-3}>
             <Menubar.Item className="MenubarItem">
