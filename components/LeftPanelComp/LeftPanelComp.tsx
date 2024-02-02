@@ -171,6 +171,8 @@ class LeftPanelComp extends Component<any,any> {
     mapSceneItemsToTreeData(_sceneItems = [])
     {
  
+      console.log(_sceneItems);
+
       var treeData :any[] = [];
 
       // Define objects
@@ -181,7 +183,7 @@ class LeftPanelComp extends Component<any,any> {
           key : item.id,
           type : getElementTreeType(item.type),
           icon : getElementTreeType(item.type) == "folder" ? <ExpandOutlined style={{marginTop:6}} /> : <BorderOutlined />,
-          parent : item.parent,
+          parent : item.canvasOwnerId ? item.canvasOwnerId : item.parent , // For canvas element their hierarchy parent is referenced by their canvasOwner prop
           children : []
         }
 

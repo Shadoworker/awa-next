@@ -577,6 +577,8 @@ class RightPanelComp extends Component<any,any> {
       
       var selectedElement = this.props.awa.getSvgInstance().findOne(idSelector);
 
+      if(!selectedElement) return false;
+
       return selectedElement.hasClass(INCANVAS_ITEM_CLASS) //isCanvasChild(selectedElement);
 
     }
