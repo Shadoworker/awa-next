@@ -171,8 +171,6 @@ class LeftPanelComp extends Component<any,any> {
     mapSceneItemsToTreeData(_sceneItems = [])
     {
  
-      console.log(_sceneItems);
-
       var treeData :any[] = [];
 
       // Define objects

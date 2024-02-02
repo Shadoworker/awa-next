@@ -143,7 +143,7 @@ export function isCanvasContainer(_el)
 
 export function isCanvasChild(_el)
 {
-  return _el.node._canvasOwnerId != null;
+  return _el.canvasOwnerId() != null;
 } 
 
 

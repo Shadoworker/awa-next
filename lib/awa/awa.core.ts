@@ -1685,7 +1685,7 @@ class awa {
               {
                 sceneEl.addClass(INCANVAS_ITEM_CLASS)
 
-                sceneEl.node._canvasOwnerId = el.canvasOwnerId;
+                sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
 
               parent.add(sceneEl)
@@ -1716,7 +1716,7 @@ class awa {
               {
                 sceneEl.addClass(INCANVAS_ITEM_CLASS)
                 
-                sceneEl.node._canvasOwnerId = el.canvasOwnerId;
+                sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
 
               parent.add(sceneEl)
@@ -1889,7 +1889,7 @@ class awa {
       type : sceneEl.type,
       name: sceneEl.m_name,
       parent : sceneEl.parentId() || this.getActiveSceneId(), // if null get the active scene as parent
-      canvasOwnerId : sceneEl.node._canvasOwnerId,
+      canvasOwnerId : sceneEl.canvasOwnerId(),
       path: sceneEl.path,
       pathString: sceneEl.pathString,
       node : {

@@ -528,7 +528,7 @@ class RightPanelComp extends Component<any,any> {
       var idSelector = "#"+id;
       var selectedElement = this.props.awa.getSvgInstance().findOne(idSelector);
 
-      if(selectedElement.node._canvasOwnerId && selectedElement.node._canvasOwnerId == _canvasId)
+      if(selectedElement.canvasOwnerId() && selectedElement.canvasOwnerId() == _canvasId)
         return true;
        
       return false;
@@ -602,7 +602,7 @@ class RightPanelComp extends Component<any,any> {
 
       var basedOnTarget = id;
       var actionTarget = id;
-      var basedOnTargetCanvas = selectedElement.node._canvasOwnerId || id; // canvas element or the canvas itself
+      var basedOnTargetCanvas = selectedElement.canvasOwnerId() || id; // canvas element or the canvas itself
       var actionTargetCanvas = basedOnTargetCanvas;
 
       // Add interaction
