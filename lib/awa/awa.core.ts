@@ -335,6 +335,9 @@ class awa {
   {
     var _project = this.project;
 
+    // Dispatch changes
+    this.dispatchUpdateSceneElements();
+    
     // Generate svg data
     var svgData = this.getSvgInstance().svg();
     _project.generatedSvg = svgData;
@@ -345,7 +348,6 @@ class awa {
     // var data = {data : _project}
     // userService.updateProject(_project.id, data);
    
-    console.log('moved')
     
   }
 
@@ -1455,7 +1457,7 @@ class awa {
 
   getScenes()
   {
-    var scenes : AwaTypes.T_AwaProjectScene[] = this.project.scenes;
+    var scenes : AwaTypes.T_AwaProjectScene[] = this.project?.scenes;
     return scenes;
   }
 
@@ -1797,7 +1799,7 @@ class awa {
 
     this.updateSceneElements(elObject, attributes)
 
-    this.dispatchUpdateSceneElements();
+    // this.dispatchUpdateSceneElements();
     
   }
   
@@ -1841,6 +1843,10 @@ class awa {
 
         elObject.canvasOwnerId = canvasOwnerId;
 
+      }
+      else if(!newParentId)
+      {
+        elObject.canvasOwnerId = null;
       }
 
       sceneItems[thisElIndex] = elObject;
