@@ -15,6 +15,7 @@ import {
   ELEMENTS_TYPES,
   GROUP_ID_BODY,
   IGNORE_PREVIEW_CLASS,
+  INCANVAS_ITEM_CLASS,
   INTERACTION_ACTION_REF,
   INTERACTION_TARGET_REF,
   MAIN_ANIM_ID,
@@ -23,7 +24,7 @@ import {
   RERENDER_SEEK_TIMELINE_DELAY,
   SCENE_CLASS,
 } from "./awa.constants";
-import { isCanvas, isCanvasElement } from "./awa.common.utils";
+import { isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
 import { AwaTypes } from "./awa.types";
 import userService from "../../services/user.service";
@@ -1016,7 +1017,7 @@ class awa {
       this.m_awaElementsIds.push(mainCanvasId);
 
       var canvasGroup = this.m_svgInstance.group(); //The root canvas element 
-      
+
       var canvasItemsGroupId = awaElementId + CLIP_ID_BODY + GROUP_ID_BODY;
       var canvasItemsGroup = this.m_svgInstance.group()
       .attr({id : canvasItemsGroupId});
@@ -1655,13 +1656,15 @@ class awa {
         var type = el.type;
         var sceneEl;
 
+        // console.log(el)
+
         switch (type) {
           case ELEMENTS_TYPES.rect:
 
             var awaElementId = el.id;
             var parentId = el.parent;
             var parent = this.m_svgInstance.findOne("#"+parentId)
-            console.log(parentId)
+
             sceneEl = this.m_svgInstance
               .rect(el.node.attributes.width, el.node.attributes.height)
               .attr({
@@ -1675,17 +1678,22 @@ class awa {
               })
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
-  
+              
+              if(isCanvasClipElement(parentId))
+              {
+                sceneEl.addClass(INCANVAS_ITEM_CLASS)
+
+                sceneEl.node._canvasOwnerId = el.canvasOwnerId;
+              }
+
               parent.add(sceneEl)
-  
+
             break;
   
           case ELEMENTS_TYPES.circle:
             
             var awaElementId = el.id;
             var parentId = el.parent;
-            
-            console.log(parentId)
 
             var parent = this.m_svgInstance.findOne("#"+parentId)
     
@@ -1701,9 +1709,15 @@ class awa {
               })
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
-  
-              parent.add(sceneEl)
               
+              if(isCanvasClipElement(parentId))
+              {
+                sceneEl.addClass(INCANVAS_ITEM_CLASS)
+                
+                sceneEl.node._canvasOwnerId = el.canvasOwnerId;
+              }
+
+              parent.add(sceneEl)
 
             break;
         }
@@ -1821,6 +1835,14 @@ class awa {
 
       elObject.parent = newParentId ? newParentId : scene.id;
       
+      if(newParentId && isCanvasClipElement(newParentId)) // Appended to a canvas : then update canvasOwnerId
+      {
+        var canvasOwnerId = newParentId.split(CLIP_ID_BODY).join(''); // remove the clip class
+
+        elObject.canvasOwnerId = canvasOwnerId;
+
+      }
+
       sceneItems[thisElIndex] = elObject;
 
       this.saveProjectChanges();

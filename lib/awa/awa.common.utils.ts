@@ -1,4 +1,4 @@
-import { CANVAS_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY } from "./awa.constants";
+import { CANVAS_ID_BODY, CLIP_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY } from "./awa.constants";
 import { ELEMENT_EFFECTS } from "./awa.core";
 
 export function isNumber(value) {
@@ -127,6 +127,12 @@ export function isCanvasElement(_id) // Check using element id components
 { 
   return _id.includes(CANVAS_ID_BODY) && _id.includes(GROUP_ID_BODY);
 } 
+
+export function isCanvasClipElement(_id) // Check using element id components
+{ 
+  return _id.includes(CLIP_ID_BODY) && _id.includes(GROUP_ID_BODY);
+} 
+
 
 export function isCanvasContainer(_el)
 {
