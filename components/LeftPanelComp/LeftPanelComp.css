@@ -106,19 +106,29 @@
 .ant-tree-treenode.ant-tree-treenode-switcher-open
 {
   width: 100% !important;
+  border: solid 1px transparent;
 }
 
  
 .ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected,
 .ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
 {
-  background-color: #747c9066;
+  background-color: #4b5e7a6e;
+  /* background-color: #50B5AD66; */
+}
+
+.ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected:hover,
+.ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected:hover
+{
+  /* background-color: #50B5AD66; */
+  background-color: #4b5e7a66;
 }
 
 .ant-tree-treenode.ant-tree-treenode-switcher-close:hover,
 .ant-tree-treenode.ant-tree-treenode-switcher-open:hover
 {
-  background-color: #747c9066;
+  border: solid 1px #50B5AD94;
+  background-color: #4b5e7a26;
 }
 
 .ant-tree .ant-tree-node-content-wrapper 

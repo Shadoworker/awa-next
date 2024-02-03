@@ -36,7 +36,9 @@ class LeftPanelComp extends Component<any,any> {
           activeSceneName : null,
           activeSceneSiblingId : null,
           treeData : [],
+          treeSelectedKeys : [],
           activeNodeId : null,
+          treeMultipleSelect : false,
 
 
           sceneOptDropdownOpened : false,
@@ -54,6 +56,14 @@ class LeftPanelComp extends Component<any,any> {
 
       this.onUpdateScenes();
       this.onUpdateSceneItems();
+
+      this.onToggleMultipleSelect();
+    }
+
+    onToggleMultipleSelect = ()=>{
+
+      // Using shift btn down or released to toggle treeMultipleSelect
+
     }
 
     onUpdateSceneItems = ()=>{
@@ -251,6 +261,21 @@ class LeftPanelComp extends Component<any,any> {
 
     }
     
+    onSceneItemSelected=(selectedKeys, info)=>
+    {
+      if(selectedKeys.length)
+      {
+        this.setState({treeSelectedKeys : selectedKeys});
+        
+        for (let i = 0; i < selectedKeys.length; i++) {
+          const key = selectedKeys[i];
+          var selectedElement = this.props.awa.getSvgInstance().findOne("#"+key)
+          this.props.awa.setSelectedElement(selectedElement);     
+        }
+      }
+        
+
+    }
 
     render() { 
         return  <Box  className='block app-left-block' style={{color:'#fff'}}>
@@ -336,7 +361,10 @@ class LeftPanelComp extends Component<any,any> {
                 showIcon={true}
                 treeData={this.state.treeData}
                 draggable={true}
+                selectedKeys={this.state.treeSelectedKeys}
+                multiple={this.state.treeMultipleSelect}
                 onMouseEnter={({node})=>{this.setSceneItem(node)}}
+                onSelect={(selectedKeys, info)=>{this.onSceneItemSelected(selectedKeys,info)}}
                 
               />
           </ContextMenu.Trigger>
