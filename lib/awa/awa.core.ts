@@ -142,6 +142,7 @@ class awa {
   m_reduxInstance: any;
   m_reduxState: any;
   m_selectedElement: null;
+  m_selectedElementsKeys: any[];
   project: AwaTypes.T_AwaProject;
   m_scenes: any[];
   m_activeSceneId: null;
@@ -193,6 +194,7 @@ class awa {
     this.m_reduxState = _reduxState;
 
     this.m_selectedElement = null;
+    this.m_selectedElementsKeys = [];
     this.m_svgInstance._awa = this;
     this.m_loonkInstance._awa = this;
     this.m_timeline._awa = this;
@@ -628,6 +630,16 @@ class awa {
     return this.m_selectedElement;
   }
 
+  setSelectedElementsKeys(_keys){
+    this.m_selectedElementsKeys = _keys;
+
+    this.dispatchSelectedSceneElements(_keys)
+  }
+  
+  getSelectedElementsKeys(){
+    return this.m_selectedElementsKeys;
+  }
+
   setSelectedAnimation(_anim) {
     this.m_selectedAnimation = _anim;
  
@@ -900,6 +912,11 @@ class awa {
   dispatchUpdateSceneElements() {
     //Dispatch an event
     awaEventEmitter.emit(awaEvents.UPDATE_SCENE_ITEMS, { detail: {} });
+  }
+
+  dispatchSelectedSceneElements(_selectedKeys : string[]) {
+    //Dispatch an event
+    awaEventEmitter.emit(awaEvents.SELECTED_SCENE_ITEMS, { detail: {selectedKeys : _selectedKeys} });
   }
 
   dispatchDeleteElement = (_id)=>{

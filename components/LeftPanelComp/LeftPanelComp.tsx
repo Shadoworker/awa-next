@@ -56,6 +56,7 @@ class LeftPanelComp extends Component<any,any> {
 
       this.onUpdateScenes();
       this.onUpdateSceneItems();
+      this.onSelectedSceneElements();
 
       this.onToggleMultipleSelect();
     }
@@ -83,6 +84,16 @@ class LeftPanelComp extends Component<any,any> {
         this.getScenes();
       })
     }
+
+
+    onSelectedSceneElements = ()=>{
+
+      awaEventEmitter.on(awaEvents.SELECTED_SCENE_ITEMS, (_data)=>{
+        var selectedKeys = _data.detail.selectedKeys;
+        this.setState({treeSelectedKeys : selectedKeys});
+      })
+    }
+
 
     getScenes = ()=>{
  
@@ -266,7 +277,7 @@ class LeftPanelComp extends Component<any,any> {
       if(selectedKeys.length)
       {
         this.setState({treeSelectedKeys : selectedKeys});
-        
+
         for (let i = 0; i < selectedKeys.length; i++) {
           const key = selectedKeys[i];
           var selectedElement = this.props.awa.getSvgInstance().findOne("#"+key)
