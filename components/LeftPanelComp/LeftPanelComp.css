@@ -113,22 +113,30 @@
 .ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected,
 .ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
 {
-  background-color: #4b5e7a6e;
+  background-color: #4b5e7a6e !important;
   /* background-color: #50B5AD66; */
 }
+
+.ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected::before,
+.ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected::before
+{
+  /* background-color: #50B5AD66; */
+  background-color: transparent !important;
+}
+
 
 .ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-selected:hover,
 .ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-selected:hover
 {
   /* background-color: #50B5AD66; */
-  background-color: #4b5e7a66;
+  background-color: #4b5e7a66 !important;
 }
 
 .ant-tree-treenode.ant-tree-treenode-switcher-close:hover,
 .ant-tree-treenode.ant-tree-treenode-switcher-open:hover
 {
-  border: solid 1px #50B5AD94;
-  background-color: #4b5e7a26;
+  border: solid 1px #50B5AD94 !important;
+  background-color: #4b5e7a26 !important;
 }
 
 .ant-tree .ant-tree-node-content-wrapper 

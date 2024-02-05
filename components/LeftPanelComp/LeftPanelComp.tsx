@@ -65,6 +65,22 @@ class LeftPanelComp extends Component<any,any> {
 
       // Using shift btn down or released to toggle treeMultipleSelect
 
+      document.addEventListener("keydown", (evt)=>{
+        evt.stopPropagation();
+        if (evt.key === 'Shift') 
+        {
+          this.setState({treeMultipleSelect : true})
+        }
+      })
+
+      document.addEventListener("keyup", (evt)=>{
+        evt.stopPropagation();
+        if (evt.key === 'Shift') 
+        {
+          this.setState({treeMultipleSelect : false})
+        }
+      })
+
     }
 
     onUpdateSceneItems = ()=>{
@@ -90,7 +106,7 @@ class LeftPanelComp extends Component<any,any> {
 
       awaEventEmitter.on(awaEvents.SELECTED_SCENE_ITEMS, (_data)=>{
         var selectedKeys = _data.detail.selectedKeys;
-        this.setState({treeSelectedKeys : selectedKeys});
+        this.setState({treeSelectedKeys : selectedKeys});        
       })
     }
 
@@ -146,6 +162,8 @@ class LeftPanelComp extends Component<any,any> {
         this.sceneOptOnOpenChange();
       }
     }
+
+
 
 
     sceneNameOnChangeHandler = (evt)=>{
@@ -283,6 +301,10 @@ class LeftPanelComp extends Component<any,any> {
           var selectedElement = this.props.awa.getSvgInstance().findOne("#"+key)
           this.props.awa.setSelectedElement(selectedElement);     
         }
+
+        // 
+        this.props.awa.setSelectedElementsKeys(selectedKeys);     
+
       }
         
 
@@ -368,7 +390,7 @@ class LeftPanelComp extends Component<any,any> {
 
           <ContextMenu.Root >
             <ContextMenu.Trigger className="ContextMenuTrigger">
-              <Ant.Tree className='app-left-block-hierarchy-tree'
+              <Ant.Tree.DirectoryTree className='app-left-block-hierarchy-tree'
                 showIcon={true}
                 treeData={this.state.treeData}
                 draggable={true}

@@ -173,6 +173,11 @@ input::-moz-selection {
     margin-bottom: 10px;
 }
 
+.awa-linegroup-container
+{
+    align-items: flex-start;
+}
+
 .awa-form-interaction-linegroup
 {
     display: flex;
@@ -186,9 +191,51 @@ input::-moz-selection {
     flex-direction: row;
 }
 
+.awa-form-container
+{
+    width: 80% !important;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+}
+
 .awa-form-group fieldset
 {
     width: 42% !important;
+}
+
+.fieldset-container-item
+{
+    width: 20% !important;
+}
+
+
+.awa-form-group.awa-form-container-item
+{
+  width: 100% !important;
+  justify-content: unset;
+}
+
+.awa-form-container-item-opts
+{
+  position: absolute;
+  right: 0px;
+  margin-top: -2px;
+}
+
+.propertyOptBtn
+{
+  padding: 2px 4px;
+  background-color: #58595d45;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all ease-in 0.2s;
+}
+
+.propertyOptBtn:hover
+{
+  background-color: #000;
+  transition: all ease-in 0.2s;
 }
 
 .awa-interaction-action-header
@@ -232,7 +279,7 @@ input::-moz-selection {
 
 .awa-form-group.group-triple .Fieldset:nth-of-type(1)
 {
-  width: 40% !important;
+  width: 40%;
 }
 
 .awa-form-group.group-triple .Fieldset .Input
@@ -246,6 +293,8 @@ input::-moz-selection {
     gap: 10px;
     width: 100% !important;
 }
+
+
 
 .awa-form-group fieldset.Fieldset-four input
 {
@@ -371,7 +420,8 @@ fieldset i
 .fieldInfo-inline
 {
     font-family: "Montserrat";
-    font-size: 11px;
+    font-size: 9px;
+    margin-left: 5px;
     margin-top: 3px;
     color: gainsboro;
     align-self: center;
@@ -528,13 +578,14 @@ select option
   .Input.InputColorContainer
   {
     padding: 0px;
+    justify-content: flex-start !important;
   }
 
   div.InputColor
   {
-    width: 60%;
+    width: 100%;
     height: 85%;
-    margin-left: 20px;
+    margin-left: 0px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 0 1px #000;

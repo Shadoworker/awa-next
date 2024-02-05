@@ -229,6 +229,7 @@ line {
   box-shadow: -3px 0px 0 0px #1b1d22;
   z-index: 3;
   flex-direction: column;
+  background-color: #242730;
 
 }
 

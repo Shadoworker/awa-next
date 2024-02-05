@@ -2289,12 +2289,16 @@ class awa {
         var el = e.target;
         if (el.instance && el.instance.type != "svg") return;
 
-
         e.preventDefault();
 
-        awaEventEmitter.emit(awaEvents.UPDATE_SELECTED_ELEMENT, {
-          detail: { selectedElementId: null },
-        });
+
+        _svgInstance._awa.setSelectedElementsKeys([]);
+
+        _svgInstance._awa.dispatchSelectedSceneElements([])
+
+        // awaEventEmitter.emit(awaEvents.UPDATE_SELECTED_ELEMENT, {
+        //   detail: { selectedElementId: null },
+        // });
 
 
         if (_self.isUserActionStateSelect()) {

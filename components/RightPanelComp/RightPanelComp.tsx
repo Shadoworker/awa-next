@@ -39,8 +39,10 @@ class RightPanelComp extends Component<any,any> {
             fillColor : "#ffffff",
             strokeColor : "#ffffff",
             opacity : 0,
-            selectedElementId : this.props.mainState.selectedElementId,
+            selectedElementId : null,//this.props.mainState.selectedElementId,
+            selectedElementsIds : [],
             selectedElementProps : {},
+            selectedElementsProps : [],
             selectedElementPropsTemp : {},
 
             selectedElementFlow : null,
@@ -69,8 +71,6 @@ class RightPanelComp extends Component<any,any> {
       var elementProps = {effects : effects};
       
       this.setState({selectedElementProps : elementProps})
-
-
 
       /* Listen for selected element updates */
       this.onUpdateSelectedElement();
@@ -128,6 +128,7 @@ class RightPanelComp extends Component<any,any> {
     }
       
     onAddEffectToElement = (_effectName)=>{
+
       var elementProps = {...this.state.selectedElementProps};
 
       var effects = [...elementProps.effects] || [];
@@ -220,20 +221,19 @@ class RightPanelComp extends Component<any,any> {
     /* When an element is selected, moved etc... to be notified and update its visual props */
     onUpdateSelectedElement = ()=>{
 
-      awaEventEmitter.on(awaEvents.UPDATE_SELECTED_ELEMENT, (_data)=>{
+      awaEventEmitter.on(awaEvents.SELECTED_SCENE_ITEMS, (_data)=>{
         
-        if(_data.detail.selectedElementId == null)
+        // if(_data.detail.selectedElementId == null)
+        if(!this.props.awa.getSelectedElementsKeys().length)
         {
           this.setState({selectedElementId : null, selectedElementProps : {}, selectedElementPropsTemp : {}, selectedElementInteractions : []})
 
           return;
         }
 
-        var id = _data.detail.selectedElementId;
-        var idSelector = "#"+id;
+        var ids = this.props.awa.getSelectedElementsKeys(); // All selected elements ids
+        var id = ids[0]; //_data.detail.selectedElementId;
         
-        var selectedElement = this.props.awa.getSvgInstance().find(idSelector)[0];
-
         // Verify if we update temp or not
         if(!isObjectEmpty(this.state.selectedElementProps) && this.state.selectedElementProps.id != id)
         {
@@ -241,45 +241,21 @@ class RightPanelComp extends Component<any,any> {
         }
 
         // Get props values : Set
-        var elementType = selectedElement.type;
-        var elementName = selectedElement.m_name;
-        var elementPosX = selectedElement.x().toFixed(2);
-        var elementPosY = selectedElement.y().toFixed(2);
-        var elementSizeX = selectedElement.width().toFixed(2);
-        var elementSizeY = selectedElement.height().toFixed(2);
-        var elementScale = selectedElement.transform().scaleX || 1;
-        var elementRotation = selectedElement.transform().rotate || 0;
-        var elementFill = selectedElement.fill();
-        var elementStroke = selectedElement.stroke();
-        var elementStrokeWidth = selectedElement.attr("stroke-width") || 0;
-        var elementStrokeDasharray = selectedElement.attr("stroke-dasharray") || '0';
-        var elementStrokeDashoffset = selectedElement.attr("stroke-dashoffset") || 0;
-        var elementOpacity = selectedElement.opacity() || 1;
-        var elementEffects = selectedElement.effects() || [];
+        var selectedElementProps = this.getSelectedElementValues(id);
 
-        var selectedElementProps = 
-        {
-          id : _data.detail.selectedElementId,
-          type : elementType,
-          name : elementName,
-          x : elementPosX,
-          y : elementPosY,
-          width : elementSizeX,
-          height : elementSizeY,
-          scale : elementScale,
-          rotation : elementRotation,
-          fill : elementFill,
-          stroke : elementStroke,
-          strokeWidth : elementStrokeWidth,
-          opacity : elementOpacity,
-          d : isElementPath(elementType) ? selectedElement.m_pathString : null,
-          strokeDasharray : elementStrokeDasharray,
-          strokeDashoffset : elementStrokeDashoffset,
-          effects : elementEffects
+        // Get all selected elements props for group selection
+        var selectedElementsProps : any[] = [];
+
+        for (let i = 0; i < ids.length; i++) {
+          const id = ids[i];
+
+          const props = this.getSelectedElementValues(id);
+          
+          selectedElementsProps.push(props);
 
         }
 
-        this.setState({selectedElementId : id, selectedElementProps : selectedElementProps})
+        this.setState({selectedElementsIds : ids, selectedElementId : id, selectedElementProps : selectedElementProps, selectedElementsProps : selectedElementsProps})
 
         // Save initial state 
         // Initial state is saved only in design mode.
@@ -295,8 +271,9 @@ class RightPanelComp extends Component<any,any> {
           {
             this.setState({selectedElementPropsTemp : selectedElementProps})
           }
-
         }
+
+
 
 
         // selected element flow
@@ -309,6 +286,55 @@ class RightPanelComp extends Component<any,any> {
         this.requestCustomAnimations();
         
       })
+    }
+
+
+    getSelectedElementValues=(id)=>
+    {
+      var idSelector = "#"+id;
+      var selectedElement = this.props.awa.getSvgInstance().findOne(idSelector);
+
+      // Get props values : Set
+      var elementType = selectedElement.type;
+      var elementName = selectedElement.m_name;
+      var elementPosX = selectedElement.x().toFixed(2);
+      var elementPosY = selectedElement.y().toFixed(2);
+      var elementSizeX = selectedElement.width().toFixed(2);
+      var elementSizeY = selectedElement.height().toFixed(2);
+      var elementScale = selectedElement.transform().scaleX || 1;
+      var elementRotation = selectedElement.transform().rotate || 0;
+      var elementFill = selectedElement.fill();
+      var elementStroke = selectedElement.stroke();
+      var elementStrokeWidth = selectedElement.attr("stroke-width") || 0;
+      var elementStrokeDasharray = selectedElement.attr("stroke-dasharray") || '0';
+      var elementStrokeDashoffset = selectedElement.attr("stroke-dashoffset") || 0;
+      var elementOpacity = selectedElement.opacity() || 1;
+      var elementEffects = selectedElement.effects() || [];
+
+      var selectedElementProps = 
+      {
+        id : id,
+        type : elementType,
+        name : elementName,
+        x : elementPosX,
+        y : elementPosY,
+        width : elementSizeX,
+        height : elementSizeY,
+        scale : elementScale,
+        rotation : elementRotation,
+        fill : elementFill,
+        stroke : elementStroke,
+        strokeWidth : elementStrokeWidth,
+        opacity : elementOpacity,
+        d : isElementPath(elementType) ? selectedElement.m_pathString : null,
+        strokeDasharray : elementStrokeDasharray,
+        strokeDashoffset : elementStrokeDashoffset,
+        effects : elementEffects
+
+      }
+
+      return selectedElementProps;
+
     }
 
     onNewCustomAnimation = ()=>{
@@ -458,6 +484,33 @@ class RightPanelComp extends Component<any,any> {
       if(this.isAppModeDesign()) return;
       
       this.props.awa.setUserMenuSelectContextMorphToPath();
+    }
+
+
+    // Process the value to be displayed in the field (according to the selected item or items)
+    getSelectedElementsValue(_name)
+    {
+      if(!this.state.selectedElementsProps.length) return;
+      
+      var value = this.state.selectedElementsProps[0][_name];
+
+      for (let i = 0; i < this.state.selectedElementsProps.length; i++) 
+      {
+        const el = this.state.selectedElementsProps[i];
+        const val = el[_name];
+
+        if(value != val)
+        {
+          value = _name == "name" ? "-" : "Mixed";
+          break;
+        }
+        else
+        {
+          value = val;
+        }
+      }
+      
+      return value;
     }
 
     updatePropsProperty(_name, _value)
@@ -766,7 +819,7 @@ class RightPanelComp extends Component<any,any> {
                         </label>
                         <div className='awa-form-group'>
                           <fieldset className="Fieldset" style={{flex:1}}>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} onChange={(e)=>this.onInputValueChanged(e)} style={{width:'100%', textIndent:2, textAlign:'left'}} className="Input" name='name' id="name" value={this.state.selectedElementProps.name} onKeyDown={(e)=>{e.stopPropagation()}} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} onChange={(e)=>this.onInputValueChanged(e)} style={{width:'100%', textIndent:2, textAlign:'left'}} className="Input" name='name' id="name" value={this.getSelectedElementsValue('name')} onKeyDown={(e)=>{e.stopPropagation()}} />
                           </fieldset>
 
                           {/* <i className="active-element-btn-option bi bi-unlock" style={{fontSize:13}}></i>
@@ -783,7 +836,7 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-bar-right"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='x' id="posX" value={this.state.selectedElementProps.x} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='x' id="posX" placeholder={this.getSelectedElementsValue('x')} value={this.getSelectedElementsValue('x')} />
                           </fieldset>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-bar-down"></i>
@@ -830,68 +883,98 @@ class RightPanelComp extends Component<any,any> {
                       </div>
 
 
-                      <div className='awa-form-linegroup'>
+                      <div className='awa-form-linegroup awa-linegroup-container'>
                         <label className="Label" >
                           Fill
                         </label>
-                        <div className='awa-form-group group-triple'>
-                          
-                          <fieldset className="Fieldset">
-                            <i className="inputIcon bi bi-paint-bucket"></i>
-                            
-                              <Popover.Root>
-                                <Popover.Trigger asChild>
-                                  <div className='Input InputColorContainer'>
-                                    <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.fill}}></div>
-                                  </div>
-                                </Popover.Trigger>
-                                <Popover.Portal>
-                                  <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                    <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.fill} onChange={(c)=>this.setFillColor(c)}  />
-                                  </Popover.Content>
-                                </Popover.Portal>
-                              </Popover.Root>
-                            
-                          </fieldset>
-                          
-                          <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span>
+                        <div className='awa-form-container'>
 
-                          <div><i className="bi bi-eye" style={{fontSize:13}}></i></div>
 
+                          <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
+                            <div className='awa-form-container-item-opts'>
+                              <i  className="actionBtn bi bi-plus-square"></i>
+                            </div>
                           </div>
+
+                          <div className='awa-form-group awa-form-container-item group-triple'>
+                            <fieldset className="Fieldset fieldset-container-item">
+                              {/* <i className="inputIcon bi bi-paint-bucket"></i> */}
+                                <Popover.Root >
+                                  <Popover.Trigger asChild>
+                                    <div className='Input InputColorContainer'>
+                                      <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.fill}}></div>
+                                    </div>
+                                  </Popover.Trigger>
+                                  <Popover.Portal>
+                                    <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
+                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.fill} onChange={(c)=>this.setFillColor(c)}  />
+                                    </Popover.Content>
+                                  </Popover.Portal>
+                                </Popover.Root>
+                              
+                            </fieldset>
+                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span>
+                            <div className='awa-form-container-item-opts'>
+                              <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i>
+                              <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
+                            </div>
+                          </div>
+                           
+                        </div>
+                        
+
                       </div>
 
 
-                      <div className='awa-form-linegroup'>
+                      <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div>
+
+
+
+                      <div className='awa-form-linegroup awa-linegroup-container'>
                         <label className="Label" >
                           Stroke
                         </label>
-                        <div className='awa-form-group group-triple'>
-                          
-                          <fieldset className="Fieldset">
-                            <i className="inputIcon bi-square"></i>
-                            <Popover.Root>
-                                <Popover.Trigger asChild>
-                                  <div className='Input InputColorContainer'>
-                                    <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.stroke}}></div>
-                                  </div>
-                                </Popover.Trigger>
-                                <Popover.Portal>
-                                  <Popover.Content id='PopoverContentColorPicker2' className="PopoverContent" sideOffset={5}>
-                                    <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.stroke} onChange={(c)=>this.setStrokeColor(c)}  />
-                                  </Popover.Content>
-                                </Popover.Portal>
-                              </Popover.Root>
- 
-                          </fieldset>
-                          
-                          <span className='fieldInfo-inline' style={{textTransform:'uppercase'}} >{this.state.selectedElementProps.stroke}</span>
+                        <div className='awa-form-container'>
 
-                          <div><i className="bi bi-eye" style={{fontSize:13}}></i></div>
-
+                          <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
+                            <div className='awa-form-container-item-opts'>
+                              <i  className="actionBtn bi bi-plus-square"></i>
+                            </div>
                           </div>
+
+                          <div className='awa-form-group awa-form-container-item group-triple'>
+                            <fieldset className="Fieldset fieldset-container-item">
+                              {/* <i className="inputIcon bi bi-paint-bucket" style={{marginLeft:-15}}></i> */}
+                                <Popover.Root >
+                                  <Popover.Trigger asChild>
+                                    <div className='Input InputColorContainer'>
+                                      <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.stroke}}></div>
+                                    </div>
+                                  </Popover.Trigger>
+                                  <Popover.Portal>
+                                    <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
+                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.stroke} onChange={(c)=>this.setStrokeColor(c)}  />
+                                    </Popover.Content>
+                                  </Popover.Portal>
+                                </Popover.Root>
+                              
+                            </fieldset>
+                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
+                            <div className='awa-form-container-item-opts'>
+                              <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i>
+                              <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
+                            </div>
+                          </div>
+
+ 
+                        </div>
+                        
+
                       </div>
 
+
+                      <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div>
+                   
 
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
