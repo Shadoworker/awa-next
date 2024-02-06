@@ -446,6 +446,14 @@ fieldset.SingleFieldSet
     font-weight: normal;
   }
 
+  .Label.FieldTitle
+  {
+    /* width: 8ch; */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .Label.effectLabel {
     /* position: absolute; */
     font-size: 12px;

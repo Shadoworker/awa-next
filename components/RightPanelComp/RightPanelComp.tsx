@@ -889,12 +889,11 @@ class RightPanelComp extends Component<any,any> {
                         </label>
                         <div className='awa-form-container'>
 
-
-                          <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
+                          {/* <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
                             <div className='awa-form-container-item-opts'>
                               <i  className="actionBtn bi bi-plus-square"></i>
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
@@ -926,8 +925,7 @@ class RightPanelComp extends Component<any,any> {
                       </div>
 
 
-                      <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div>
-
+                      {/* <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div> */}
 
 
                       <div className='awa-form-linegroup awa-linegroup-container'>
@@ -936,11 +934,11 @@ class RightPanelComp extends Component<any,any> {
                         </label>
                         <div className='awa-form-container'>
 
-                          <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
+                          {/* <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
                             <div className='awa-form-container-item-opts'>
                               <i  className="actionBtn bi bi-plus-square"></i>
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
@@ -973,8 +971,41 @@ class RightPanelComp extends Component<any,any> {
                       </div>
 
 
-                      <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div>
+                      {/* <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div> */}
                    
+
+
+                      {/* Color | Image | Video */}
+                      <div className='awa-form-linegroup awa-linegroup-container'>
+                        <label className="Label FieldTitle">
+                          Background
+                        </label>
+                        <div className='awa-form-container'>
+
+                          <div className='awa-form-group awa-form-container-item group-triple'>
+                            <fieldset className="Fieldset fieldset-container-item">
+
+                              <label htmlFor="baseBackground" style={{width:'80%'}}>
+                                <div className='Input InputColorContainer'>
+                                  <div className='InputColor' style={{backgroundImage:'url("")'}}>
+                                  </div>
+                                </div>
+                              </label>
+                              <input style={{display:'none'}} type="file" name="" id="baseBackground" />
+                              
+                            </fieldset>
+                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
+                            <div className='awa-form-container-item-opts'>
+                              <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
+                            </div>
+                          </div>
+
+ 
+                        </div>
+                        
+
+                      </div>
+
 
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
