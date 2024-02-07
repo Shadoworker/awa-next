@@ -813,7 +813,7 @@ class RightPanelComp extends Component<any,any> {
                   <Accordion.Content >
                     <div style={{ position:'relative', display: 'flex', width:'90%', marginLeft:'auto', marginRight:'auto', flexDirection: 'column', gap: 5}}>
                       
-                      <div className='awa-form-linegroup'>
+                      {/* <div className='awa-form-linegroup'>
                         <label className="Label" >
                           Name
                         </label>
@@ -821,12 +821,8 @@ class RightPanelComp extends Component<any,any> {
                           <fieldset className="Fieldset" style={{flex:1}}>
                             <input onBlur={(e)=>this.onInputValueBlured(e)} onChange={(e)=>this.onInputValueChanged(e)} style={{width:'100%', textIndent:2, textAlign:'left'}} className="Input" name='name' id="name" value={this.getSelectedElementsValue('name')} onKeyDown={(e)=>{e.stopPropagation()}} />
                           </fieldset>
-
-                          {/* <i className="active-element-btn-option bi bi-unlock" style={{fontSize:13}}></i>
-                          <i className="active-element-btn-option bi bi-eye" style={{fontSize:13}}></i> */}
-
                           </div>
-                      </div>
+                      </div> */}
                       
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
@@ -864,9 +860,71 @@ class RightPanelComp extends Component<any,any> {
                           </div>
                       </div>
 
+                      {/* Transform */}
+                      
+
+                      {/* Scale */}
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
-                          Transform
+                          Scale
+                        </label>
+                        <div className='awa-form-group'>
+                          
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi bi-arrow-right-square"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                          </fieldset>
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi-arrow-down-square"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                          </fieldset>
+
+                        </div>
+                      </div>
+
+                      {/* Skew */}
+                      <div className='awa-form-linegroup'>
+                        <label className="Label" >
+                          Skew
+                        </label>
+                        <div className='awa-form-group'>
+                          
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi bi-box-arrow-in-up-right"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                          </fieldset>
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi-box-arrow-in-down-right"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                          </fieldset>
+
+                        </div>
+                      </div>
+
+                      {/* Anchor */}
+                      <div className='awa-form-linegroup'>
+                        <label className="Label FieldTitle" >
+                          Anchor
+                        </label>
+                        <div className='awa-form-group'>
+                          
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi bi-arrow-right-circle"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                          </fieldset>
+                          <fieldset className="Fieldset">
+                            <i className="inputIcon bi-arrow-down-circle"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                          </fieldset>
+
+                        </div>
+                      </div>
+
+                      {/* Rotation */}
+
+                      <div className='awa-form-linegroup'>
+                        <label className="Label" >
+                          Rotation
                         </label>
                         <div className='awa-form-group'>
                           
@@ -875,11 +933,46 @@ class RightPanelComp extends Component<any,any> {
                             <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
                           </fieldset>
                           <fieldset className="Fieldset">
-                            <i className="inputIcon bi-arrow-up-right-square"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                            {/* <i className="inputIcon bi-arrow-up-right-square"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} /> */}
                           </fieldset>
 
+                        </div>
+                      </div>
+
+                      {/* Transform  ------------ */}
+
+
+
+                      {/* Color | Image | Video */}
+                      <div className='awa-form-linegroup awa-linegroup-container'>
+                        <label className="Label FieldTitle">
+                          Background
+                        </label>
+                        <div className='awa-form-container'>
+
+                          <div className='awa-form-group awa-form-container-item group-triple'>
+                            <fieldset className="Fieldset fieldset-container-item">
+
+                              <label htmlFor="baseBackground" style={{width:'80%'}}>
+                                <div className='Input InputColorContainer'>
+                                  <div className='InputColor' style={{backgroundSize:'contain', backgroundImage:'url("https://img.freepik.com/premium-vector/square-transparent-background-with-gradient-effect-vector-illustration_522680-499.jpg")'}}>
+                                  </div>
+                                </div>
+                              </label>
+                              <input style={{display:'none'}} type="file" name="" id="baseBackground" />
+                              
+                            </fieldset>
+                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
+                            <div className='awa-form-container-item-opts'>
+                              <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
+                            </div>
                           </div>
+
+ 
+                        </div>
+                        
+
                       </div>
 
 
@@ -970,50 +1063,13 @@ class RightPanelComp extends Component<any,any> {
 
                       </div>
 
-
-                      {/* <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div> */}
-                   
-
-
-                      {/* Color | Image | Video */}
-                      <div className='awa-form-linegroup awa-linegroup-container'>
-                        <label className="Label FieldTitle">
-                          Background
-                        </label>
-                        <div className='awa-form-container'>
-
-                          <div className='awa-form-group awa-form-container-item group-triple'>
-                            <fieldset className="Fieldset fieldset-container-item">
-
-                              <label htmlFor="baseBackground" style={{width:'80%'}}>
-                                <div className='Input InputColorContainer'>
-                                  <div className='InputColor' style={{backgroundImage:'url("")'}}>
-                                  </div>
-                                </div>
-                              </label>
-                              <input style={{display:'none'}} type="file" name="" id="baseBackground" />
-                              
-                            </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
-                            <div className='awa-form-container-item-opts'>
-                              <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
-                            </div>
-                          </div>
-
- 
-                        </div>
-                        
-
-                      </div>
-
-
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
                         </label>
                         <div className='awa-form-group'>
                           {/* STROKE WIDTH */}
                           <fieldset className="Fieldset">
-                            <i className="inputIcon bi bi-border-width" style={{transform:'scale(-1)'}}></i>
+                            <i className="inputIcon bi bi-border-width" style={{transform:'scale(-1)', marginTop:0}}></i>
                             <input className="Input"  type="number" onBlur={(e)=>this.onInputValueBlured(e)}  onChange={(e)=>{this.onInputValueChanged(e); this.onInputValueBlured(e)}} name='strokeWidth' value={this.state.selectedElementProps.strokeWidth} />
                           </fieldset>
 
@@ -1033,6 +1089,9 @@ class RightPanelComp extends Component<any,any> {
 
                           </div>
                       </div>
+
+                      {/* <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div> */}
+                   
 
                       <div className='awa-form-linegroup' style={{marginBottom:5}}>
                         <label className="Label" >
