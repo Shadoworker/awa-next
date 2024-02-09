@@ -301,7 +301,12 @@ class RightPanelComp extends Component<any,any> {
       var elementPosY = selectedElement.y().toFixed(2);
       var elementSizeX = selectedElement.width().toFixed(2);
       var elementSizeY = selectedElement.height().toFixed(2);
-      var elementScale = selectedElement.transform().scaleX || 1;
+      var elementScaleX = selectedElement.transform().scaleX || 1;
+      var elementScaleY = selectedElement.transform().scaleY || 1;
+      var elementSkewX = selectedElement.transform().skewX || 0;
+      var elementSkewY = selectedElement.transform().skewY || 0;
+      var elementAnchorX = selectedElement.anchor().x || 0.5;
+      var elementAnchorY = selectedElement.anchor().y || 0.5;
       var elementRotation = selectedElement.transform().rotate || 0;
       var elementFill = selectedElement.fill();
       var elementStroke = selectedElement.stroke();
@@ -320,7 +325,12 @@ class RightPanelComp extends Component<any,any> {
         y : elementPosY,
         width : elementSizeX,
         height : elementSizeY,
-        scale : elementScale,
+        scaleX : elementScaleX,
+        scaleY : elementScaleY,
+        skewX : elementSkewX,
+        skewY : elementSkewY,
+        anchorX : elementAnchorX,
+        anchorY : elementAnchorY,
         rotation : elementRotation,
         fill : elementFill,
         stroke : elementStroke,
@@ -379,6 +389,7 @@ class RightPanelComp extends Component<any,any> {
         _value = parseFloat(_value);
       };
       
+
       this.updatePropsProperty(_name, _value);
 
     }
@@ -445,12 +456,17 @@ class RightPanelComp extends Component<any,any> {
 
     }
 
+    getStrokeDasharrayInputValue(index){
+
+      var value = this.getSelectedElementsValue("strokeDasharray", index)
+      return value;
+    }
+
     getStrokeDasharrayValue() {
       // Get the PIN value by concatenating the values of each input
       const strokeDasharrayValue = Array.from(document.querySelectorAll('.dasharrayInput:not([disabled])'))
                         .map((input : any) => input.value)
                         .join(' ');
-
 
       this.updatePropsProperty("strokeDasharray", strokeDasharrayValue)
 
@@ -488,7 +504,7 @@ class RightPanelComp extends Component<any,any> {
 
 
     // Process the value to be displayed in the field (according to the selected item or items)
-    getSelectedElementsValue(_name)
+    getSelectedElementsValue(_name, _index=0)
     {
       if(!this.state.selectedElementsProps.length) return;
       
@@ -501,12 +517,41 @@ class RightPanelComp extends Component<any,any> {
 
         if(value != val)
         {
-          value = _name == "name" ? "-" : "Mixed";
+          value = (_name == "name" || _name == "opacity") ? "-" : "Mixed";
+
+          if(_name == "strokeDasharray")
+          {
+            if(this.state.selectedElementsIds.length > 1) // +2 items
+            {
+              var mixedStrokeDashArray = '- - - -';
+              value = mixedStrokeDashArray.split(' ')[_index] || null;
+
+              if(_index == -1) // we use -1 index for global selection
+              {
+                value = '0';
+              }
+            }
+
+          }
+
           break;
         }
         else
         {
           value = val;
+
+          if(_name == "strokeDasharray")
+          {
+            if(this.state.selectedElementsIds.length == 1) // One item
+            {
+              value = this.state.selectedElementProps?.strokeDasharray?.split(' ')[_index];
+
+              if(_index == -1) // we use -1 index for global selection
+              {
+                value = this.state.selectedElementProps?.strokeDasharray;
+              }
+            }
+          }
         }
       }
       
@@ -834,9 +879,10 @@ class RightPanelComp extends Component<any,any> {
                             <i className="inputIcon bi bi-arrow-bar-right"></i>
                             <input onBlur={(e)=>this.onInputValueBlured(e)} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='x' id="posX" placeholder={this.getSelectedElementsValue('x')} value={this.getSelectedElementsValue('x')} />
                           </fieldset>
+                          <i className="bi bi-link chainOptBtn"></i>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-bar-down"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='y' id="posY" value={this.state.selectedElementProps.y} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='y' id="posY" placeholder={this.getSelectedElementsValue('y')} value={this.getSelectedElementsValue('y')} />
                           </fieldset>
 
                           </div>
@@ -850,11 +896,12 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrows-expand-vertical"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} minLength={0} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='width' id="width" value={this.state.selectedElementProps.width} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} minLength={0} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='width' id="width" placeholder={this.getSelectedElementsValue('width')} value={this.getSelectedElementsValue('width')} />
                           </fieldset>
+                          <i className="bi bi-link chainOptBtn"></i>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrows-expand"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} minLength={0} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='height' id="height" value={this.state.selectedElementProps.height} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} minLength={0} type="number" onChange={(e)=>this.onInputValueChanged(e)} className="Input" name='height' id="height" placeholder={this.getSelectedElementsValue('height')} value={this.getSelectedElementsValue('height')} />
                           </fieldset>
 
                           </div>
@@ -872,11 +919,12 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-right-square"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scaleX' id="scaleX" placeholder={this.getSelectedElementsValue('scaleX')} value={this.getSelectedElementsValue('scaleX')} />
                           </fieldset>
+                          <i className="bi bi-link chainOptBtn"></i>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi-arrow-down-square"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scaleY' id="scaleY" placeholder={this.getSelectedElementsValue('scaleY')} value={this.getSelectedElementsValue('scaleY')} />
                           </fieldset>
 
                         </div>
@@ -891,11 +939,12 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-box-arrow-in-up-right"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='skewX' id="skewX" placeholder={this.getSelectedElementsValue('skewX')} value={this.getSelectedElementsValue('skewX')} />
                           </fieldset>
+                          <i className="bi bi-link chainOptBtn"></i>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi-box-arrow-in-down-right"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='skewY' id="skewY" placeholder={this.getSelectedElementsValue('skewY')} value={this.getSelectedElementsValue('skewY')} />
                           </fieldset>
 
                         </div>
@@ -910,31 +959,32 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-right-circle"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input"  name='anchorX' id="anchorX" placeholder={this.getSelectedElementsValue('anchorX')} value={this.getSelectedElementsValue('anchorX')} />
                           </fieldset>
+                          <i className="bi bi-link chainOptBtn"></i>
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi-arrow-down-circle"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input"  name='anchorY' id="anchorY" placeholder={this.getSelectedElementsValue('anchorY')} value={this.getSelectedElementsValue('anchorY')} />
                           </fieldset>
 
                         </div>
                       </div>
 
-                      {/* Rotation */}
+                      {/* Angle (Rotation | Border Radius) */}
 
                       <div className='awa-form-linegroup'>
                         <label className="Label" >
-                          Rotation
+                          Angle
                         </label>
                         <div className='awa-form-group'>
                           
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-arrow-clockwise"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" value={this.state.selectedElementProps.rotation} prefix='°' />
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" placeholder={this.getSelectedElementsValue('rotation')} value={this.getSelectedElementsValue('rotation')} prefix='°' />
                           </fieldset>
                           <fieldset className="Fieldset">
-                            {/* <i className="inputIcon bi-arrow-up-right-square"></i>
-                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' step={0.1} onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={0} max={100} name='scale' id="scale" value={this.state.selectedElementProps.scale} /> */}
+                             <i className="inputIcon bi bi-square"></i>
+                            <input onBlur={(e)=>this.onInputValueBlured(e)} type='number' onChange={(e)=>this.onInputValueChanged(e)} className="Input" min={-360} max={360} name='rotation' id="rotation" placeholder={this.getSelectedElementsValue('rotation')} value={this.getSelectedElementsValue('rotation')} prefix='°' />
                           </fieldset>
 
                         </div>
@@ -943,18 +993,17 @@ class RightPanelComp extends Component<any,any> {
                       {/* Transform  ------------ */}
 
 
-
                       {/* Color | Image | Video */}
+                      
                       <div className='awa-form-linegroup awa-linegroup-container'>
-                        <label className="Label FieldTitle">
+                        <label className="Label FieldTitle" >
                           Background
                         </label>
                         <div className='awa-form-container'>
-
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-
-                              <label htmlFor="baseBackground" style={{width:'80%'}}>
+                            
+                              <label htmlFor="baseBackground" style={{width:'80%', height:23}}>
                                 <div className='Input InputColorContainer'>
                                   <div className='InputColor' style={{backgroundSize:'contain', backgroundImage:'url("https://img.freepik.com/premium-vector/square-transparent-background-with-gradient-effect-vector-illustration_522680-499.jpg")'}}>
                                   </div>
@@ -963,18 +1012,14 @@ class RightPanelComp extends Component<any,any> {
                               <input style={{display:'none'}} type="file" name="" id="baseBackground" />
                               
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
+                            {/* <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span> */}
                             <div className='awa-form-container-item-opts'>
+                              {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
                           </div>
-
- 
                         </div>
-                        
-
                       </div>
-
 
                       <div className='awa-form-linegroup awa-linegroup-container'>
                         <label className="Label" >
@@ -1007,7 +1052,7 @@ class RightPanelComp extends Component<any,any> {
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span>
                             <div className='awa-form-container-item-opts'>
-                              <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i>
+                              {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
                           </div>
@@ -1052,7 +1097,7 @@ class RightPanelComp extends Component<any,any> {
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
                             <div className='awa-form-container-item-opts'>
-                              <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i>
+                              {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
                           </div>
@@ -1070,22 +1115,34 @@ class RightPanelComp extends Component<any,any> {
                           {/* STROKE WIDTH */}
                           <fieldset className="Fieldset">
                             <i className="inputIcon bi bi-border-width" style={{transform:'scale(-1)', marginTop:0}}></i>
-                            <input className="Input"  type="number" onBlur={(e)=>this.onInputValueBlured(e)}  onChange={(e)=>{this.onInputValueChanged(e); this.onInputValueBlured(e)}} name='strokeWidth' value={this.state.selectedElementProps.strokeWidth} />
+                            <input className="Input"  type="number" onBlur={(e)=>this.onInputValueBlured(e)}  onChange={(e)=>{this.onInputValueChanged(e); this.onInputValueBlured(e)}} name='strokeWidth' placeholder={this.getSelectedElementsValue('strokeWidth')} value={this.getSelectedElementsValue('strokeWidth')} />
                           </fieldset>
 
                           {/* STROKE COVERAGE */}
 
-                          <fieldset className="Fieldset">
-                            <i className="inputIcon bi bi-border-all" style={{transform:'scale(1)'}}></i>
-                            <select className='Input'>
-                              <option>all</option>
-                              <option>top</option>
-                              <option>left</option>
-                              <option>right</option>
-                              <option>bottom</option>
-                              <option>custom</option>
-                            </select>
-                          </fieldset>
+                          <DropdownMenu.Root>
+                          <DropdownMenu.Trigger asChild>
+                            <i  className="actionBtn bi bi-plus-square-dotted"></i>
+                          </DropdownMenu.Trigger>
+
+                          <DropdownMenu.Portal>
+                            <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
+                              <DropdownMenu.Item className="DropdownMenuItem" onClick={(e)=>{}}>
+                                Border 
+                                <div className="RightSlot">
+                                  All
+                                </div> 
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Item className="DropdownMenuItem" onClick={(e)=>{}}>
+                                Type
+                                <div className="RightSlot">
+                                  Inside
+                                </div>
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Arrow className="DropdownMenuArrow" />
+                            </DropdownMenu.Content>
+                          </DropdownMenu.Portal>
+                        </DropdownMenu.Root>
 
                           </div>
                       </div>
@@ -1102,7 +1159,7 @@ class RightPanelComp extends Component<any,any> {
                           <fieldset className="Fieldset Fieldset-full">
                             {/* <i className="inputIcon bi bi-border-style" style={{transform:'scale(1)', marginBottom:8}}></i> */}
                             <svg width={'100%'} height={10} style={{marginLeft:'0%'}}>
-                              <line x1="0" y1="0" x2="100%" y2="0" strokeWidth={7} stroke="#fff" strokeDasharray={this.state.selectedElementProps.strokeDasharray} />
+                              <line x1="0" y1="0" x2="100%" y2="0" strokeWidth={7} stroke="#fff" strokeDasharray={this.getStrokeDasharrayInputValue(-1)} />
                             </svg>
                           </fieldset>
                         </div>
@@ -1117,10 +1174,10 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset Fieldset-four">
                            
-                            <input className="Input dasharrayInput" type='number' name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}   />
-                            <input className="Input dasharrayInput" type='number' name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
-                            <input className="Input dasharrayInput" type='number' name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
-                            <input className="Input dasharrayInput" type='number' name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
+                            <input className="Input dasharrayInput" type='number' placeholder={this.getStrokeDasharrayInputValue(0)} value={this.getStrokeDasharrayInputValue(0)}  name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}   />
+                            <input className="Input dasharrayInput" type='number' placeholder={this.getStrokeDasharrayInputValue(1)} value={this.getStrokeDasharrayInputValue(1)}  name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
+                            <input className="Input dasharrayInput" type='number' placeholder={this.getStrokeDasharrayInputValue(2)} value={this.getStrokeDasharrayInputValue(2)}  name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
+                            <input className="Input dasharrayInput" type='number' placeholder={this.getStrokeDasharrayInputValue(3)} value={this.getStrokeDasharrayInputValue(3)}  name='strokeDasharray' min={0} minLength={0} maxLength={4} onChange={(e:any)=>this.getStrokeDasharrayValue()} onBlur={(e:any)=>this.onStrokeDasharrayValueBlurred(e)}  disabled />
                            
                           </fieldset>
 
@@ -1135,7 +1192,7 @@ class RightPanelComp extends Component<any,any> {
                           
                           <fieldset className="Fieldset" >
                             <i className="inputIcon bi bi-distribute-horizontal" ></i>
-                            <input  type="number" onChange={(e)=>{this.onInputValueBlured(e); this.onInputValueChanged(e)}} style={{width:'100%', textIndent:2, textAlign:'center'}} className="Input" name='strokeDashoffset' id="strokeDashoffset" value={this.state.selectedElementProps.strokeDashoffset} />
+                            <input  type="number" onChange={(e)=>{this.onInputValueBlured(e); this.onInputValueChanged(e)}} style={{width:'100%', textIndent:2, textAlign:'center'}} className="Input" name='strokeDashoffset' id="strokeDashoffset"  placeholder={this.getSelectedElementsValue('strokeDashoffset')} value={this.getSelectedElementsValue('strokeDashoffset')} />
                           </fieldset>
                           <fieldset className="Fieldset" >
                             <Button className={`inputBtn  ${this.isAppModeDesign() ? "inputBtnDisabled" : ""}`} onClick={(e)=>this.onLineDrawAnime(e)} size={'1'}  >Draw</Button> 
@@ -1150,9 +1207,9 @@ class RightPanelComp extends Component<any,any> {
                         <div className='awa-form-group'>
                           
                           <fieldset className="Fieldset SingleFieldSet">
-                            <i className="inputIcon " style={{color:'#fff', fontSize:12, fontStyle:'normal'}}>{this.state.selectedElementProps.opacity || 0}</i>
+                            <i className="inputIcon " style={{color:'#fff', fontSize:12, fontStyle:'normal'}}>{this.getSelectedElementsValue('opacity')}</i>
                             <div style={{position:'absolute', width:'70%', marginLeft:'20%', height:3, backgroundColor:'#ffffff44', borderRadius:10}}></div>
-                            <input onChange={(e)=>{this.onInputValueChanged(e); this.onInputValueBlured(e)}} name='opacity' className="Input awa-range-input" style={{position:'relative', width:'50%', marginLeft:0, paddingLeft:25}} type='range' min={0} step={0.1} max={1} value={this.state.selectedElementProps.opacity}  />
+                            <input onChange={(e)=>{this.onInputValueChanged(e); this.onInputValueBlured(e)}} name='opacity' className="Input awa-range-input" style={{position:'relative', width:'50%', marginLeft:0, paddingLeft:25}} type='range' min={0} step={0.1} max={1} value={this.getSelectedElementsValue('opacity')}  />
                           </fieldset>
 
                           </div>

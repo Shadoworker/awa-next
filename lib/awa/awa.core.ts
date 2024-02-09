@@ -1664,9 +1664,7 @@ class awa {
         canvasGroup.draggable(this.getLoonkInstance());
         canvasGroup.selectable(this.getLoonkInstance());
 
-
         parent.add(canvasGroup)
-
 
       }
       else
@@ -1674,8 +1672,6 @@ class awa {
 
         var type = el.type;
         var sceneEl;
-
-        // console.log(el)
 
         switch (type) {
           case ELEMENTS_TYPES.rect:
@@ -1686,15 +1682,7 @@ class awa {
 
             sceneEl = this.m_svgInstance
               .rect(el.node.attributes.width, el.node.attributes.height)
-              .attr({
-                id: awaElementId,
-                x: el.node.attributes.x,
-                y: el.node.attributes.y,
-                fill: el.node.attributes.fill,
-                stroke: el.node.attributes.stroke,
-                "stroke-width": el.node.attributes.strokeWidth,
-                class: "awa-element-rect",
-              })
+              .attr(el.node.attributes)
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
               
@@ -1718,14 +1706,7 @@ class awa {
     
             sceneEl = this.m_svgInstance
               .circle(80)
-              .attr({
-                id: awaElementId,
-                cx: el.node.attributes.cx,
-                cy: el.node.attributes.cy,
-                fill: el.node.attributes.fill,
-                stroke: el.node.attributes.stroke,
-                "stroke-width": el.node.attributes.strokeWidth,
-              })
+              .attr(el.node.attributes)
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
               
@@ -1816,7 +1797,8 @@ class awa {
 
     this.updateSceneElements(elObject, attributes)
 
-    // this.dispatchUpdateSceneElements();
+    // Dispatch update
+    this.dispatchSelectedSceneElements([]);
     
   }
   

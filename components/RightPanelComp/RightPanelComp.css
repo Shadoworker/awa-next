@@ -238,6 +238,24 @@ input::-moz-selection {
   transition: all ease-in 0.2s;
 }
 
+.chainOptBtn
+{
+  font-size: 11px;
+  padding: 3px 2px;
+  background-color: #433e3c00;
+  color: #7f7f7fab;
+  border-radius: 3px;
+  transform: rotate(90deg);
+  cursor: pointer;
+  transition: all ease-in 0.2s;
+}
+
+.chainOptBtn:hover
+{
+  color: #50B5AD;
+  transition: all ease-in 0.2s;
+}
+
 .awa-interaction-action-header
 {
   display:flex;
