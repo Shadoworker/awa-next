@@ -1026,31 +1026,25 @@ class RightPanelComp extends Component<any,any> {
                           Fill
                         </label>
                         <div className='awa-form-container'>
-
-                          {/* <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
-                            <div className='awa-form-container-item-opts'>
-                              <i  className="actionBtn bi bi-plus-square"></i>
-                            </div>
-                          </div> */}
-
+  
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                               {/* <i className="inputIcon bi bi-paint-bucket"></i> */}
                                 <Popover.Root >
                                   <Popover.Trigger asChild>
                                     <div className='Input InputColorContainer'>
-                                      <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.fill}}></div>
+                                      <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('fill')}}></div>
                                     </div>
                                   </Popover.Trigger>
                                   <Popover.Portal>
                                     <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.fill} onChange={(c)=>this.setFillColor(c)}  />
+                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.getSelectedElementsValue('fill')} onChange={(c)=>this.setFillColor(c)}  />
                                     </Popover.Content>
                                   </Popover.Portal>
                                 </Popover.Root>
                               
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span>
+                            <span className='fieldInfo-inline' style={{textTransform: this.getSelectedElementsValue('fill') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('fill')}</span>
                             <div className='awa-form-container-item-opts'>
                               {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
@@ -1084,18 +1078,18 @@ class RightPanelComp extends Component<any,any> {
                                 <Popover.Root >
                                   <Popover.Trigger asChild>
                                     <div className='Input InputColorContainer'>
-                                      <div className='InputColor' style={{backgroundColor:this.state.selectedElementProps.stroke}}></div>
+                                      <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('stroke')}}></div>
                                     </div>
                                   </Popover.Trigger>
                                   <Popover.Portal>
                                     <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.state.selectedElementProps.stroke} onChange={(c)=>this.setStrokeColor(c)}  />
+                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.getSelectedElementsValue('stroke')} onChange={(c)=>this.setStrokeColor(c)}  />
                                     </Popover.Content>
                                   </Popover.Portal>
                                 </Popover.Root>
                               
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.stroke}</span>
+                            <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('stroke')}</span>
                             <div className='awa-form-container-item-opts'>
                               {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
