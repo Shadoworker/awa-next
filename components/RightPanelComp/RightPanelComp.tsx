@@ -2,7 +2,7 @@ import React, { Component} from 'react';
 
 import { Box,Button,Tabs, Text } from '@radix-ui/themes';
 import * as Popover from '@radix-ui/react-popover';
-import ColorPicker, { useColorPicker } from 'react-best-gradient-color-picker';
+import Picker from 'react-best-gradient-color-picker';
 import { ChevronDownIcon, ChevronRightIcon, Cross1Icon, Cross2Icon, EyeOpenIcon, HamburgerMenuIcon, MinusIcon, MixerHorizontalIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 
 import * as Accordion from '@radix-ui/react-accordion';
@@ -23,6 +23,7 @@ import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { EFFECT_ID_BODY, INCANVAS_ITEM_CLASS, INTERACTION_ACTION_REF, INTERACTION_ANIMATION_REF, INTERACTION_BASED_ON_REF, INTERACTION_EVENT_REF, INTERACTION_TARGET_REF, INTERACTION_TYPE_REF, NATIVE_ACTIONS, NATIVE_ANIMATIONS } from '../../lib/awa/awa.constants';
 import * as Ant from 'antd';
 import Image from 'next/image';
+import ReactGPicker from 'react-gcolor-picker';
 // import { List, Tooltip } from 'antd';
 
 
@@ -75,6 +76,9 @@ class RightPanelComp extends Component<any,any> {
       /* Listen for selected element updates */
       this.onUpdateSelectedElement();
       this.onNewCustomAnimation();
+
+      this.onUpdateInputColor();
+
 
     }
  
@@ -196,8 +200,36 @@ class RightPanelComp extends Component<any,any> {
 
     }
 
+    requestToggleColorPicker = (_data)=>{
+      awaEventEmitter.emit(awaEvents.TOGGLE_COLOR_PICKER, _data);
+    }
+
+    onUpdateInputColor = ()=>{
+
+      awaEventEmitter.on(awaEvents.UPDATE_INPUT_COLOR, (_data)=>{
+   
+        var colorType = _data.type;
+        var colorString = _data.color; 
+        
+        if(colorType == 'fill')
+        {
+          // if()
+          console.log(colorString)
+          this.setFillColor(colorString)
+        }
+        else if(colorType == 'stroke')
+        {
+          this.setStrokeColor(colorString)
+        }
+  
+      })
+    }
+      
+
     setFillColor = (c) =>{
        
+      console.log(c)
+
       var hexColor = rgbToHex(c)
      
       // this.setState({fillColor : hexColor})
@@ -255,6 +287,7 @@ class RightPanelComp extends Component<any,any> {
 
         }
 
+        // console.log({selectedElementsIds : ids, selectedElementId : id, selectedElementProps : selectedElementProps, selectedElementsProps : selectedElementsProps})
         this.setState({selectedElementsIds : ids, selectedElementId : id, selectedElementProps : selectedElementProps, selectedElementsProps : selectedElementsProps})
 
         // Save initial state 
@@ -273,9 +306,7 @@ class RightPanelComp extends Component<any,any> {
           }
         }
 
-
-
-
+        
         // selected element flow
         this.getSelectedElementFlow();
 
@@ -484,7 +515,7 @@ class RightPanelComp extends Component<any,any> {
       var _value = anime.setDashoffset(selectedElement.node);
       var _initialValue = 0;
       var _isLineDraw = true;
-      console.log(_name, _value, _initialValue);
+      // console.log(_name, _value, _initialValue);
       this.requestAddNewKeyframe(_name, _value, _initialValue, _isLineDraw);
     }
 
@@ -1029,24 +1060,14 @@ class RightPanelComp extends Component<any,any> {
   
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-                              {/* <i className="inputIcon bi bi-paint-bucket"></i> */}
-                                <Popover.Root >
-                                  <Popover.Trigger asChild>
-                                    <div className='Input InputColorContainer'>
-                                      <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('fill')}}></div>
-                                    </div>
-                                  </Popover.Trigger>
-                                  <Popover.Portal>
-                                    <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.getSelectedElementsValue('fill')} onChange={(c)=>this.setFillColor(c)}  />
-                                    </Popover.Content>
-                                  </Popover.Portal>
-                                </Popover.Root>
+                                
+                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill'})} >
+                                <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('fill')}}></div>
+                              </div>
                               
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform: this.getSelectedElementsValue('fill') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('fill')}</span>
                             <div className='awa-form-container-item-opts'>
-                              {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
                           </div>
@@ -1056,38 +1077,16 @@ class RightPanelComp extends Component<any,any> {
 
                       </div>
 
-
-                      {/* <div style={{width:'100%', height:1, backgroundColor:'#ffffff25', marginTop:5, marginBottom:15}}></div> */}
-
-
                       <div className='awa-form-linegroup awa-linegroup-container'>
                         <label className="Label" >
                           Stroke
                         </label>
                         <div className='awa-form-container'>
-
-                          {/* <div className='awa-form-group awa-form-container-item' style={{marginBottom:20}}>
-                            <div className='awa-form-container-item-opts'>
-                              <i  className="actionBtn bi bi-plus-square"></i>
-                            </div>
-                          </div> */}
-
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-                              {/* <i className="inputIcon bi bi-paint-bucket" style={{marginLeft:-15}}></i> */}
-                                <Popover.Root >
-                                  <Popover.Trigger asChild>
-                                    <div className='Input InputColorContainer'>
-                                      <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('stroke')}}></div>
-                                    </div>
-                                  </Popover.Trigger>
-                                  <Popover.Portal>
-                                    <Popover.Content id='PopoverContentColorPicker' className="PopoverContent" sideOffset={5}>
-                                      <ColorPicker className={{opacity:1}} width={250} height={150} value={this.getSelectedElementsValue('stroke')} onChange={(c)=>this.setStrokeColor(c)}  />
-                                    </Popover.Content>
-                                  </Popover.Portal>
-                                </Popover.Root>
-                              
+                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke'})}>
+                                <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('stroke')}}></div>
+                              </div>
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('stroke')}</span>
                             <div className='awa-form-container-item-opts'>
@@ -1300,7 +1299,7 @@ class RightPanelComp extends Component<any,any> {
                                             </Popover.Trigger>
                                             <Popover.Portal>
                                               <Popover.Content id='PopoverContentColorPicker2' className="PopoverContent" sideOffset={5}>
-                                                <ColorPicker className={{}} width={250} height={150} value={effect.properties.color}  onChange={(c)=>this.setEffectPropValue(effect.id, "color", rgbToHex(c))}  />
+                                                <Picker className={{}} width={250} height={150} value={effect.properties.color}  onChange={(c)=>this.setEffectPropValue(effect.id, "color", rgbToHex(c))}  />
                                               </Popover.Content>
                                             </Popover.Portal>
                                           </Popover.Root>

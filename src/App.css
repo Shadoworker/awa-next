@@ -788,4 +788,47 @@ opacity: 1;
 
 }
 
+.awa-color-picker-box
+{
+  position: absolute;
+  top: 15%;
+  right: 18%;
+  z-index: 8000;
+  background-color: #09090a;
+  padding: 7px;
+  border-radius: 5px;
+}
+
+.popup_tabs-header
+{
+  height: 30px !important;
+}
+
+.popup_tabs-body
+{
+  padding-top: 10px !important;
+}
+
+.popup_tabs-header .popup_tabs-header-label
+{
+  height: 40px !important;
+  font-size: 10px !important;
+}
+
+.input_rgba .input_rgba-wrap input
+{
+  height: 30px !important;
+  font-size: 13px !important;
+}
+
+.input_rgba-label
+{
+  font-size: 10px !important;
+}
+
+.input_rgba-hex-label, .input_rgba-alpha-label
+{
+  top: 2px !important;
+}
+
 /* --------- */

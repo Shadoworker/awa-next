@@ -31,6 +31,7 @@ import anime from '../../../lib/assets/vendors/anime';
 import { EFFECT_ID_BODY, TIMELINE_STEP } from '../../../lib/awa/awa.constants';
 import { withRouter } from 'next/router';
 import { AwaTypes } from '../../../lib/awa/awa.types';
+import ColorPicker from 'react-best-gradient-color-picker';
 
 class AppPage extends Component<any, any> {
 
@@ -46,6 +47,10 @@ class AppPage extends Component<any, any> {
 
       timelineTime : this.props.mainState.timelineTime,
 
+
+      toggleColorPicker : false,
+      colorType : 'fill',
+      colorPickerColor : '#fff'
 
     };
   }
@@ -495,6 +500,10 @@ class AppPage extends Component<any, any> {
     // console.log(rect)
 
 
+
+    // Listeners -----------------------------
+    this.onToggleColorPicker();
+
   }
 
   timelineOnUpdate(_anim, _timeline, _slider, _progressbarLength)
@@ -552,6 +561,25 @@ class AppPage extends Component<any, any> {
 
   }
 
+
+  onToggleColorPicker = ()=>{
+
+    awaEventEmitter.on(awaEvents.TOGGLE_COLOR_PICKER, (_data)=>{
+ 
+      this.setState({toggleColorPicker : !this.state.toggleColorPicker, colorType : _data.type})
+
+    })
+  }
+
+  onPickerColorChange=(c:any)=>
+  {
+    this.setState({colorPickerColor : c})
+    this.requestUpdateInputColor({type:this.state.colorType, color : c})
+  }
+
+  requestUpdateInputColor = (_data)=>{
+    awaEventEmitter.emit(awaEvents.UPDATE_INPUT_COLOR, _data);
+  }
 
   onRequestReduxStoreUpdate(){
 
@@ -614,6 +642,13 @@ class AppPage extends Component<any, any> {
                          height="0"
                        ></svg>
                      </Box>
+                     
+                    {this.state.toggleColorPicker &&
+                      <div className='awa-color-picker-box'>
+                        <ColorPicker value={this.state.colorPickerColor} onChange={(c)=>this.onPickerColorChange(c)} />
+                      </div>
+                    }
+
                    </Flex>
                  </Box>
 

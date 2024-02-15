@@ -146,8 +146,6 @@ export function isCanvasChild(_el)
   return _el.canvasOwnerId() != null;
 } 
 
-
-
 export function isPointInCanvas(_p, _el)
 {
   var 
@@ -181,4 +179,9 @@ export function getElementTreeType(_type)
   return _type == "g" ? "folder" : "file";
 
 } 
+
+export function isGradient(_colorString)
+{
+  return _colorString.includes('%');
+}
 

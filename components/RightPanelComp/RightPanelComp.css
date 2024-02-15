@@ -657,7 +657,7 @@ select option
   {
     position: fixed;
     left: -17% !important;
-    top: -30% !important;
+    top: 30% !important;
   }
 
   
@@ -665,7 +665,7 @@ select option
   {
     position: fixed;
     left: -17% !important;
-    top: 22% !important;
+    top: 30% !important;
   }
 
   .PopoverContent input {
