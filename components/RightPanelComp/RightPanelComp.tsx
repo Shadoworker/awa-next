@@ -15,7 +15,7 @@ import * as mainActions from '../../redux/main/mainActions'
 
 import './RightPanelComp.css';
 import awaEvents, { awaEventEmitter } from '../../lib/awa/awa.events';
-import { getNextEffectIndex, isCanvasChild, isCanvasElement, isElementPath, isNumber, isObjectEmpty, removeEffect, rgbToHex, sortAnimationsByName } from '../../lib/awa/awa.common.utils';
+import { getGradientValues, getNextEffectIndex, isCanvasChild, isCanvasElement, isElementPath, isGradient, isNumber, isObjectEmpty, removeEffect, rgbToHex, sortAnimationsByName } from '../../lib/awa/awa.common.utils';
 import { getPopertyInitialValue } from '../../lib/awa/awa.anime.utils';
 import { APP_MODE, ELEMENT_EFFECTS, ELEMENT_PROPERTIES } from '../../lib/awa/awa.core';
 import anime from '../../lib/assets/vendors/anime';
@@ -210,15 +210,18 @@ class RightPanelComp extends Component<any,any> {
    
         var colorType = _data.type;
         var colorString = _data.color; 
-        
+
         if(colorType == 'fill')
         {
-          // if()
-          console.log(colorString)
+          this.setState({fillColor : colorString})
+
           this.setFillColor(colorString)
+          
         }
         else if(colorType == 'stroke')
         {
+          this.setState({strokeColor : colorString})
+
           this.setStrokeColor(colorString)
         }
   
@@ -228,14 +231,13 @@ class RightPanelComp extends Component<any,any> {
 
     setFillColor = (c) =>{
        
-      console.log(c)
 
       var hexColor = rgbToHex(c)
      
-      // this.setState({fillColor : hexColor})
+      this.setState({fillColor : c})
 
-      this.updatePropsProperty("fill", hexColor);
-      this.updateElementProperty("fill", hexColor);
+      this.updatePropsProperty("fill", c);
+      this.updateElementProperty("fill", c);
 
     }
 
@@ -243,10 +245,10 @@ class RightPanelComp extends Component<any,any> {
 
       var hexColor = rgbToHex(c)
      
-      // this.setState({strokeColor : hexColor})
+      this.setState({strokeColor : c})
 
-      this.updatePropsProperty("stroke", hexColor);
-      this.updateElementProperty("stroke", hexColor);
+      this.updatePropsProperty("stroke", c);
+      this.updateElementProperty("stroke", c);
 
     }
 
@@ -1062,7 +1064,7 @@ class RightPanelComp extends Component<any,any> {
                             <fieldset className="Fieldset fieldset-container-item">
                                 
                               <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill'})} >
-                                <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('fill')}}></div>
+                                <div className='InputColor' style={{background:this.state.fillColor}}></div>
                               </div>
                               
                             </fieldset>
@@ -1085,7 +1087,7 @@ class RightPanelComp extends Component<any,any> {
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                               <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke'})}>
-                                <div className='InputColor' style={{backgroundColor:this.getSelectedElementsValue('stroke')}}></div>
+                                <div className='InputColor' style={{background:this.state.strokeColor}}></div>
                               </div>
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('stroke')}</span>

@@ -9,6 +9,9 @@ export const CONTAINER_ID_BODY = '--container--';
 export const CLIP_ID_BODY = '--clip--';
 export const GROUP_ID_BODY = '--group--';
 
+export const GRADIENT_ID_BODY = "--gradient--item"
+
+
 export const INCANVAS_ITEM_CLASS = '--incanvas-item--';
 
 export const CONNECTORS_GROUP_CLASS = 'awa--connectors--group';

@@ -645,7 +645,7 @@ class AppPage extends Component<any, any> {
                      
                     {this.state.toggleColorPicker &&
                       <div className='awa-color-picker-box'>
-                        <ColorPicker value={this.state.colorPickerColor} onChange={(c)=>this.onPickerColorChange(c)} />
+                        <ColorPicker hideAdvancedSliders hideColorGuide hideInputType value={this.state.colorPickerColor} onChange={(c)=>this.onPickerColorChange(c)} />
                       </div>
                     }
 

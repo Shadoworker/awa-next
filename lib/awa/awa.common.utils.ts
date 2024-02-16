@@ -185,3 +185,39 @@ export function isGradient(_colorString)
   return _colorString.includes('%');
 }
 
+export function getGradientValues(_colorString)
+{
+  var type = _colorString.split("-gradient")[0];
+  var part1 = _colorString.split("gradient(")[1];
+  var part11 = (part1.split("%)")[0] + "%").toLowerCase();
+
+
+  if(part11.includes('rgb(')) 
+  {
+    part11 = part11.replace(')', ', 1)') // fixing first value rgb val
+    part11 = part11.replace('rgb(', 'rgba(')
+  }
+
+  part11 = part11.replace('  ', ' ')
+
+  var segments = part11.split(", rgba")
+
+  var angle = segments[0].split('deg')[0];
+
+  var values : any[] = []
+
+  for (let i = 1; i < segments.length; i++) {
+    const seg = segments[i];
+
+    var color = 'rgba'+seg.split(') ')[0]+')'
+    var percentage = seg.split(') ')[1]
+
+    values.push({color : color, percentage:percentage})
+    
+  }
+
+  var data = {type : type, angle : angle, values : values};
+
+  return data;
+}
+

@@ -14,10 +14,15 @@
   /* background-color: #2d1b35; */
 }
 
+html
+{
+  background-color: #242730;
+}
+
 body
 {
   margin: 0px;
-  overflow-x: hidden;
+  overflow: hidden !important;
 }
 
 img
@@ -791,12 +796,13 @@ opacity: 1;
 .awa-color-picker-box
 {
   position: absolute;
-  top: 15%;
+  top: 13%;
   right: 18%;
   z-index: 8000;
   background-color: #09090a;
   padding: 7px;
   border-radius: 5px;
+  transform: scale(0.95);
 }
 
 .popup_tabs-header

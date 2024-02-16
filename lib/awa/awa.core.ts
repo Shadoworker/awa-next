@@ -24,7 +24,7 @@ import {
   RERENDER_SEEK_TIMELINE_DELAY,
   SCENE_CLASS,
 } from "./awa.constants";
-import { isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement } from "./awa.common.utils";
+import { getGradientValues, isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement, isGradient } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
 import { AwaTypes } from "./awa.types";
 import userService from "../../services/user.service";
@@ -1141,11 +1141,31 @@ class awa {
           break;
 
         case "fill":
-          this.getSelectedElement().fill(value);
+
+          if(isGradient(value))
+          {
+            var data = getGradientValues(value);
+            console.log(data)
+            this.getSelectedElement().setGradientElement("fill", data.type, data.angle, data.values)
+          }
+          else
+          {
+            this.getSelectedElement().fill(value);
+          }
           break;
 
         case "stroke":
-          this.getSelectedElement().stroke({ color: value });
+          
+          if(isGradient(value))
+          {
+            var data = getGradientValues(value);
+            this.getSelectedElement().setGradientElement("stroke", data.type, data.angle, data.values)
+          }
+          else
+          {
+            this.getSelectedElement().stroke({ color: value });
+          }
+
           break;
 
         case "opacity":
