@@ -343,6 +343,8 @@ class RightPanelComp extends Component<any,any> {
       var elementRotation = selectedElement.transform().rotate || 0;
       var elementFill = selectedElement.fill();
       var elementStroke = selectedElement.stroke();
+      var elementBaseFill = selectedElement.baseFill();
+      var elementBaseStroke = selectedElement.baseStroke();
       var elementStrokeWidth = selectedElement.attr("stroke-width") || 0;
       var elementStrokeDasharray = selectedElement.attr("stroke-dasharray") || '0';
       var elementStrokeDashoffset = selectedElement.attr("stroke-dashoffset") || 0;
@@ -367,6 +369,8 @@ class RightPanelComp extends Component<any,any> {
         rotation : elementRotation,
         fill : elementFill,
         stroke : elementStroke,
+        baseFill : elementBaseFill,
+        baseStroke : elementBaseStroke,
         strokeWidth : elementStrokeWidth,
         opacity : elementOpacity,
         d : isElementPath(elementType) ? selectedElement.m_pathString : null,
@@ -1063,12 +1067,12 @@ class RightPanelComp extends Component<any,any> {
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                                 
-                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill'})} >
+                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill', color : this.state.selectedElementProps.baseFill })} >
                                 <div className='InputColor' style={{background:this.state.fillColor}}></div>
                               </div>
                               
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform: this.getSelectedElementsValue('fill') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('fill')}</span>
+                            <span className='fieldInfo-inline' style={{textTransform: this.getSelectedElementsValue('fill') == "Mixed" ? 'unset' : 'uppercase'}}>{/* {this.getSelectedElementsValue('fill')} */}</span>
                             <div className='awa-form-container-item-opts'>
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
@@ -1086,11 +1090,11 @@ class RightPanelComp extends Component<any,any> {
                         <div className='awa-form-container'>
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke'})}>
+                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke', color : this.state.selectedElementProps.baseStroke})}>
                                 <div className='InputColor' style={{background:this.state.strokeColor}}></div>
                               </div>
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('stroke')}</span>
+                            <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{/* {this.getSelectedElementsValue('stroke')} */}</span>
                             <div className='awa-form-container-item-opts'>
                               {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>

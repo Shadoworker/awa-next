@@ -566,7 +566,7 @@ class AppPage extends Component<any, any> {
 
     awaEventEmitter.on(awaEvents.TOGGLE_COLOR_PICKER, (_data)=>{
  
-      this.setState({toggleColorPicker : !this.state.toggleColorPicker, colorType : _data.type})
+      this.setState({toggleColorPicker : !this.state.toggleColorPicker, colorType : _data.type, colorPickerColor : _data.color})
 
     })
   }

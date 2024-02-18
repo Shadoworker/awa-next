@@ -1145,13 +1145,16 @@ class awa {
           if(isGradient(value))
           {
             var data = getGradientValues(value);
-            console.log(data)
             this.getSelectedElement().setGradientElement("fill", data.type, data.angle, data.values)
           }
           else
           {
             this.getSelectedElement().fill(value);
           }
+
+          // Define base color
+          this.getSelectedElement().baseFill(value);
+
           break;
 
         case "stroke":
@@ -1165,6 +1168,9 @@ class awa {
           {
             this.getSelectedElement().stroke({ color: value });
           }
+
+          // Define base color
+          this.getSelectedElement().baseStroke(value);
 
           break;
 
