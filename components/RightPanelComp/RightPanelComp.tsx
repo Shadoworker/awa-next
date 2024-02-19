@@ -1067,7 +1067,7 @@ class RightPanelComp extends Component<any,any> {
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                                 
-                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill', color : this.state.selectedElementProps.baseFill })} >
+                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill', color : this.state.selectedElementProps.baseFill.color })} >
                                 <div className='InputColor' style={{background:this.state.fillColor}}></div>
                               </div>
                               
@@ -1090,7 +1090,7 @@ class RightPanelComp extends Component<any,any> {
                         <div className='awa-form-container'>
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke', color : this.state.selectedElementProps.baseStroke})}>
+                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke', color : this.state.selectedElementProps.baseStroke.color})}>
                                 <div className='InputColor' style={{background:this.state.strokeColor}}></div>
                               </div>
                             </fieldset>

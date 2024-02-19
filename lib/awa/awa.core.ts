@@ -1142,10 +1142,12 @@ class awa {
 
         case "fill":
 
+          var baseColorId = null;
+
           if(isGradient(value))
           {
             var data = getGradientValues(value);
-            this.getSelectedElement().setGradientElement("fill", data.type, data.angle, data.values)
+            baseColorId = this.getSelectedElement().setGradientElement("fill", data.type, data.angle, data.values)
           }
           else
           {
@@ -1153,16 +1155,18 @@ class awa {
           }
 
           // Define base color
-          this.getSelectedElement().baseFill(value);
+          this.getSelectedElement().baseFill(baseColorId,value);
 
           break;
 
         case "stroke":
           
+          var baseColorId = null;
+
           if(isGradient(value))
           {
             var data = getGradientValues(value);
-            this.getSelectedElement().setGradientElement("stroke", data.type, data.angle, data.values)
+            baseColorId = this.getSelectedElement().setGradientElement("stroke", data.type, data.angle, data.values)
           }
           else
           {
@@ -1170,7 +1174,7 @@ class awa {
           }
 
           // Define base color
-          this.getSelectedElement().baseStroke(value);
+          this.getSelectedElement().baseStroke(baseColorId, value);
 
           break;
 
@@ -1719,6 +1723,8 @@ class awa {
                 sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
 
+              // this.renderGradients(el, sceneEl)
+
               parent.add(sceneEl)
 
             break;
@@ -1743,16 +1749,41 @@ class awa {
                 sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
 
+              // this.renderGradients(el, sceneEl)
+
               parent.add(sceneEl)
 
             break;
         }
-  
+
+        this.renderGradients(el, sceneEl)
+
+        // -------------------------------------------------
 
       }
       
     }
 
+  }
+
+  renderGradients(el, sceneEl)
+  {
+    // Gradients
+    if(el.node.baseFill && el.node.baseFill.id) // is a gradient not a simple color
+    {
+      var data = getGradientValues(el.node.baseFill.color);
+      var baseColorId = sceneEl.setGradientElement("fill", data.type, data.angle, data.values)
+
+      sceneEl.baseFill(baseColorId,el.node.baseFill.color);
+    }
+
+    if(el.node.baseStroke && el.node.baseStroke.id) // is a gradient not a simple color
+    {
+      var data = getGradientValues(el.node.baseStroke.color);
+      var baseColorId = sceneEl.setGradientElement("stroke", data.type, data.angle, data.values)
+
+      sceneEl.baseStroke(baseColorId,el.node.baseStroke.color);
+    }
   }
 
   deleteScene(_id)
@@ -1920,7 +1951,9 @@ class awa {
       node : {
         attributes : attributes ? attributes : sceneEl.attr(),
         anchor : sceneEl.node.anchor,
-        effects : sceneEl.node.effects
+        effects : sceneEl.node.effects,
+        baseFill : sceneEl.baseFill(),
+        baseStroke : sceneEl.baseStroke(),
       },
       options : {visible : true, locked : false},
       events : []//sceneEl.events, events used ?

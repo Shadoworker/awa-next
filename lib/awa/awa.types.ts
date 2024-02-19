@@ -43,6 +43,8 @@ export namespace AwaTypes {
     attributes : object|{},
     anchor : object|{},
     effects : any[],
+    baseFill : object|{},
+    baseStroke : object|{},
   }
 
   type T_AwaElOptions = {
