@@ -1067,8 +1067,8 @@ class RightPanelComp extends Component<any,any> {
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                                 
-                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill', color : this.state.selectedElementProps.baseFill.color })} >
-                                <div className='InputColor' style={{background:this.state.fillColor}}></div>
+                              <div className='Input InputColorContainer' onClick={()=>this.requestToggleColorPicker({type:'fill', color : this.state.selectedElementProps.baseFill?.color })} >
+                                <div className='InputColor' style={{background:this.state.selectedElementProps.baseFill?.color}}></div>
                               </div>
                               
                             </fieldset>
@@ -1080,7 +1080,6 @@ class RightPanelComp extends Component<any,any> {
                            
                         </div>
                         
-
                       </div>
 
                       <div className='awa-form-linegroup awa-linegroup-container'>
@@ -1090,8 +1089,8 @@ class RightPanelComp extends Component<any,any> {
                         <div className='awa-form-container'>
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
-                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke', color : this.state.selectedElementProps.baseStroke.color})}>
-                                <div className='InputColor' style={{background:this.state.strokeColor}}></div>
+                              <div className='Input InputColorContainer'  onClick={()=>this.requestToggleColorPicker({type:'stroke', color : this.state.selectedElementProps.baseStroke?.color})}>
+                                <div className='InputColor' style={{background: this.state.selectedElementProps.baseStroke?.color}}></div>
                               </div>
                             </fieldset>
                             <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{/* {this.getSelectedElementsValue('stroke')} */}</span>

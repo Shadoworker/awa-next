@@ -1776,6 +1776,11 @@ class awa {
 
       sceneEl.baseFill(baseColorId,el.node.baseFill.color);
     }
+    else if(el.node.baseFill)
+    {
+      sceneEl.baseFill(null,el.node.baseFill.color);
+    }
+
 
     if(el.node.baseStroke && el.node.baseStroke.id) // is a gradient not a simple color
     {
@@ -1783,6 +1788,10 @@ class awa {
       var baseColorId = sceneEl.setGradientElement("stroke", data.type, data.angle, data.values)
 
       sceneEl.baseStroke(baseColorId,el.node.baseStroke.color);
+    }
+    else if(el.node.baseStroke)
+    {
+      sceneEl.baseStroke(null,el.node.baseStroke.color);
     }
   }
 
@@ -1851,7 +1860,7 @@ class awa {
   {
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl, attributes);
-
+ 
     this.updateSceneElements(elObject, attributes)
 
     // Dispatch update
