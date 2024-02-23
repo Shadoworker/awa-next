@@ -60,8 +60,8 @@ class RightPanelComp extends Component<any,any> {
     componentDidMount(){
 
       var rightPanTabContainer : any = document.querySelector('#rightPanTabContainer');
-      var wHeight = window.innerHeight - 107;
-      rightPanTabContainer.style.height = wHeight +'px';
+      // var wHeight = window.innerHeight - 107;
+      rightPanTabContainer.style.height = "83%" //wHeight +'px';
 
 
       this.initDasharrayFieldsBehaviour();
@@ -203,6 +203,10 @@ class RightPanelComp extends Component<any,any> {
     requestToggleColorPicker = (_data)=>{
       awaEventEmitter.emit(awaEvents.TOGGLE_COLOR_PICKER, _data);
     }
+    
+    requestToggleMediaPicker = (_data)=>{
+      awaEventEmitter.emit(awaEvents.TOGGLE_MEDIA_PICKER, _data);
+    }
 
     onUpdateInputColor = ()=>{
 
@@ -343,6 +347,7 @@ class RightPanelComp extends Component<any,any> {
       var elementRotation = selectedElement.transform().rotate || 0;
       var elementFill = selectedElement.fill();
       var elementStroke = selectedElement.stroke();
+      var elementBaseBackground = selectedElement.baseBackground();
       var elementBaseFill = selectedElement.baseFill();
       var elementBaseStroke = selectedElement.baseStroke();
       var elementStrokeWidth = selectedElement.attr("stroke-width") || 0;
@@ -369,6 +374,7 @@ class RightPanelComp extends Component<any,any> {
         rotation : elementRotation,
         fill : elementFill,
         stroke : elementStroke,
+        baseBackground : elementBaseBackground,
         baseFill : elementBaseFill,
         baseStroke : elementBaseStroke,
         strokeWidth : elementStrokeWidth,
@@ -588,6 +594,10 @@ class RightPanelComp extends Component<any,any> {
                 value = this.state.selectedElementProps?.strokeDasharray;
               }
             }
+          }
+          if(_name == "fill" || _name == "stroke")
+          {
+            value = value.includes('url("#') ? "Gradient" : value; // url("# : begining of the gradient values
           }
         }
       }
@@ -1040,13 +1050,12 @@ class RightPanelComp extends Component<any,any> {
                           <div className='awa-form-group awa-form-container-item group-triple'>
                             <fieldset className="Fieldset fieldset-container-item">
                             
-                              <label htmlFor="baseBackground" style={{width:'80%', height:23}}>
+                              <label style={{width:'80%', height:23}}  onClick={()=>this.requestToggleMediaPicker({type : this.state.selectedElementProps.baseBackground?.type, media : this.state.selectedElementProps.baseBackground?.media})}  >
                                 <div className='Input InputColorContainer'>
                                   <div className='InputColor' style={{backgroundSize:'contain', backgroundImage:'url("https://img.freepik.com/premium-vector/square-transparent-background-with-gradient-effect-vector-illustration_522680-499.jpg")'}}>
                                   </div>
                                 </div>
                               </label>
-                              <input style={{display:'none'}} type="file" name="" id="baseBackground" />
                               
                             </fieldset>
                             {/* <span className='fieldInfo-inline' style={{textTransform:'uppercase'}}>{this.state.selectedElementProps.fill}</span> */}
@@ -1072,7 +1081,7 @@ class RightPanelComp extends Component<any,any> {
                               </div>
                               
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform: this.getSelectedElementsValue('fill') == "Mixed" ? 'unset' : 'uppercase'}}>{/* {this.getSelectedElementsValue('fill')} */}</span>
+                            <span className='fieldInfo-inline' style={{textTransform: !this.getSelectedElementsValue('fill')?.includes("#") ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('fill')}</span>
                             <div className='awa-form-container-item-opts'>
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
                             </div>
@@ -1093,7 +1102,7 @@ class RightPanelComp extends Component<any,any> {
                                 <div className='InputColor' style={{background: this.state.selectedElementProps.baseStroke?.color}}></div>
                               </div>
                             </fieldset>
-                            <span className='fieldInfo-inline' style={{textTransform:this.getSelectedElementsValue('stroke') == "Mixed" ? 'unset' : 'uppercase'}}>{/* {this.getSelectedElementsValue('stroke')} */}</span>
+                            <span className='fieldInfo-inline' style={{textTransform:!this.getSelectedElementsValue('stroke')?.includes("#") ? 'unset' : 'uppercase'}}>{this.getSelectedElementsValue('stroke')}</span>
                             <div className='awa-form-container-item-opts'>
                               {/* <i className="bi bi-dash-lg propertyOptBtn" style={{fontSize:11, marginRight:2}}></i> */}
                               <i className="bi bi-eye propertyOptBtn" style={{fontSize:11}}></i>
@@ -1335,7 +1344,7 @@ class RightPanelComp extends Component<any,any> {
                     </Accordion.Trigger>
                   </Accordion.Header>
                   <Accordion.Content>
-                    <div style={{ position:'relative', fontSize:12, fontFamily:'Montserrat', display: 'flex', width:'90%', marginLeft:'auto', marginRight:'auto', flexDirection: 'column', gap: 5 }}>
+                    <div style={{ position:'relative', fontSize:12, fontFamily:'Montserrat', display: 'flex', width:'90%', marginLeft:'auto', marginRight:'auto', flexDirection: 'column', gap: 5, paddingBottom:105 }}>
                       <Ant.List
                         dataSource={sortAnimationsByName(this.state.customAnimations)}
                         renderItem={(item:any) => (

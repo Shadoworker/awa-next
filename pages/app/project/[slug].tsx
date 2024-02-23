@@ -17,9 +17,9 @@ import '../../../lib/assets/vendors/svg.filter';
 import '../../../lib/assets/vendors/svg.connectable';
 
 
-import { getTimelineItems, createNewTween} from '../../../lib/awa/awa.anime.utils';
+import { getTimelineItems} from '../../../lib/awa/awa.anime.utils';
 
-import awa, { APP_MODE, USER_ACTION_STATE } from '../../../lib/awa/awa.core';
+import awa, { APP_MODE } from '../../../lib/awa/awa.core';
 
 import MenubarComp from '../../../components/MenubarComp/MenubarComp';
 import LeftPanelComp from '../../../components/LeftPanelComp/LeftPanelComp';
@@ -28,10 +28,15 @@ import TimelineBoxComp from '../../../components/TimelineBoxComp/TimelineBoxComp
 
 import awaEvents, { awaEventEmitter } from '../../../lib/awa/awa.events';
 import anime from '../../../lib/assets/vendors/anime';
-import { EFFECT_ID_BODY, TIMELINE_STEP } from '../../../lib/awa/awa.constants';
+import { EFFECT_ID_BODY, MEDIA_PICKER_TYPES, TIMELINE_STEP } from '../../../lib/awa/awa.constants';
 import { withRouter } from 'next/router';
-import { AwaTypes } from '../../../lib/awa/awa.types';
 import ColorPicker from 'react-best-gradient-color-picker';
+
+import Card from '@mui/material/Card';
+import { Button, CardActions, CardContent, CardMedia, IconButton } from '@mui/material';
+import { Typography } from 'antd';
+import { PlayIcon, UploadIcon } from '@radix-ui/react-icons';
+
 
 class AppPage extends Component<any, any> {
 
@@ -49,8 +54,12 @@ class AppPage extends Component<any, any> {
 
 
       toggleColorPicker : false,
+      toggleMediaPicker : false,
       colorType : 'fill',
-      colorPickerColor : '#fff'
+      colorPickerColor : '#fff',
+
+      mediaPickerType : "image",
+      mediaPickerMedia : null
 
     };
   }
@@ -503,6 +512,7 @@ class AppPage extends Component<any, any> {
 
     // Listeners -----------------------------
     this.onToggleColorPicker();
+    this.onToggleMediaPicker();
 
   }
 
@@ -566,9 +576,41 @@ class AppPage extends Component<any, any> {
 
     awaEventEmitter.on(awaEvents.TOGGLE_COLOR_PICKER, (_data)=>{
  
-      this.setState({toggleColorPicker : !this.state.toggleColorPicker, colorType : _data.type, colorPickerColor : _data.color})
+      this.setState({toggleColorPicker : !this.state.toggleColorPicker, toggleMediaPicker : false, colorType : _data.type, colorPickerColor : _data.color})
 
     })
+  }
+
+  
+  onToggleMediaPicker = ()=>{
+
+    awaEventEmitter.on(awaEvents.TOGGLE_MEDIA_PICKER, (_data)=>{
+ 
+      this.setState({toggleMediaPicker : !this.state.toggleMediaPicker, toggleColorPicker : false})
+
+    })
+  }
+
+  setMediaPickerType = (type)=>{
+    this.setState({mediaPickerType : type})
+  }
+
+  triggerMediaInput = (e)=>{
+
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    var input : HTMLInputElement|null = document.querySelector('input#baseBackground');
+    input?.click();
+  }
+
+  hideColorPicker = (e)=>{
+
+    // e.preventDefault(); 
+    // e.stopPropagation(); 
+
+    // if(this.state.toggleColorPicker)
+    //   this.setState({toggleColorPicker : false})
+
   }
 
   onPickerColorChange=(c:any)=>
@@ -616,7 +658,7 @@ class AppPage extends Component<any, any> {
 
    render() {
      return (
-       <Flex direction={"column"} className="awa-app-ui">
+       <Flex direction={"column"} className="awa-app-ui" onClick={(e)=>this.hideColorPicker(e)}>
          <Box className="awa-header">
            <MenubarComp awa={this.state.awa} />
          </Box>
@@ -646,6 +688,52 @@ class AppPage extends Component<any, any> {
                     {this.state.toggleColorPicker &&
                       <div className='awa-color-picker-box'>
                         <ColorPicker hideAdvancedSliders hideColorGuide hideInputType value={this.state.colorPickerColor} onChange={(c)=>this.onPickerColorChange(c)} />
+                      </div>
+                    }
+                    
+                    {
+                    this.state.toggleMediaPicker &&
+                      <div className='awa-media-picker-box'>
+                        <Card sx={{ width: 295 , backgroundColor: '#09090a'}}>
+                           
+                          {this.state.mediaPickerType == MEDIA_PICKER_TYPES.image &&
+                            <label htmlFor="baseBackground">
+                              <img style={{ width:'100%', height:270, objectFit:'cover'}} src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=400%2C400&ssl=1" alt="image" />
+                            </label>
+                          }
+                          
+                          {this.state.mediaPickerType == MEDIA_PICKER_TYPES.video &&
+                            <label htmlFor="baseBackground" onClick={(e)=>this.triggerMediaInput(e)}>
+                              <video width={"100%"} height={270} controls src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" ></video>
+                            </label>
+                          }
+                          
+                          <input style={{display:'none'}} type="file" name="" id="baseBackground" />
+
+                          <CardContent style={{padding:5}}>
+                          </CardContent>
+                          <CardActions style={{justifyContent:'space-between'}}>
+                            {/* <Button size="small" >Image</Button>
+                            <Button size="small" >Video</Button> */}
+                            <div className="mediaControlBtnWrapper">
+                              <div id="media-solid-btn" onClick={()=>this.setMediaPickerType(MEDIA_PICKER_TYPES.image)} className={`mediaControlBtn ${this.state.mediaPickerType == MEDIA_PICKER_TYPES.image ? "mediaControlBtnSelected" : ""}`}>
+                                Image
+                              </div>
+                              <div id="media-gradient-btn" onClick={()=>this.setMediaPickerType(MEDIA_PICKER_TYPES.video)} className={`mediaControlBtn ${this.state.mediaPickerType == MEDIA_PICKER_TYPES.video ? "mediaControlBtnSelected" : ""}`}>
+                                Video
+                              </div>
+                            </div>
+
+                            {/* <div>
+                              <span>Change</span>
+                              <IconButton aria-label="delete" size="small" style={{backgroundColor:'#c2c2c245'}}>
+                                <UploadIcon color='#fff' fontSize="inherit" />
+                              </IconButton>
+                            </div> */}
+                            
+
+                          </CardActions>
+                        </Card>
                       </div>
                     }
 

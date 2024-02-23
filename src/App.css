@@ -52,15 +52,13 @@ img
 
 /* Hide scrollbar for Firefox */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: 0.1px;
   scrollbar-color: transparent transparent;
   font-family: 'Montserrat' !important;
 
 }
 
-body{
-  overflow: hidden;
-}
+ 
 .awa-app-ui
 {
 background-color: #242730;
@@ -803,6 +801,69 @@ opacity: 1;
   padding: 7px;
   border-radius: 5px;
   transform: scale(0.95);
+}
+
+.awa-media-picker-box
+{
+  position: absolute;
+  top: 13%;
+  right: 18%;
+  z-index: 8000;
+  background-color: #09090a;
+  padding: 7px;
+  border-radius: 5px;
+  transform: scale(0.95);
+}
+
+.mediaControlBtnWrapper {
+  background: rgb(54, 54, 54);
+}
+
+.mediaControlBtnWrapper {
+  height: 28px;
+  display: flex;
+  padding: 2px;
+  position: relative;
+  background: #e9e9f5;
+  align-items: center;
+  border-radius: 6px;
+  justify-content: center;
+}
+
+.mediaControlBtnSelected {
+  color: #568cf5 !important;
+  background: black !important;
+}
+
+.mediaControlBtn {
+  color: #fff;
+}
+
+.mediaControlBtnWrapper {
+  background: #363636 !important;
+}
+
+.mediaControlBtn {
+  color: #fff;
+  height: 24px;
+  display: flex;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0);
+  transition: all 160ms ease;
+  align-items: center;
+  font-weight: 700;
+  line-height: 1;
+  padding-left: 8px;
+  border-radius: 4px;
+  padding-right: 8px;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mediaControlBtn:hover {
+  
+
 }
 
 .popup_tabs-header

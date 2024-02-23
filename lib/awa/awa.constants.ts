@@ -56,6 +56,11 @@ export const PREVIEW_DATA_KEYS =
 
 }
 
+export const MEDIA_PICKER_TYPES = 
+{
+    image : 'image',
+    video : 'video',
+}
 
 export const NATIVE_ANIMATIONS = 
 {
