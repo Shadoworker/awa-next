@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+
+    <svg height="550" width="750" style="background-color: #a5a6aa;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+
+
+            <filter id='inset' x='-50%' y='-50%' width='200%' height='200%'>
+
+                <feColorMatrix in="SourceGraphic" type="matrix" values=" 0 0 0 0 0 
+                  0 0 0 1 0 
+                  0 0 0 0 0 
+                  0 0 0 1 0" result="opaque-source" />
+                <feGaussianBlur stdDeviation="15" />
+                <feComposite operator="xor" in2="opaque-source" />
+                <feComposite operator="in" in2="opaque-source" />
+
+            </filter>
+
+            <filter id="inner-shadow" x="0" y="0" width="100%" height="100%">
+
+                <feOffset result="SvgjsFeOffset1123" in="SourceGraphic" dy="5" dx="5"></feOffset>
+                <feGaussianBlur result="offsetblur" in="SvgjsFeOffset1123" stdDeviation="0">
+                </feGaussianBlur>
+                <feComposite result="inverse" in="SourceGraphic" operator="out" in2="offsetblur">
+                </feComposite>
+                <feFlood result="color" in="SourceGraphic" flood-opacity="1" flood-color="yellow"></feFlood>
+                <feComposite result="shadow" in="color" operator="in" in2="inverse"></feComposite>
+
+            </filter>
+
+            <filter id="inner-shadow2" x="0" y="0" width="100%" height="100%">
+
+                <feOffset result="SvgjsFeOffset1123" in="SourceGraphic" dy="5" dx="5"></feOffset>
+                <feGaussianBlur result="offsetblur" in="SvgjsFeOffset1123" stdDeviation="0">
+                </feGaussianBlur>
+                <feComposite result="inverse" in="SourceGraphic" operator="out" in2="offsetblur">
+                </feComposite>
+                <feFlood result="color" in="SourceGraphic" flood-opacity="0.21" flood-color="red"></feFlood>
+                <feComposite result="shadow" in="color" operator="in" in2="inverse"></feComposite>
+
+            </filter>
+
+            <filter id="blur">
+                <feGaussianBlur in="SourceGraphic" result="blurer" stdDeviation="5">
+                </feGaussianBlur>
+            </filter>
+
+
+            <filter id="drop-shadow" x="0" y="0" width="200%" height="200%" color-interpolation-filters="sRGB">
+                <feComponentTransfer in="SourceGraphic">
+                    <feFuncR type="discrete" tableValues=".5" />
+                    <feFuncG type="discrete" tableValues=".5" />
+                    <feFuncB type="discrete" tableValues=".5" />
+                </feComponentTransfer>
+                <feGaussianBlur stdDeviation=".85" />
+                <feOffset dx="8" dy="8" result="shadow" />
+                <feComposite in="SourceGraphic" in2="shadow" operator="atop" result="xorer" />
+            </filter>
+
+ 
+        </defs>
+
+
+        <rect id="originalRect" x="10" y="10" width="100" height="100" fill="#D9D9D9" rx="10" ry="10" />
+
+        <g>
+            <use id="originalRect-filter-dropshadow-0"  href="#originalRect" x="0" filter="url(#drop-shadow)" />
+            <use id="originalRect-filter-inset-0"       href="#originalRect" x="0" filter="url(#inset)" />
+            <use id="originalRect-filter-innershadow-0" href="#originalRect" x="0" filter="url(#inner-shadow)" />
+            <use id="originalRect-filter-innershadow-1" href="#originalRect" x="0" filter="url(#inner-shadow2)" />
+        </g>
+
+
+
+        <!-- <use id="originalRect-filter-blur-0" href="#originalRect"  x="0" filter="url(#blur)" />   -->
+
+    </svg>
+
+
+
+
+
+</body>
+
+</html>

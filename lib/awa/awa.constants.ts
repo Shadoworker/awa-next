@@ -11,6 +11,8 @@ export const GROUP_ID_BODY = '--group--';
 
 export const GRADIENT_ID_BODY = "--gradient--item"
 
+export const BACKGROUND_ID_BODY = "--background--item"
+
 
 export const INCANVAS_ITEM_CLASS = '--incanvas-item--';
 

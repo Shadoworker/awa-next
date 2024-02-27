@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CANVAS</title>
+</head>
+<body>
+    
+
+    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" style="border: solid 1px gray;">
+        <!-- Define a clipping path using the clipPath element -->
+        <defs>
+          <clipPath id="myClip">
+            <rect x="10" y="10" width="80" height="80" />
+          </clipPath>
+        </defs>
+      
+        <!-- Apply the clipping path to a group element using the clip-path attribute -->
+        
+        <g id="canvas" >
+            <g clip-path="url(#myClip)">
+                <!-- Contents of the group -->
+                <rect x="0" y="0" width="100" height="100" fill="blue" />
+                <circle cx="50" cy="50" r="30" fill="red" />
+            </g>
+        </g>
+      </svg>
+      
+
+      <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" style="border: solid 1px red;">
+        <!-- Define a rectangle to be reused -->
+        <rect id="myRect" x="20" y="20" width="60" height="60" fill="blue" />
+      
+        <!-- Use the rectangle and apply a clipPath to it -->
+        <clipPath id="myClipPath">
+          <use xlink:href="#myRect" />
+        </clipPath>
+      
+        <!-- Apply the clipPath to another element (in this case, a circle) -->
+        <circle cx="100" cy="100" r="50" fill="red" clip-path="url(#myClipPath)" />
+      </svg>
+      
+
+</body>
+</html>

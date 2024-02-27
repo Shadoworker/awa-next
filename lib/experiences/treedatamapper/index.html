@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trailing Dots Example</title>
+    <style>
+        .main-container {
+            max-width: 200px; /* Adjust the max-width as needed */
+            border: 1px solid #ccc; /* Optional styling */
+            padding: 10px; /* Optional styling */
+        }
+
+        .main-container .child-container {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="child-container">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur quis urna at mi tristique volutpat.
+        </div>
+    </div>
+</body>
+</html>

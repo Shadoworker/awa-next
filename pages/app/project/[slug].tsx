@@ -188,9 +188,9 @@ class AppPage extends Component<any, any> {
     m_loonkInstance.start();
 
     // ANIMATIONS ------------------------------------------------------
-    var centered = false;
-    var rotate = true;
-    var _path = anime.path('#path_1',0,centered,rotate);
+    // var centered = false;
+    // var rotate = true;
+    // var _path = anime.path('#path_1',0,centered,rotate);
     // _path.centered = false;
     // _path.rotate = true;
 
@@ -363,8 +363,18 @@ class AppPage extends Component<any, any> {
 
     // rect.addClip(rectClip);
     // awaInstance.addAnimation(rectClip)
+   
+    var pattern = m_svgInstance.pattern(200, 200, function(add) {
+      add.image('https://img.pikbest.com/origin/10/01/88/35ipIkbEsTXKu.jpg!w700wp', 200, 200);
+    })
 
-    
+    pattern.attr({id:"patt-1"})
+   
+    var rect = m_svgInstance.rect(75,75).attr({
+        x : 140,
+        y : 100,
+        fill: '#patt-1',
+      })
 
     // awaInstance.addInteraction(interaction)
 
@@ -723,14 +733,6 @@ class AppPage extends Component<any, any> {
                                 Video
                               </div>
                             </div>
-
-                            {/* <div>
-                              <span>Change</span>
-                              <IconButton aria-label="delete" size="small" style={{backgroundColor:'#c2c2c245'}}>
-                                <UploadIcon color='#fff' fontSize="inherit" />
-                              </IconButton>
-                            </div> */}
-                            
 
                           </CardActions>
                         </Card>

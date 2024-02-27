@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CANVAS CENTERER</title>
+</head>
+<body style="margin: 0;">
+    
+
+    <svg width="800" height="600" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" style="border: solid 1px gray;" >
+        
+        <g id="canvas" style="outline: solid 0.5px red;">
+          <rect x="180" y="40" width="60" height="60" fill="blue" />
+          <circle cx="150" cy="150" r="30" fill="red" />
+        </g>
+      </svg>
+      
+      
+      <script>
+
+        var svg = document.querySelector("svg");
+        var group = document.querySelector("g");
+
+        console.log(svg)
+        console.log(group)
+
+        var ratioX = 500/800;
+        var ratioY = 400/600;
+
+        var svgSize = svg.getBBox();
+        var groupSize = group.getBBox();
+
+        var groupLeft = groupSize.x;
+
+        console.log(group.getBoundingClientRect())
+        console.log(ratioX, ratioY)
+        console.log((groupLeft*ratioX))
+
+        group.style.transform = `translate(${-groupLeft}px, ${0}px)`;
+
+      </script>
+
+</body>
+</html>

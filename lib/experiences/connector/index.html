@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CANVAS CONNECTOR</title>
+</head>
+<body style="margin: 0;">
+    
+
+      <svg width="800" height="600" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" style="border: solid 1px gray;" >
+         
+        <g id="canvas-1" style="outline: solid 0.5px red;">
+          <rect x="180" y="40" width="60" height="60" fill="blue" />
+          <circle cx="150" cy="150" r="30" fill="red" />
+        </g>
+
+
+        <g id="canvas-2" style="outline: solid 0.5px rgb(0, 106, 255);">
+          <circle cx="350" cy="250" r="30" fill="red" />
+        </g>
+
+        
+          <connector role="edge" n1="#canvas-1" n2="#canvas-2" />
+ 
+      </svg>
+      
+      
+      <script>
+
+        var svg = document.querySelector("svg");
+        var group = document.querySelector("g");
+
+
+      </script>
+
+</body>
+</html>

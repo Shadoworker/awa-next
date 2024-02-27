@@ -1,0 +1,145 @@
+<!DOCTYPE html> 
+<html> 
+
+<head> 
+	<style> 
+		svg{
+			border: solid 1px green;
+		}
+		.patterns { 
+			background-color: #5a65748f; 
+			/* margin: 1%;  */
+			height: 100vh; 
+		} 
+	</style> 
+</head> 
+
+<body> 
+	<h3 style="color:green;text-align: center;"> 
+		SVG BG 
+	</h3> 
+	<div class="patterns"> 
+
+		<svg width="600" height="250" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+			 
+				<pattern id="patt-1" x="0" y="0" width="60" height="40" patternUnits="userSpaceOnUse" patternContentUnits="" >
+					<image id="patt-1-image" href="./bg-1.jpeg" x="0" y="0" width="60" height="40" preserveAspectRatio="none" />
+				</pattern>
+
+				<rect id="def-rect-1" x="0" y="0" width="400" height="200" stroke="red" />
+
+			</defs>
+	 
+			<g id="rect-1-elements">
+				<use href="#def-rect-1" x="0" fill="url(#patt-1)" />
+				<use href="#def-rect-1" x="0" fill="#ff000010" />
+			</g>
+			
+		</svg>
+		
+ 
+		  <span>GRID : </span> <input id="gridSlider" value="0" type="range" oninput="gridSliderOnChange()" >
+		  <span>H : </span> <input id="hSpacingSlider" value="0" type="range" oninput="hSpacingSliderOnChange()" >
+		  <span>V : </span> <input id="vSpacingSlider" value="0" type="range" oninput="vSpacingSliderOnChange()" >
+  
+	</div>
+	
+	<script>
+
+		var img = new Image();
+		img.src = "./bg-1.jpeg";
+		img.onload = function() 
+		{
+			var realWidth = this.naturalWidth;
+			var realHeight = this.naturalHeight;
+
+			var rectWidth = 400;
+			var rectHeight = 200;
+
+			var baseScale = 6;
+
+			document.querySelector('#gridSlider').value = baseScale;
+
+			var tileW = realWidth/baseScale, 
+				tileH = realHeight/baseScale;
+
+			document.querySelector("#patt-1").setAttribute("width", tileW)
+			document.querySelector("#patt-1").setAttribute("height", tileH)
+
+			document.querySelector("#patt-1").setAttribute("baseWidth", realWidth)
+			document.querySelector("#patt-1").setAttribute("baseHeight", realHeight)
+			document.querySelector("#patt-1").setAttribute("hSpacing", 0)
+			document.querySelector("#patt-1").setAttribute("vSpacing", 0)
+
+
+			document.querySelector("#patt-1 image").setAttribute("width", tileW)
+			document.querySelector("#patt-1 image").setAttribute("height", tileH)
+			
+
+		};
+
+		function gridSliderOnChange()
+		{
+			var baseScale = document.querySelector('#gridSlider').value;
+			
+			baseScale = baseScale > 0 ? baseScale : 1;
+
+			var baseWidth = parseFloat(document.querySelector("#patt-1").getAttribute("baseWidth"))
+			var baseHeight= parseFloat(document.querySelector("#patt-1").getAttribute("baseHeight"))
+
+			var hSpacing = parseFloat(document.querySelector("#patt-1").getAttribute("hSpacing"))
+			var vSpacing = parseFloat(document.querySelector("#patt-1").getAttribute("vSpacing"))
+
+			var tileW = baseWidth/baseScale, 
+				tileH = baseHeight/baseScale;
+
+			
+			document.querySelector("#patt-1").setAttribute("width", (tileW + hSpacing))
+			document.querySelector("#patt-1").setAttribute("height", (tileH + vSpacing))
+ 
+			document.querySelector("#patt-1 image").setAttribute("width", tileW)
+			document.querySelector("#patt-1 image").setAttribute("height", tileH)
+			
+		}
+
+		function hSpacingSliderOnChange()
+		{
+			var ratio = document.querySelector('#hSpacingSlider').value;
+			
+			var baseWidth = parseFloat(document.querySelector("#patt-1").getAttribute("baseWidth"))
+
+			var hSpacing = 0;
+			if(ratio > 0)
+				hSpacing = baseWidth*(ratio/100);
+
+
+			document.querySelector("#patt-1").setAttribute("hSpacing", hSpacing)
+  
+
+			gridSliderOnChange();
+			
+		}
+
+		function vSpacingSliderOnChange()
+		{
+			var ratio = document.querySelector('#vSpacingSlider').value;
+			
+			var baseHeight= parseFloat(document.querySelector("#patt-1").getAttribute("baseHeight"))
+
+			var vSpacing = 0;
+			if(ratio > 0)
+				vSpacing = baseHeight*(ratio/100);
+
+			document.querySelector("#patt-1").setAttribute("vSpacing", vSpacing)
+  
+
+			gridSliderOnChange();
+			
+		}
+ 
+	</script>
+	
+</body> 
+
+</html> 
