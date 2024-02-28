@@ -3,6 +3,10 @@
 
 <head> 
 	<style> 
+		body
+		{
+			margin: 0px;
+		}
 		svg{
 			border: solid 1px green;
 		}
@@ -15,19 +19,24 @@
 </head> 
 
 <body> 
-	<h3 style="color:green;text-align: center;"> 
+	<!-- <h3 style="color:green;text-align: center;"> 
 		SVG BG 
-	</h3> 
+	</h3>  -->
 	<div class="patterns"> 
 
-		<svg width="600" height="250" xmlns="http://www.w3.org/2000/svg">
+		<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 			 
-				<pattern id="patt-1" x="0" y="0" width="60" height="40" patternUnits="userSpaceOnUse" patternContentUnits="" >
-					<image id="patt-1-image" href="./bg-1.jpeg" x="0" y="0" width="60" height="40" preserveAspectRatio="none" />
+				<!-- <pattern id="patt-1" x="0" y="0" width="1" height="1" patternUnits="userSpaceOnUse" patternContentUnits="" >
+					<image id="patt-1-image" href="./bg-1.jpeg" x="0" y="0" width="1" height="1" preserveAspectRatio="none" />
+				</pattern> -->
+
+				<pattern id="patt-1" x="0" y="0" width="200" height="100" patternUnits="userSpaceOnUse" patternContentUnits="">
+					<image id="patt-1-image" href="./bg-4.png" x="0" y="0" width="200" height="100" preserveAspectRatio="none" 
+					  />
 				</pattern>
 
-				<rect id="def-rect-1" x="0" y="0" width="400" height="200" stroke="red" />
+				<rect id="def-rect-1" x="0" y="0" width="400" height="300" stroke="red" />
 
 			</defs>
 	 
@@ -47,44 +56,101 @@
 	
 	<script>
 
-		var img = new Image();
-		img.src = "./bg-1.jpeg";
-		img.onload = function() 
+		function initBg(baseScale=-1)
 		{
-			var realWidth = this.naturalWidth;
-			var realHeight = this.naturalHeight;
 
-			var rectWidth = 400;
-			var rectHeight = 200;
+			var img = new Image();
+			img.src = "./bg-4.png";
+			img.onload = function() 
+			{
+				var realWidth = this.naturalWidth;
+				var realHeight = this.naturalHeight;
 
-			var baseScale = 6;
+				var rectWidth = 400;
+				var rectHeight = 300;
 
-			document.querySelector('#gridSlider').value = baseScale;
+				if(baseScale == -1) // Fit
+				{
+					var bgWRatio = rectWidth / realWidth, 
+						bgHRatio = rectHeight / realHeight;
 
-			var tileW = realWidth/baseScale, 
-				tileH = realHeight/baseScale;
+						// console.log(bgWRatio, bgHRatio)
 
-			document.querySelector("#patt-1").setAttribute("width", tileW)
-			document.querySelector("#patt-1").setAttribute("height", tileH)
+					document.querySelector("#patt-1").setAttribute("width", realWidth)
+					document.querySelector("#patt-1").setAttribute("height", realHeight)
+ 
+					document.querySelector("#patt-1 image").setAttribute("width", realWidth)
+					document.querySelector("#patt-1 image").setAttribute("height", realHeight)
 
-			document.querySelector("#patt-1").setAttribute("baseWidth", realWidth)
-			document.querySelector("#patt-1").setAttribute("baseHeight", realHeight)
-			document.querySelector("#patt-1").setAttribute("hSpacing", 0)
-			document.querySelector("#patt-1").setAttribute("vSpacing", 0)
+					var newBgHeight = realHeight * bgWRatio;
+					// console.log(newBgHeight)
+					var translateY = (rectHeight - newBgHeight)/2;
+					// console.log(rectHeight - newBgHeight)
+
+					document.querySelector("#patt-1 image").setAttribute("transform", `scale(${bgWRatio}) translate(0, ${translateY})`)
 
 
-			document.querySelector("#patt-1 image").setAttribute("width", tileW)
-			document.querySelector("#patt-1 image").setAttribute("height", tileH)
+				}
+				else if(baseScale == 0) // Fill
+				{
+
+					var bgWRatio = rectWidth / realWidth, 
+						bgHRatio = rectHeight / realHeight;
+
+					var scaler = (realWidth>realHeight) ? bgHRatio : bgWRatio;
+						// console.log(bgWRatio, bgHRatio)
+
+					document.querySelector("#patt-1").setAttribute("width", realWidth)
+					document.querySelector("#patt-1").setAttribute("height", realHeight)
+ 
+					document.querySelector("#patt-1 image").setAttribute("width", realWidth)
+					document.querySelector("#patt-1 image").setAttribute("height", realHeight)
+
+					var newBgWidth = realWidth * scaler;
+					var newBgHeight = realHeight * scaler;
+					// console.log(newBgHeight)
+					var translateX = (rectWidth - newBgWidth)/2;
+					var translateY = (rectHeight - newBgHeight)/2;
+					// console.log(rectHeight - newBgHeight)
+
+					document.querySelector("#patt-1 image").setAttribute("transform", `scale(${scaler}) translate(${translateX}, ${translateY})`)
+
+
+				}
+				else if(baseScale != -1) // Tile
+				{
+					document.querySelector('#gridSlider').value = baseScale;
+
+					var tileW = realWidth/baseScale, 
+						tileH = realHeight/baseScale;
+
+					document.querySelector("#patt-1").setAttribute("width", tileW)
+					document.querySelector("#patt-1").setAttribute("height", tileH)
+
+					document.querySelector("#patt-1").setAttribute("baseWidth", realWidth)
+					document.querySelector("#patt-1").setAttribute("baseHeight", realHeight)
+					document.querySelector("#patt-1").setAttribute("hSpacing", 0)
+					document.querySelector("#patt-1").setAttribute("vSpacing", 0)
+
+
+					document.querySelector("#patt-1 image").setAttribute("width", tileW)
+					document.querySelector("#patt-1 image").setAttribute("height", tileH)
 
 
 
-			// Spacing Sliders max values
+					// Spacing Sliders max values
 
-			document.querySelector("#hSpacingSlider").setAttribute("maxSpacing", (rectWidth-tileW))
-			document.querySelector("#vSpacingSlider").setAttribute("maxSpacing", (rectHeight-tileH))
-			
+					document.querySelector("#hSpacingSlider").setAttribute("maxSpacing", (rectWidth-tileW))
+					document.querySelector("#vSpacingSlider").setAttribute("maxSpacing", (rectHeight-tileH))
+					
 
-		};
+				}
+
+				
+			};
+		}
+		
+		initBg(0)
 
 		function gridSliderOnChange()
 		{
