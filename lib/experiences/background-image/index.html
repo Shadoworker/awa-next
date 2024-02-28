@@ -75,6 +75,13 @@
 
 			document.querySelector("#patt-1 image").setAttribute("width", tileW)
 			document.querySelector("#patt-1 image").setAttribute("height", tileH)
+
+
+
+			// Spacing Sliders max values
+
+			document.querySelector("#hSpacingSlider").setAttribute("maxSpacing", (rectWidth-tileW))
+			document.querySelector("#vSpacingSlider").setAttribute("maxSpacing", (rectHeight-tileH))
 			
 
 		};
@@ -107,12 +114,11 @@
 		{
 			var ratio = document.querySelector('#hSpacingSlider').value;
 			
-			var baseWidth = parseFloat(document.querySelector("#patt-1").getAttribute("baseWidth"))
+			var maxSpacing = parseFloat(document.querySelector("#hSpacingSlider").getAttribute("maxSpacing"))
 
 			var hSpacing = 0;
 			if(ratio > 0)
-				hSpacing = baseWidth*(ratio/100);
-
+				hSpacing = maxSpacing*(ratio/100);
 
 			document.querySelector("#patt-1").setAttribute("hSpacing", hSpacing)
   
@@ -125,14 +131,13 @@
 		{
 			var ratio = document.querySelector('#vSpacingSlider').value;
 			
-			var baseHeight= parseFloat(document.querySelector("#patt-1").getAttribute("baseHeight"))
+			var maxSpacing = parseFloat(document.querySelector("#vSpacingSlider").getAttribute("maxSpacing"))
 
 			var vSpacing = 0;
 			if(ratio > 0)
-				vSpacing = baseHeight*(ratio/100);
+				vSpacing = maxSpacing*(ratio/100);
 
 			document.querySelector("#patt-1").setAttribute("vSpacing", vSpacing)
-  
 
 			gridSliderOnChange();
 			
