@@ -6,12 +6,14 @@ import awaEvents, { awaEventEmitter } from "./awa.events";
 import { createNewTween, getTimelineItems } from "./awa.anime.utils";
 import {
   AWA_ELEMENT_CLASS,
+  DEFBG_ID_BODY,
   BASE_FLOW_ID,
   BASE_INTERACTION_ID,
   BASE_SCENE_ID,
   CLIP_ID_BODY,
   CONNECTORS_GROUP_CLASS,
   CONTAINER_ID_BODY,
+  DEFBASE_ID_BODY,
   ELEMENTS_TYPES,
   GROUP_ID_BODY,
   IGNORE_PREVIEW_CLASS,
@@ -943,11 +945,15 @@ class awa {
 
       var _type = _data.detail.type;
 
+      // Get/Create the defs section
+      var elementsDefs = this.m_svgInstance.defs(); 
+
       var sceneEl;
+      var awaElementId;
 
       switch (_type) {
         case USER_MENU_CREATE_CONTEXT.CREATE_RECT:
-          var awaElementId = this.createAwaElementId("rect");
+          awaElementId = this.createAwaElementId("rect");
           
           this.m_awaElementsIds.push(awaElementId);
 
@@ -964,12 +970,11 @@ class awa {
             })
             .draggable(this.getLoonkInstance())
             .selectable(this.getLoonkInstance());
-
-
+ 
           break;
 
         case USER_MENU_CREATE_CONTEXT.CREATE_CIRCLE:
-          var awaElementId = this.createAwaElementId("circle");
+          awaElementId = this.createAwaElementId("circle");
 
           this.m_awaElementsIds.push(awaElementId);
 
@@ -989,13 +994,18 @@ class awa {
           break;
       }
 
+      // Add to defs and instantiate baseNode(s)
+      elementsDefs.add(sceneEl);
+      var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
+      var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: '#ffffff'});
+
       sceneEl.parentId(this.getActiveSceneId())
 
       // Add to scene
       if(sceneEl)
       {
         // Add to container
-        this.addElementToScene(sceneEl)
+        this.addElementToScene(sceneEl, defBackgroundItem, defBaseItem)
       }
 
       // Quit this state
@@ -1844,13 +1854,15 @@ class awa {
 
   }
 
-  addElementToScene(sceneEl, parent:any = null) // Adds or Update if exist
+  addElementToScene(sceneEl, defBackgroundItem, defBaseItem, parent:any = null) // Adds or Update if exist
   {
    
     if(!parent)
       parent = this.getActiveSceneContainer();
 
-    parent.add(sceneEl);
+    // parent.add(sceneEl); // The element itself is no longer rendered
+    parent.add(defBackgroundItem);
+    parent.add(defBaseItem);
 
     this.updateSceneElementObject(sceneEl);
 

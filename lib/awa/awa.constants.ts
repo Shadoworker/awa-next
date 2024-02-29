@@ -11,7 +11,8 @@ export const GROUP_ID_BODY = '--group--';
 
 export const GRADIENT_ID_BODY = "--gradient--item"
 
-export const BACKGROUND_ID_BODY = "--background--item"
+export const DEFBG_ID_BODY = "--defbg--item" // def background item
+export const DEFBASE_ID_BODY = "--defbase--item" // def base item
 
 export const PATTERN_BG_ID_BODY = "--pattern--background"
 
