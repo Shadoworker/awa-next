@@ -374,21 +374,14 @@ class AppPage extends Component<any, any> {
 
     })
  
-    // .attr({id:"patt-1", x : 0, y : 0})
-   
-    var rectA = m_svgInstance.rect(100,75).attr({
-      id : 'rect-def-1',
-      x : 100,
-      y : 30,
-      stroke:"black"
-    }).fill(pattern)
+    // var rectA = m_svgInstance.rect(100,75).attr({
+    //   id : 'rect-def-1',
+    //   x : 100,
+    //   y : 30,
+    //   stroke:"black"
+    // }).fill(pattern)
  
-    // setTimeout(() => {
-      
-    //    document.querySelector("#patt-img")?.removeAttribute("href")
-    //    document.querySelector("#patt-img")?.setAttribute("href" , "data:image/webp;base64,UklGRgwFAABXRUJQVlA4TP8EAAAvjIAnEAdiIG2bwP1d6l1cWy2QSdtE90xPQB+yYNDcELpSCSUCAYoe5P9KFlgH8P8xNFwFCXA28rWFekFIt7W9Saw3CDoWMFimogRGp9lwyjlOlfu/LcsXknz8juj/BMCFm8Xz8/PLCrVwNc9OPizY28yzs/PngrPlY0bOF1wVL/eZ1tmKpUWeaX/csLOeZVXmz7wUT1nV9ytGFnlm4EPBxGqemZm/cLCeZ+bON85bZEbnL45bZKY/Om2TG5ctXfaYmX/vsCK3IFu7a5nZuHLXU72Y25DD3bkNTw7LLMyLOpGvUScWqBMLOPN9t/uw7gXkbisIgqDVlaZ9/JVlWf69ETamPYIaNcRJry1N2n6Xx/fb81aGPYIaeeLcRmjOx748/WXRHNS+J4jNvhnb7/LcvT2zgiJ9Qfba0oCPfXn+my2zAlRf6Gx0q3r9KanvluRrUFtCcxBWstuX5P925GtQL4T+INT2/ltq3NmxBLUrKg1CLa9fpVY7FqB2RdVBSNruSs1WPIMaeZUJ0ZLnfexLdzyCGnnCxEZ0xvar1G/BHFTpCzO96MT2t6zw3bhZQZG+MNWLjv2UpqxNyDegNoW5/pFdaQxMWIPaEia3AbyWLlmA2hFGNwB8VQSznkHtCsN72JYOeQQ1Eqa38OGQWUGJPON8fLrjvgBR+sJ8/DgjX4MaCAulO5agtoSNYemKBahdwdkjqKHg7AHUyONsVlCkLxjLC1ADwVi+BrUlOFuC2hWcLUANBWePoEYeZw+gSl8wNitIvmAsL0BtCcbyNahtwdkS1K7gbAFqKDh7BDXyOHsEVTYEY48gtwVjs4LUF4zNCpA7jN0XoAd85WtoFOysTy1RBzYnnlALcOy+0BPwMz+ygt4Lfop5lt0vobnPD4AN9AccVdmvF+jUCzTrhWzUCoSMDa+ur4cUtLkaJOrwLiYg4GmYquO3lL7H0TBVp8cEdBkapOrMNCagyU48UWffUaTHTDxRxDEBPV7iiaKmMQFNVhJFv6NIj5EbpXNEQI+PkdI6jQlosjHVo24o0mPiUukeEtBjYqptQkGThZHSf02RHge3FagBAT0OplUkFDTdN1SVXlOk57zLatSQgJ7zriuaxAQ0XZdUpG4o0uNNjQjoOW5SWRoT0HKbqv6OIhu8qTEBIXNpTMAFbyqhyAZv6oqAkLl0QMAFbyqhSN+oX/eoKwIio34clA4IaPOmEgp83tQVJfLM+XJSOiCgY87OSSqhIDBFvrlJXVH6nhkNYO+mdEBA14wWsHOTSihoGtEHtns3qSuK9Ay4AIAPR6UDAnrV+fIA/yp5t0clFFxU5Usc//hzkrqiyEY1LYnT208npQMCwioaIc5//3WQSihoa/O6oP/fu0ddUeDr8doSOrdfWv7bpYaUyNPR6kP3+4+GnWUTCjo0P0SV//4co64paBK8Dire7vZuUUOK9M8K+qh+++WWaUyADE55HZj5+nXOh3XqhgJ0GweNtoSx7z8n/mCfGpGAfhj2Yfb7z8HfmwumMc3K13+7d1AtUXdO0GqLGteLtF6ocb24dtO0XiTWjN10bc3ATUNbEjg6sSMdumpkRTqEs28sSGK4O56Yll7B6fHErNsYrr8xKBmBwWFiSHoJJkeJCTcx+LycVnU3AKvxdVpFMgK7gztt00uwPJpqSa/B9nVKu43B+OCOkIzA/PBmeiK9HaEOxqPDAVwIAA==")
-
-    // }, 2000);
+ 
 
     var elementsDefs = m_svgInstance.defs(); 
 
@@ -398,18 +391,13 @@ class AppPage extends Component<any, any> {
         y : 0,
       })
 
-      
-    var image = m_svgInstance.image('https://cdn.img42.com/4b6f5e63ac50c95fe147052d8a4db676.jpeg')
-    image.size(100, 100).move(20, 20)
+    rect.selectable(m_loonkInstance);
+    rect.draggable(m_loonkInstance);
 
+    elementsDefs.add(rect)
 
-    // rect.selectable(m_loonkInstance);
-    // rect.draggable(m_loonkInstance);
-
-    // elementsDefs.add(rect)
-
-    // var rectDefUse = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-1', fill: pattern});
-    // var rectDefUse2 = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-2', fill: '#ffffff65'});
+    var rectDefUse = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-1', fill: pattern});
+    var rectDefUse2 = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-2', fill: '#ffffff65'});
 
     // awaInstance.addInteraction(interaction)
 
