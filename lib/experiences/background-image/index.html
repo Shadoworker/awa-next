@@ -16,33 +16,31 @@
 			height: 100vh; 
 		} 
 	</style> 
+
+	<script src="./svg.js"></script>
 </head> 
 
 <body> 
 	<!-- <h3 style="color:green;text-align: center;"> 
 		SVG BG 
 	</h3>  -->
-	<div class="patterns"> 
+	<div id="patterns" class="patterns"> 
 
-		<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
+		<!-- <svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
 			<defs>
-			 
-				<!-- <pattern id="patt-1" x="0" y="0" width="1" height="1" patternUnits="userSpaceOnUse" patternContentUnits="" >
-					<image id="patt-1-image" href="./bg-1.jpeg" x="0" y="0" width="1" height="1" preserveAspectRatio="none" />
-				</pattern> -->
-
-				<pattern id="patt-1" x="0" y="0" width="200" height="100" patternUnits="userSpaceOnUse" patternContentUnits="">
-					<image id="patt-1-image" href="./bg-4.png" x="0" y="0" width="200" height="100" preserveAspectRatio="none" 
+			  
+				<pattern id="patt-1" x="0" y="0" width="200" height="100" patternUnits="userSpaceOnUse" >
+					<image id="patt-1-image" href="https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg" x="0" y="0" width="200" height="100" preserveAspectRatio="none" 
 					  />
 				</pattern>
 
-				<rect id="def-rect-1" x="0" y="0" width="400" height="300" stroke="red" />
+				<rect id="def-rect-1" x="0" y="0" width="400" height="300" stroke="red" onclick="clickTest(this)" />
 
 			</defs>
 	 
 			<g id="rect-1-elements">
-				<use href="#def-rect-1" x="0" fill="url(#patt-1)" />
-				<use href="#def-rect-1" x="0" fill="#ff000010" />
+				<use id="def-rect-1-use-1" href="#def-rect-1" x="0" fill="url(#patt-1)" />
+				<use id="def-rect-1-use-2" href="#def-rect-1" x="0" fill="#ff000010" />
 			</g>
 			
 		</svg>
@@ -51,10 +49,29 @@
 		  <span>GRID : </span> <input id="gridSlider" value="0" type="range" oninput="gridSliderOnChange()" >
 		  <span>H : </span> <input id="hSpacingSlider" value="0" type="range" oninput="hSpacingSliderOnChange()" >
 		  <span>V : </span> <input id="vSpacingSlider" value="0" type="range" oninput="vSpacingSliderOnChange()" >
-  
+   -->
 	</div>
 	
 	<script>
+
+
+		var draw = SVG().addTo("#patterns").size(300, 300)
+		var rect = draw.rect(100, 100).attr({ fill: '#f06' })
+
+
+		var pattern = draw.pattern(50, 50, function(add) {
+		add.image('https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg', 50, 50)
+		.attr({width:50, height:50});
+		})
+
+		rect.fill(pattern)
+
+		function clickTest(el)
+		{
+			// console.log(el)
+
+			el.setAttribute("x", parseInt(el.getAttribute("x"))+5)
+		}
 
 		function initBg(baseScale=-1)
 		{
@@ -150,7 +167,7 @@
 			};
 		}
 		
-		initBg(0)
+		// initBg(0)
 
 		function gridSliderOnChange()
 		{
