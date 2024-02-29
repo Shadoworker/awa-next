@@ -13,6 +13,8 @@ export const GRADIENT_ID_BODY = "--gradient--item"
 
 export const BACKGROUND_ID_BODY = "--background--item"
 
+export const PATTERN_BG_ID_BODY = "--pattern--background"
+
 
 export const INCANVAS_ITEM_CLASS = '--incanvas-item--';
 
