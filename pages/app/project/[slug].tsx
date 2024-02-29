@@ -366,31 +366,31 @@ class AppPage extends Component<any, any> {
    
 
 
-    var elementsDefs = m_svgInstance.defs(); 
+    // var elementsDefs = m_svgInstance.defs(); 
 
-    var rect = m_svgInstance.rect(75,75).attr({
-        id : 'rect-def-1',
-        x : 0,
-        y : 0,
-      })
+    // var rect = m_svgInstance.rect(75,75).attr({
+    //     id : 'rect-def-1',
+    //     x : 0,
+    //     y : 0,
+    //   })
 
-    rect.selectable(m_loonkInstance);
-    rect.draggable(m_loonkInstance);
+    // rect.selectable(m_loonkInstance);
+    // rect.draggable(m_loonkInstance);
 
-    elementsDefs.add(rect)
+    // elementsDefs.add(rect)
 
-    var pattern = m_svgInstance.pattern(20, 20, function(add) {
+    // var pattern = m_svgInstance.pattern(20, 20, function(add) {
       
-      var image = add.image()
-       .attr({width:20, height:20})
+    //   var image = add.image()
+    //    .attr({width:20, height:20})
         
-       image.node.removeAttribute("href")
-       image.node.setAttribute("href" , "data:image/webp;base64,UklGRgwFAABXRUJQVlA4TP8EAAAvjIAnEAdiIG2bwP1d6l1cWy2QSdtE90xPQB+yYNDcELpSCSUCAYoe5P9KFlgH8P8xNFwFCXA28rWFekFIt7W9Saw3CDoWMFimogRGp9lwyjlOlfu/LcsXknz8juj/BMCFm8Xz8/PLCrVwNc9OPizY28yzs/PngrPlY0bOF1wVL/eZ1tmKpUWeaX/csLOeZVXmz7wUT1nV9ytGFnlm4EPBxGqemZm/cLCeZ+bON85bZEbnL45bZKY/Om2TG5ctXfaYmX/vsCK3IFu7a5nZuHLXU72Y25DD3bkNTw7LLMyLOpGvUScWqBMLOPN9t/uw7gXkbisIgqDVlaZ9/JVlWf69ETamPYIaNcRJry1N2n6Xx/fb81aGPYIaeeLcRmjOx748/WXRHNS+J4jNvhnb7/LcvT2zgiJ9Qfba0oCPfXn+my2zAlRf6Gx0q3r9KanvluRrUFtCcxBWstuX5P925GtQL4T+INT2/ltq3NmxBLUrKg1CLa9fpVY7FqB2RdVBSNruSs1WPIMaeZUJ0ZLnfexLdzyCGnnCxEZ0xvar1G/BHFTpCzO96MT2t6zw3bhZQZG+MNWLjv2UpqxNyDegNoW5/pFdaQxMWIPaEia3AbyWLlmA2hFGNwB8VQSznkHtCsN72JYOeQQ1Eqa38OGQWUGJPON8fLrjvgBR+sJ8/DgjX4MaCAulO5agtoSNYemKBahdwdkjqKHg7AHUyONsVlCkLxjLC1ADwVi+BrUlOFuC2hWcLUANBWePoEYeZw+gSl8wNitIvmAsL0BtCcbyNahtwdkS1K7gbAFqKDh7BDXyOHsEVTYEY48gtwVjs4LUF4zNCpA7jN0XoAd85WtoFOysTy1RBzYnnlALcOy+0BPwMz+ygt4Lfop5lt0vobnPD4AN9AccVdmvF+jUCzTrhWzUCoSMDa+ur4cUtLkaJOrwLiYg4GmYquO3lL7H0TBVp8cEdBkapOrMNCagyU48UWffUaTHTDxRxDEBPV7iiaKmMQFNVhJFv6NIj5EbpXNEQI+PkdI6jQlosjHVo24o0mPiUukeEtBjYqptQkGThZHSf02RHge3FagBAT0OplUkFDTdN1SVXlOk57zLatSQgJ7zriuaxAQ0XZdUpG4o0uNNjQjoOW5SWRoT0HKbqv6OIhu8qTEBIXNpTMAFbyqhyAZv6oqAkLl0QMAFbyqhSN+oX/eoKwIio34clA4IaPOmEgp83tQVJfLM+XJSOiCgY87OSSqhIDBFvrlJXVH6nhkNYO+mdEBA14wWsHOTSihoGtEHtns3qSuK9Ay4AIAPR6UDAnrV+fIA/yp5t0clFFxU5Usc//hzkrqiyEY1LYnT208npQMCwioaIc5//3WQSihoa/O6oP/fu0ddUeDr8doSOrdfWv7bpYaUyNPR6kP3+4+GnWUTCjo0P0SV//4co64paBK8Dire7vZuUUOK9M8K+qh+++WWaUyADE55HZj5+nXOh3XqhgJ0GweNtoSx7z8n/mCfGpGAfhj2Yfb7z8HfmwumMc3K13+7d1AtUXdO0GqLGteLtF6ocb24dtO0XiTWjN10bc3ATUNbEjg6sSMdumpkRTqEs28sSGK4O56Yll7B6fHErNsYrr8xKBmBwWFiSHoJJkeJCTcx+LycVnU3AKvxdVpFMgK7gztt00uwPJpqSa/B9nVKu43B+OCOkIzA/PBmeiK9HaEOxqPDAVwIAA==")
+    //    image.node.removeAttribute("href")
+    //    image.node.setAttribute("href" , "data:image/webp;base64,UklGRgwFAABXRUJQVlA4TP8EAAAvjIAnEAdiIG2bwP1d6l1cWy2QSdtE90xPQB+yYNDcELpSCSUCAYoe5P9KFlgH8P8xNFwFCXA28rWFekFIt7W9Saw3CDoWMFimogRGp9lwyjlOlfu/LcsXknz8juj/BMCFm8Xz8/PLCrVwNc9OPizY28yzs/PngrPlY0bOF1wVL/eZ1tmKpUWeaX/csLOeZVXmz7wUT1nV9ytGFnlm4EPBxGqemZm/cLCeZ+bON85bZEbnL45bZKY/Om2TG5ctXfaYmX/vsCK3IFu7a5nZuHLXU72Y25DD3bkNTw7LLMyLOpGvUScWqBMLOPN9t/uw7gXkbisIgqDVlaZ9/JVlWf69ETamPYIaNcRJry1N2n6Xx/fb81aGPYIaeeLcRmjOx748/WXRHNS+J4jNvhnb7/LcvT2zgiJ9Qfba0oCPfXn+my2zAlRf6Gx0q3r9KanvluRrUFtCcxBWstuX5P925GtQL4T+INT2/ltq3NmxBLUrKg1CLa9fpVY7FqB2RdVBSNruSs1WPIMaeZUJ0ZLnfexLdzyCGnnCxEZ0xvar1G/BHFTpCzO96MT2t6zw3bhZQZG+MNWLjv2UpqxNyDegNoW5/pFdaQxMWIPaEia3AbyWLlmA2hFGNwB8VQSznkHtCsN72JYOeQQ1Eqa38OGQWUGJPON8fLrjvgBR+sJ8/DgjX4MaCAulO5agtoSNYemKBahdwdkjqKHg7AHUyONsVlCkLxjLC1ADwVi+BrUlOFuC2hWcLUANBWePoEYeZw+gSl8wNitIvmAsL0BtCcbyNahtwdkS1K7gbAFqKDh7BDXyOHsEVTYEY48gtwVjs4LUF4zNCpA7jN0XoAd85WtoFOysTy1RBzYnnlALcOy+0BPwMz+ygt4Lfop5lt0vobnPD4AN9AccVdmvF+jUCzTrhWzUCoSMDa+ur4cUtLkaJOrwLiYg4GmYquO3lL7H0TBVp8cEdBkapOrMNCagyU48UWffUaTHTDxRxDEBPV7iiaKmMQFNVhJFv6NIj5EbpXNEQI+PkdI6jQlosjHVo24o0mPiUukeEtBjYqptQkGThZHSf02RHge3FagBAT0OplUkFDTdN1SVXlOk57zLatSQgJ7zriuaxAQ0XZdUpG4o0uNNjQjoOW5SWRoT0HKbqv6OIhu8qTEBIXNpTMAFbyqhyAZv6oqAkLl0QMAFbyqhSN+oX/eoKwIio34clA4IaPOmEgp83tQVJfLM+XJSOiCgY87OSSqhIDBFvrlJXVH6nhkNYO+mdEBA14wWsHOTSihoGtEHtns3qSuK9Ay4AIAPR6UDAnrV+fIA/yp5t0clFFxU5Usc//hzkrqiyEY1LYnT208npQMCwioaIc5//3WQSihoa/O6oP/fu0ddUeDr8doSOrdfWv7bpYaUyNPR6kP3+4+GnWUTCjo0P0SV//4co64paBK8Dire7vZuUUOK9M8K+qh+++WWaUyADE55HZj5+nXOh3XqhgJ0GweNtoSx7z8n/mCfGpGAfhj2Yfb7z8HfmwumMc3K13+7d1AtUXdO0GqLGteLtF6ocb24dtO0XiTWjN10bc3ATUNbEjg6sSMdumpkRTqEs28sSGK4O56Yll7B6fHErNsYrr8xKBmBwWFiSHoJJkeJCTcx+LycVnU3AKvxdVpFMgK7gztt00uwPJpqSa/B9nVKu43B+OCOkIzA/PBmeiK9HaEOxqPDAVwIAA==")
  
-     }).attr({id:'rect-def-1-bg'})
+    //  }).attr({id:'rect-def-1-bg'})
 
-    var rectDefUse = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-1', fill: pattern});
-    var rectDefUse2 = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-2', fill: '#ffffff65'});
+    // var rectDefUse = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-1', fill: pattern});
+    // var rectDefUse2 = m_svgInstance.use(rect).attr({id: 'rect-def-1-use-2', fill: '#ffffff65'});
 
     // awaInstance.addInteraction(interaction)
 

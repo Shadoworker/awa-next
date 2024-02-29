@@ -3,6 +3,7 @@ export const TIMELINE_STEP = 10;
 
 export const AWA_ELEMENT_CLASS = 'awa--element--';
 export const EFFECT_ID_BODY = '--effect--item--';
+export const DEFREFS_GROUP_ID_BODY = "--defrefs--list" // references of a specific def (element)
 export const EFFECTOR_GROUP_ID_BODY = "--effector--list"
 export const CANVAS_ID_BODY = '--canvas--';
 export const CONTAINER_ID_BODY = '--container--';

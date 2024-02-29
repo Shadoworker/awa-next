@@ -25,6 +25,7 @@ import {
   PREVIEW_TYPES,
   RERENDER_SEEK_TIMELINE_DELAY,
   SCENE_CLASS,
+  DEFREFS_GROUP_ID_BODY,
 } from "./awa.constants";
 import { getGradientValues, isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement, isGradient } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
@@ -996,8 +997,15 @@ class awa {
 
       // Add to defs and instantiate baseNode(s)
       elementsDefs.add(sceneEl);
+
+      var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
+      var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
+
       var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
       var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: '#ffffff'});
+
+      defrefsGroup.add(defBackgroundItem)
+      defrefsGroup.add(defBaseItem)
 
       sceneEl.parentId(this.getActiveSceneId())
 
@@ -1005,7 +1013,7 @@ class awa {
       if(sceneEl)
       {
         // Add to container
-        this.addElementToScene(sceneEl, defBackgroundItem, defBaseItem)
+        this.addElementToScene(sceneEl, defrefsGroup)
       }
 
       // Quit this state
@@ -1854,15 +1862,14 @@ class awa {
 
   }
 
-  addElementToScene(sceneEl, defBackgroundItem, defBaseItem, parent:any = null) // Adds or Update if exist
+  addElementToScene(sceneEl, defrefsGroup, parent:any = null) // Adds or Update if exist
   {
    
     if(!parent)
       parent = this.getActiveSceneContainer();
 
     // parent.add(sceneEl); // The element itself is no longer rendered
-    parent.add(defBackgroundItem);
-    parent.add(defBaseItem);
+    parent.add(defrefsGroup);
 
     this.updateSceneElementObject(sceneEl);
 
