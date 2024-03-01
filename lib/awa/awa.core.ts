@@ -1013,8 +1013,8 @@ class awa {
       if(sceneEl)
       {
         // Add to container
-        this.addElementToScene(sceneEl, defBackgroundItem, defBaseItem)
-        // this.addElementToScene(sceneEl, defrefsGroup)
+        // this.addElementToScene(sceneEl, defBackgroundItem, defBaseItem)
+        this.addElementToScene(sceneEl, defrefsGroup)
       }
 
       // Quit this state
@@ -1863,16 +1863,17 @@ class awa {
 
   }
 
-  // addElementToScene(sceneEl, defrefsGroup, parent:any = null) // Adds or Update if exist
-  addElementToScene(sceneEl, it1,it2, parent:any = null) // Adds or Update if exist
+  addElementToScene(sceneEl, defrefsGroup, parent:any = null) // Adds or Update if exist
+  // addElementToScene(sceneEl, it1,it2, parent:any = null) // Adds or Update if exist
   {
    
     if(!parent)
       parent = this.getActiveSceneContainer();
 
     // parent.add(sceneEl); // The element itself is no longer rendered
-    parent.add(it1);
-    parent.add(it2);
+    parent.add(defrefsGroup);
+    // parent.add(it1);
+    // parent.add(it2);
 
     this.updateSceneElementObject(sceneEl);
 
