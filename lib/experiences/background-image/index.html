@@ -39,8 +39,16 @@
 			</defs>
 	 
 			<g id="rect-1-elements">
+
+				<defs>
+					<rect id="def-rect-2" x="0" y="0" width="30" height="30" stroke="blue"/>
+				</defs>
+
 				<use id="def-rect-1-use-1" href="#def-rect-1" x="0" fill="url(#patt-1)" />
 				<use id="def-rect-1-use-2" href="#def-rect-1" x="0" fill="#ff000010" />
+
+				<use id="def-rect-2-use-1" href="#def-rect-2" x="0" fill="#4a1" />
+
 			</g>
 			
 		</svg>
@@ -49,22 +57,34 @@
 		  <span>GRID : </span> <input id="gridSlider" value="0" type="range" oninput="gridSliderOnChange()" >
 		  <span>H : </span> <input id="hSpacingSlider" value="0" type="range" oninput="hSpacingSliderOnChange()" >
 		  <span>V : </span> <input id="vSpacingSlider" value="0" type="range" oninput="vSpacingSliderOnChange()" >
-   -->
-	</div>
+  
+	</div> -->
 	
 	<script>
 
 
 		var draw = SVG().addTo("#patterns").size(300, 300)
-		var rect = draw.rect(100, 100).attr({ fill: '#f06' })
-
-
+		var rect = draw.rect(100, 100).attr({ fill: '#f06fff42' })
+		
 		var pattern = draw.pattern(50, 50, function(add) {
 		add.image('https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg', 50, 50)
 		.attr({width:50, height:50});
 		})
 
-		rect.fill(pattern)
+		var g = draw.group();
+		var rect2 = draw.rect(50, 50).attr({ fill: 'red' })
+		g.add(rect2)
+
+		var defs2 = g.add(draw.defs(false));
+		var defs3 = g.add(draw.defs(false));
+
+		// g.add(defs2)
+		// var rect3 = draw.rect(25, 25).attr({ fill: 'blue' })
+		// defs2.add(rect3)
+
+
+
+		// rect.fill(pattern)
 
 		function clickTest(el)
 		{
