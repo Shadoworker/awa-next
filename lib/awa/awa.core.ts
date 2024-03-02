@@ -947,7 +947,7 @@ class awa {
       var _type = _data.detail.type;
 
       // Get/Create the defs section
-      var elementsDefs = this.m_svgInstance.defs(); 
+      var elementsDefsNode = this.m_svgInstance.defs(); 
 
       var sceneEl;
       var awaElementId;
@@ -996,7 +996,7 @@ class awa {
       }
 
       // Add to defs and instantiate baseNode(s)
-      elementsDefs.add(sceneEl);
+      elementsDefsNode.add(sceneEl);
 
       var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
       var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
@@ -1013,7 +1013,6 @@ class awa {
       if(sceneEl)
       {
         // Add to container
-        // this.addElementToScene(sceneEl, defBackgroundItem, defBaseItem)
         this.addElementToScene(sceneEl, defrefsGroup)
       }
 
@@ -1720,14 +1719,18 @@ class awa {
       {
 
         var type = el.type;
-        var sceneEl;
+        var sceneEl, parent;
+
+        var elementsDefsNode = this.m_svgInstance.defs(); 
 
         switch (type) {
           case ELEMENTS_TYPES.rect:
 
             var awaElementId = el.id;
             var parentId = el.parent;
-            var parent = this.m_svgInstance.findOne("#"+parentId)
+            parent = this.m_svgInstance.findOne("#"+parentId)
+
+            elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
             sceneEl = this.m_svgInstance
               .rect(el.node.attributes.width, el.node.attributes.height)
@@ -1744,7 +1747,8 @@ class awa {
 
               // this.renderGradients(el, sceneEl)
 
-              parent.add(sceneEl)
+              // parent.add(sceneEl)
+              parent.add(elementsDefsNode)
 
             break;
   
@@ -1753,8 +1757,10 @@ class awa {
             var awaElementId = el.id;
             var parentId = el.parent;
 
-            var parent = this.m_svgInstance.findOne("#"+parentId)
+            parent = this.m_svgInstance.findOne("#"+parentId)
     
+            elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
+
             sceneEl = this.m_svgInstance
               .circle(80)
               .attr(el.node.attributes)
@@ -1770,10 +1776,25 @@ class awa {
 
               // this.renderGradients(el, sceneEl)
 
-              parent.add(sceneEl)
+              // parent.add(sceneEl)
+              parent.add(elementsDefsNode)
 
             break;
         }
+
+
+        elementsDefsNode.add(sceneEl);
+
+        var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
+        var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
+  
+        var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
+        var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: '#ffffff'});
+  
+        defrefsGroup.add(defBackgroundItem)
+        defrefsGroup.add(defBaseItem)
+  
+        parent.add(defrefsGroup)
 
         this.renderGradients(el, sceneEl)
 
@@ -1864,7 +1885,6 @@ class awa {
   }
 
   addElementToScene(sceneEl, defrefsGroup, parent:any = null) // Adds or Update if exist
-  // addElementToScene(sceneEl, it1,it2, parent:any = null) // Adds or Update if exist
   {
    
     if(!parent)
@@ -1872,8 +1892,6 @@ class awa {
 
     // parent.add(sceneEl); // The element itself is no longer rendered
     parent.add(defrefsGroup);
-    // parent.add(it1);
-    // parent.add(it2);
 
     this.updateSceneElementObject(sceneEl);
 
