@@ -633,6 +633,39 @@ class awa {
     return this.m_selectedElement;
   }
 
+  
+  getSelectedElementBase(el=null) : any {
+   
+    var selectedElement = this.getSelectedElement();
+
+    if(el) // / Get from the provided element : Not the current selected one
+      selectedElement = el;
+
+    var selectedElementId = selectedElement.attr("id");
+    var baseId = "#"+selectedElementId+DEFBASE_ID_BODY;
+
+    var base = this.getSvgInstance().findOne(baseId);
+
+    return base;
+
+  }
+
+  getSelectedElementBackground(el=null) : any {
+   
+    var selectedElement = this.getSelectedElement();
+
+    if(el) // / Get from the provided element : Not the current selected one
+    selectedElement = el;
+
+    var selectedElementId = selectedElement.attr("id");
+    var bgId = "#"+selectedElementId+DEFBG_ID_BODY;
+
+    var bg = this.getSvgInstance().findOne(bgId);
+
+    return bg;
+    
+  }
+
   setSelectedElementsKeys(_keys){
     this.m_selectedElementsKeys = _keys;
 
@@ -1141,6 +1174,8 @@ class awa {
     });
   }
 
+  /*  Which elemnt to update ? DEF or USE BASE/BACKGROUND .... */
+  
   onRequestUpdateSelectedElementProperty() {
     awaEventEmitter.on(awaEvents.UPDATE_SELECTED_ELEMENT_PROPERTY, (_data) => {
       var propertyName = _data.property;
@@ -1160,16 +1195,17 @@ class awa {
 
         case "fill":
 
-          var baseColorId = null;
+          var baseColorId : any = null;
 
           if(isGradient(value))
           {
             var data = getGradientValues(value);
-            baseColorId = this.getSelectedElement().setGradientElement("fill", data.type, data.angle, data.values)
+            baseColorId = this.getSelectedElementBase().setGradientElement("fill", data.type, data.angle, data.values)
+            
           }
           else
           {
-            this.getSelectedElement().fill(value);
+            this.getSelectedElementBase().fill(value);
           }
 
           // Define base color
@@ -1179,16 +1215,17 @@ class awa {
 
         case "stroke":
           
-          var baseColorId = null;
+          var baseColorId:any = null;
 
           if(isGradient(value))
           {
             var data = getGradientValues(value);
-            baseColorId = this.getSelectedElement().setGradientElement("stroke", data.type, data.angle, data.values)
+            baseColorId = this.getSelectedElementBase().setGradientElement("stroke", data.type, data.angle, data.values)
+ 
           }
           else
           {
-            this.getSelectedElement().stroke({ color: value });
+            this.getSelectedElementBase().stroke({ color: value });
           }
 
           // Define base color
@@ -1729,7 +1766,7 @@ class awa {
             var awaElementId = el.id;
             var parentId = el.parent;
             parent = this.m_svgInstance.findOne("#"+parentId)
-
+             
             elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
             attrsTemp = {...el.node.attributes};
@@ -1744,11 +1781,12 @@ class awa {
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
               
-              if(isCanvasClipElement(parentId))
+              if(isCanvasClipElement(parentId)) // 
               {
                 sceneEl.addClass(INCANVAS_ITEM_CLASS)
 
                 sceneEl.canvasOwnerId(el.canvasOwnerId);
+
               }
  
               // parent.add(sceneEl)
@@ -1790,14 +1828,13 @@ class awa {
             break;
         }
 
-
         elementsDefsNode.add(sceneEl);
 
         var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
         var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
   
         var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
-        var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: attrsTemp.fill, stroke: attrsTemp.stroke});
+        var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: el.node.baseFill.color, stroke: el.node.baseStroke.color});
   
         defrefsGroup.add(defBackgroundItem)
         defrefsGroup.add(defBaseItem)
@@ -1817,6 +1854,10 @@ class awa {
   renderGradients(el, sceneEl)
   {
     // Gradients
+
+    var sceneElBase = this.getSelectedElementBase(sceneEl);
+
+
     if(el.node.baseFill && el.node.baseFill.id) // is a gradient not a simple color
     {
       var data = getGradientValues(el.node.baseFill.color);
@@ -1997,6 +2038,8 @@ class awa {
 
   elementToObject(sceneEl, attributes=null)
   {
+    console.log(sceneEl.parentId())
+    
     var elObject : AwaTypes.T_AwaEl = {
 
       id : sceneEl.attr('id'),
