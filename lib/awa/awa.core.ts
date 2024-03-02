@@ -1750,9 +1750,7 @@ class awa {
 
                 sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
-
-              // this.renderGradients(el, sceneEl)
-
+ 
               // parent.add(sceneEl)
               parent.add(elementsDefsNode)
 
@@ -1785,9 +1783,7 @@ class awa {
                 
                 sceneEl.canvasOwnerId(el.canvasOwnerId);
               }
-
-              // this.renderGradients(el, sceneEl)
-
+ 
               // parent.add(sceneEl)
               parent.add(elementsDefsNode)
 
