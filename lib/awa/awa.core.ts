@@ -1720,7 +1720,7 @@ class awa {
 
         var type = el.type;
         var sceneEl, parent;
-
+        var attrsTemp : any = {};
         var elementsDefsNode = this.m_svgInstance.defs(); 
 
         switch (type) {
@@ -1732,9 +1732,15 @@ class awa {
 
             elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
+            attrsTemp = {...el.node.attributes};
+            var nofillStrokeAttrs = {...el.node.attributes};
+            
+            delete nofillStrokeAttrs.fill;
+            delete nofillStrokeAttrs.stroke;
+
             sceneEl = this.m_svgInstance
               .rect(el.node.attributes.width, el.node.attributes.height)
-              .attr(el.node.attributes)
+              .attr(nofillStrokeAttrs)
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
               
@@ -1761,9 +1767,15 @@ class awa {
     
             elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
+            attrsTemp = {...el.node.attributes};
+            var nofillStrokeAttrs = {...el.node.attributes};
+            delete nofillStrokeAttrs.fill;
+            delete nofillStrokeAttrs.stroke;
+
+
             sceneEl = this.m_svgInstance
               .circle(80)
-              .attr(el.node.attributes)
+              .attr(nofillStrokeAttrs)
               .draggable(this.getLoonkInstance())
               .selectable(this.getLoonkInstance());
               
@@ -1789,7 +1801,7 @@ class awa {
         var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
   
         var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
-        var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: '#ffffff'});
+        var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: attrsTemp.fill, stroke: attrsTemp.stroke});
   
         defrefsGroup.add(defBackgroundItem)
         defrefsGroup.add(defBaseItem)
