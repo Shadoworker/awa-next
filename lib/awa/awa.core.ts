@@ -1274,6 +1274,7 @@ class awa {
       // 
       if(this.getSelectedElement())
       {
+        // console.log(this.getSelectedElement())
         // Update scene's element
         this.updateSceneElementObject(this.getSelectedElement())
       }
@@ -1727,12 +1728,9 @@ class awa {
           class: "awa-element-canvas",
         });
 
-
         var canvasClipRectClone = canvasClipRect.clone().attr({ opacity: 1 });
 
         var canvasClipRectUse = this.m_svgInstance.use(canvasClipRect);
-
-        // canvasClipRect.node.style.pointerEvents = "none";
 
         // Use the use element to set the clip rect : like so when the original is moved,
         // the use element is also moved without glitching effect
@@ -1756,7 +1754,7 @@ class awa {
       {
 
         var type = el.type;
-        var sceneEl, parent;
+        var sceneEl, parent, parentId;
         var attrsTemp : any = {};
         var elementsDefsNode = this.m_svgInstance.defs(); 
 
@@ -1764,9 +1762,11 @@ class awa {
           case ELEMENTS_TYPES.rect:
 
             var awaElementId = el.id;
-            var parentId = el.parent;
+            parentId = el.parent;
             parent = this.m_svgInstance.findOne("#"+parentId)
              
+            console.log(parentId)
+
             elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
             attrsTemp = {...el.node.attributes};
@@ -1797,7 +1797,7 @@ class awa {
           case ELEMENTS_TYPES.circle:
             
             var awaElementId = el.id;
-            var parentId = el.parent;
+            parentId = el.parent;
 
             parent = this.m_svgInstance.findOne("#"+parentId)
     
@@ -1828,7 +1828,9 @@ class awa {
             break;
         }
 
-        elementsDefsNode.add(sceneEl);
+        sceneEl.parentId(parentId); // Set parent Id for the element
+
+        elementsDefsNode.add(sceneEl); // Adding the element to the defs node
 
         var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
         var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
@@ -1950,7 +1952,7 @@ class awa {
   {
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl, attributes);
- 
+    console.log(sceneEl)
     this.updateSceneElements(elObject, attributes)
 
     // Dispatch update
