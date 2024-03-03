@@ -20,7 +20,7 @@ import { getPopertyInitialValue } from '../../lib/awa/awa.anime.utils';
 import { APP_MODE, ELEMENT_EFFECTS, ELEMENT_PROPERTIES } from '../../lib/awa/awa.core';
 import anime from '../../lib/assets/vendors/anime';
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { EFFECT_ID_BODY, INCANVAS_ITEM_CLASS, INTERACTION_ACTION_REF, INTERACTION_ANIMATION_REF, INTERACTION_BASED_ON_REF, INTERACTION_EVENT_REF, INTERACTION_TARGET_REF, INTERACTION_TYPE_REF, NATIVE_ACTIONS, NATIVE_ANIMATIONS } from '../../lib/awa/awa.constants';
+import { EFFECT_ID_BODY, INCANVAS_ITEM_CLASS, INTERACTION_ACTION_REF, INTERACTION_ANIMATION_REF, INTERACTION_BASED_ON_REF, INTERACTION_EVENT_REF, INTERACTION_TARGET_REF, INTERACTION_TYPE_REF, MEDIA_PICKER_TYPES, NATIVE_ACTIONS, NATIVE_ANIMATIONS } from '../../lib/awa/awa.constants';
 import * as Ant from 'antd';
 import Image from 'next/image';
 import ReactGPicker from 'react-gcolor-picker';
@@ -78,6 +78,7 @@ class RightPanelComp extends Component<any,any> {
       this.onNewCustomAnimation();
 
       this.onUpdateInputColor();
+      this.onUpdateInputMedia();
 
 
     }
@@ -255,6 +256,28 @@ class RightPanelComp extends Component<any,any> {
       this.updateElementProperty("stroke", c);
 
     }
+
+
+    onUpdateInputMedia= ()=>{
+
+      awaEventEmitter.on(awaEvents.UPDATE_INPUT_MEDIA, (_data)=>{
+   
+        var mediaType = _data.type;
+        var mediaString = _data.media; 
+        
+        this.setBackgroundMedia(mediaType, mediaString)
+  
+      })
+    }
+
+    setBackgroundMedia = (type, media) =>{
+
+      var baseBackground = {id:null, type:type, media:media}
+      this.updatePropsProperty("baseBackground", baseBackground); // baseBackground
+      this.updateElementProperty("background", baseBackground);   // background
+
+    }
+
 
     /* When an element is selected, moved etc... to be notified and update its visual props */
     onUpdateSelectedElement = ()=>{
@@ -1052,7 +1075,7 @@ class RightPanelComp extends Component<any,any> {
                             
                               <label style={{width:'80%', height:23}}  onClick={()=>this.requestToggleMediaPicker({type : this.state.selectedElementProps.baseBackground?.type, media : this.state.selectedElementProps.baseBackground?.media})}  >
                                 <div className='Input InputColorContainer'>
-                                  <div className='InputColor' style={{backgroundSize:'contain', backgroundImage:'url("https://img.freepik.com/premium-vector/square-transparent-background-with-gradient-effect-vector-illustration_522680-499.jpg")'}}>
+                                  <div className='InputColor' style={{backgroundSize:'contain', backgroundImage: this.state.selectedElementProps.baseBackground?.media ? this.state.selectedElementProps.baseBackground?.media : 'url("https://img.freepik.com/premium-vector/square-transparent-background-with-gradient-effect-vector-illustration_522680-499.jpg")'}}>
                                   </div>
                                 </div>
                               </label>

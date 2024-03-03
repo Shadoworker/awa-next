@@ -1,4 +1,4 @@
-import { CANVAS_ID_BODY, CLIP_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY } from "./awa.constants";
+import { CANVAS_ID_BODY, CLIP_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY, MEDIA_PICKER_TYPES } from "./awa.constants";
 import { ELEMENT_EFFECTS } from "./awa.core";
 
 export function isNumber(value) {
@@ -221,3 +221,24 @@ export function getGradientValues(_colorString)
   return data;
 }
 
+
+
+export function mediaToBase64(file) {
+  
+  return new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+
+})}
+
+export function isMediaImage(_base64)
+{
+  return _base64.includes(MEDIA_PICKER_TYPES.image);
+}
+
+export function isMediaVideo(_base64)
+{
+  return _base64.includes(MEDIA_PICKER_TYPES.video);
+}

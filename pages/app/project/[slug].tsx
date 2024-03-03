@@ -36,6 +36,7 @@ import Card from '@mui/material/Card';
 import { Button, CardActions, CardContent, CardMedia, IconButton } from '@mui/material';
 import { Typography } from 'antd';
 import { PlayIcon, UploadIcon } from '@radix-ui/react-icons';
+import { isMediaImage, isMediaVideo, mediaToBase64 } from '../../../lib/awa/awa.common.utils';
 
 
 class AppPage extends Component<any, any> {
@@ -629,6 +630,30 @@ class AppPage extends Component<any, any> {
     input?.click();
   }
 
+  
+  handleMediaInput = (e)=>{
+
+    e.preventDefault(); 
+    
+    var files = e.target.files;
+    var file = files[0];
+
+    mediaToBase64(file)
+    .then((base64:string)=>{
+      // console.log(d)
+      var type = base64.includes(MEDIA_PICKER_TYPES.image) ? MEDIA_PICKER_TYPES.image : MEDIA_PICKER_TYPES.video;
+      this.setMediaPickerType(type);
+
+      this.setState({mediaPickerMedia : base64})
+      this.requestUpdateInputMedia({type : type, media : base64})
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+
+  }
+
+
   hideColorPicker = (e)=>{
 
     // e.preventDefault(); 
@@ -647,6 +672,10 @@ class AppPage extends Component<any, any> {
 
   requestUpdateInputColor = (_data)=>{
     awaEventEmitter.emit(awaEvents.UPDATE_INPUT_COLOR, _data);
+  }
+
+  requestUpdateInputMedia = (_data)=>{
+    awaEventEmitter.emit(awaEvents.UPDATE_INPUT_MEDIA, _data);
   }
 
   onRequestReduxStoreUpdate(){
@@ -717,24 +746,23 @@ class AppPage extends Component<any, any> {
                       </div>
                     }
                     
-                    {
-                    this.state.toggleMediaPicker &&
+                    {this.state.toggleMediaPicker &&
                       <div className='awa-media-picker-box'>
                         <Card sx={{ width: 295 , backgroundColor: '#09090a'}}>
                            
                           {this.state.mediaPickerType == MEDIA_PICKER_TYPES.image &&
                             <label htmlFor="baseBackground">
-                              <img style={{ width:'100%', height:270, objectFit:'cover'}} src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=400%2C400&ssl=1" alt="image" />
+                              <img style={{ width:'100%', height:270, objectFit:'contain', backgroundColor: "gainsboro"}} src={(this.state.mediaPickerMedia && isMediaImage(this.state.mediaPickerMedia)) ? this.state.mediaPickerMedia : "https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=400%2C400&ssl=1"} alt="image" />
                             </label>
                           }
                           
                           {this.state.mediaPickerType == MEDIA_PICKER_TYPES.video &&
                             <label htmlFor="baseBackground" onClick={(e)=>this.triggerMediaInput(e)}>
-                              <video width={"100%"} height={270} controls src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" ></video>
+                              <video width={"100%"} height={270} controls src={(this.state.mediaPickerMedia && isMediaVideo(this.state.mediaPickerMedia)) ? this.state.mediaPickerMedia : "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"} ></video>
                             </label>
                           }
                           
-                          <input style={{display:'none'}} type="file" name="" id="baseBackground" />
+                          <input style={{display:'none'}} type="file" name="" id="baseBackground" onChange={(e)=>this.handleMediaInput(e)} />
 
                           <CardContent style={{padding:5}}>
                           </CardContent>

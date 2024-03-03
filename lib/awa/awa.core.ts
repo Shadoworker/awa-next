@@ -41,6 +41,7 @@ export const ANIMATABLE_PROPERTIES = {
   y: "translateY",
   scale: "scale",
   rotation: "rotate",
+  background: "background",
   fill: "fill",
   stroke: "stroke",
   strokeWidth: "strokeWidth",
@@ -1193,6 +1194,16 @@ class awa {
           this.getSelectedElement().y(value);
           break;
 
+        case "background":
+ 
+          this.getSelectedElementBackground().setBackgroundElement(value.type, value.media);
+            
+          // Define base background
+          this.getSelectedElement().baseBackground(value.id, value.type, value.media);
+
+          break;
+
+
         case "fill":
 
           var baseColorId : any = null;
@@ -1764,8 +1775,6 @@ class awa {
             var awaElementId = el.id;
             parentId = el.parent;
             parent = this.m_svgInstance.findOne("#"+parentId)
-             
-            console.log(parentId)
 
             elementsDefsNode = parent.getDefs() ? parent.getDefs() : elementsDefsNode;
 
@@ -1952,7 +1961,7 @@ class awa {
   {
     // Add this element object to scene items
     var elObject = this.elementToObject(sceneEl, attributes);
-    console.log(sceneEl)
+
     this.updateSceneElements(elObject, attributes)
 
     // Dispatch update
@@ -2040,7 +2049,6 @@ class awa {
 
   elementToObject(sceneEl, attributes=null)
   {
-    console.log(sceneEl.parentId())
     
     var elObject : AwaTypes.T_AwaEl = {
 
