@@ -26,28 +26,27 @@
 	</h3>  -->
 	<div id="patterns" class="patterns"> 
 
-		<!-- <svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
+		<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 			  
-				<pattern id="patt-1" x="0" y="0" width="200" height="100" patternUnits="userSpaceOnUse" >
-					<image id="patt-1-image" href="https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg" x="0" y="0" width="200" height="100" preserveAspectRatio="none" 
+				<pattern id="patt-1" x="150" y="80" width="200" height="100" patternUnits="userSpaceOnUse" >
+					<image id="patt-1-image" href="./bg-11.jpg" x="0" y="0" width="200" height="100" preserveAspectRatio="none" 
 					  />
 				</pattern>
 
-				<rect id="def-rect-1" x="0" y="0" width="400" height="300" stroke="red" onclick="clickTest(this)" />
+				<!-- <rect id="def-rect-1" x="0" y="0" width="400" height="300" stroke="red" onclick="clickTest(this)" /> -->
 
 			</defs>
 	 
 			<g id="rect-1-elements">
 
 				<defs>
-					<rect id="def-rect-2" x="0" y="0" width="30" height="30" stroke="blue"/>
+					<rect id="def-rect-2" x="150" y="80" width="200" height="300" stroke="blue"/>
 				</defs>
 
-				<use id="def-rect-1-use-1" href="#def-rect-1" x="0" fill="url(#patt-1)" />
-				<use id="def-rect-1-use-2" href="#def-rect-1" x="0" fill="#ff000010" />
+				<use id="def-rect-1-use-1" href="#def-rect-2"  fill="url(#patt-1)" />
+				<use id="def-rect-1-use-2" href="#def-rect-2"  fill="#ff000010" />
 
-				<use id="def-rect-2-use-1" href="#def-rect-2" x="0" fill="#4a1" />
 
 			</g>
 			
@@ -58,25 +57,25 @@
 		  <span>H : </span> <input id="hSpacingSlider" value="0" type="range" oninput="hSpacingSliderOnChange()" >
 		  <span>V : </span> <input id="vSpacingSlider" value="0" type="range" oninput="vSpacingSliderOnChange()" >
   
-	</div> -->
+	</div>
 	
 	<script>
 
 
-		var draw = SVG().addTo("#patterns").size(300, 300)
-		var rect = draw.rect(100, 100).attr({ fill: '#f06fff42' })
+		// var draw = SVG().addTo("#patterns").size(300, 300)
+		// var rect = draw.rect(100, 100).attr({ fill: '#f06fff42' })
 		
-		var pattern = draw.pattern(50, 50, function(add) {
-		add.image('https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg', 50, 50)
-		.attr({width:50, height:50});
-		})
+		// var pattern = draw.pattern(50, 50, function(add) {
+		// add.image('https://i0.wp.com/www.photo-paysage.com/blog/wp-content/uploads/2013/05/image-paysage.jpg', 50, 50)
+		// .attr({width:50, height:50});
+		// })
 
-		var g = draw.group();
-		var rect2 = draw.rect(50, 50).attr({ fill: 'red' })
-		g.add(rect2)
+		// var g = draw.group();
+		// var rect2 = draw.rect(50, 50).attr({ fill: 'red' })
+		// g.add(rect2)
 
-		var defs2 = g.add(draw.defs(false));
-		var defs3 = g.add(draw.defs(false));
+		// var defs2 = g.add(draw.defs(false));
+		// var defs3 = g.add(draw.defs(false));
 
 		// g.add(defs2)
 		// var rect3 = draw.rect(25, 25).attr({ fill: 'blue' })
@@ -97,21 +96,19 @@
 		{
 
 			var img = new Image();
-			img.src = "./bg-4.png";
+			img.src = "./bg-11.jpg";
 			img.onload = function() 
 			{
 				var realWidth = this.naturalWidth;
 				var realHeight = this.naturalHeight;
 
-				var rectWidth = 400;
+				var rectWidth  = 400;
 				var rectHeight = 300;
 
 				if(baseScale == -1) // Fit
 				{
 					var bgWRatio = rectWidth / realWidth, 
 						bgHRatio = rectHeight / realHeight;
-
-						// console.log(bgWRatio, bgHRatio)
 
 					document.querySelector("#patt-1").setAttribute("width", realWidth)
 					document.querySelector("#patt-1").setAttribute("height", realHeight)
@@ -120,9 +117,7 @@
 					document.querySelector("#patt-1 image").setAttribute("height", realHeight)
 
 					var newBgHeight = realHeight * bgWRatio;
-					// console.log(newBgHeight)
 					var translateY = (rectHeight - newBgHeight)/2;
-					// console.log(rectHeight - newBgHeight)
 
 					document.querySelector("#patt-1 image").setAttribute("transform", `scale(${bgWRatio}) translate(0, ${translateY})`)
 
@@ -145,10 +140,9 @@
 
 					var newBgWidth = realWidth * scaler;
 					var newBgHeight = realHeight * scaler;
-					// console.log(newBgHeight)
+
 					var translateX = (rectWidth - newBgWidth)/2;
 					var translateY = (rectHeight - newBgHeight)/2;
-					// console.log(rectHeight - newBgHeight)
 
 					document.querySelector("#patt-1 image").setAttribute("transform", `scale(${scaler}) translate(${translateX}, ${translateY})`)
 
@@ -174,7 +168,6 @@
 					document.querySelector("#patt-1 image").setAttribute("height", tileH)
 
 
-
 					// Spacing Sliders max values
 
 					document.querySelector("#hSpacingSlider").setAttribute("maxSpacing", (rectWidth-tileW))
@@ -187,7 +180,7 @@
 			};
 		}
 		
-		// initBg(0)
+		initBg(0)
 
 		function gridSliderOnChange()
 		{

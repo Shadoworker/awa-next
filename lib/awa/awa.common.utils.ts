@@ -1,4 +1,4 @@
-import { CANVAS_ID_BODY, CLIP_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY, MEDIA_PICKER_TYPES } from "./awa.constants";
+import { CANVAS_ID_BODY, CLIP_ID_BODY, CONTAINER_ID_BODY, GROUP_ID_BODY, MEDIA_PICKER_TYPES, MEDIA_RENDER_MODE } from "./awa.constants";
 import { ELEMENT_EFFECTS } from "./awa.core";
 
 export function isNumber(value) {
@@ -241,4 +241,101 @@ export function isMediaImage(_base64)
 export function isMediaVideo(_base64)
 {
   return _base64.includes(MEDIA_PICKER_TYPES.video);
+}
+
+export function initBg(base64, patternId, elementSize, renderMode = MEDIA_RENDER_MODE.fill, tile = 4)
+{
+
+  var img = new Image();
+  img.src = base64;
+  img.onload = function()
+  {
+      
+    var realWidth = img?.naturalWidth;
+    var realHeight = img?.naturalHeight;
+
+    var rectX  = elementSize.x;
+    var rectY = elementSize.y;
+    var rectWidth  = elementSize.width;
+    var rectHeight = elementSize.height;
+
+    if(renderMode == MEDIA_RENDER_MODE.fill) // Fill
+    {
+
+      var bgWRatio = rectWidth / realWidth, 
+          bgHRatio = rectHeight / realHeight;
+
+      var scaler = (realWidth>realHeight) ? bgHRatio : bgWRatio;
+
+      document.querySelector("#"+patternId)?.setAttribute("width", realWidth.toString())
+      document.querySelector("#"+patternId)?.setAttribute("height", realHeight.toString())
+
+      document.querySelector("#"+patternId+" image")?.setAttribute("width", realWidth.toString())
+      document.querySelector("#"+patternId+" image")?.setAttribute("height", realHeight.toString())
+
+      scaler = 0.5;
+      var newBgWidth = realWidth * scaler;
+      var newBgHeight = realHeight * scaler;
+
+      const translateX = rectX + (rectWidth - newBgWidth)/2;
+      const translateY = rectY + (rectHeight - newBgHeight)/2;
+      
+      var reverseScaler = 1-scaler;
+      
+      document.querySelector("#"+patternId)?.setAttribute("x", `${translateX}`)
+      document.querySelector("#"+patternId)?.setAttribute("y", `${translateY}`)
+
+      document.querySelector("#"+patternId+" image")?.setAttribute("transform", `scale(${scaler}) `)
+
+
+    }
+    
+    else if(renderMode == MEDIA_RENDER_MODE.fit) // Fit
+    {
+
+      var bgWRatio = rectWidth / realWidth, 
+          bgHRatio = rectHeight / realHeight;
+
+      document.querySelector("#"+patternId)?.setAttribute("width", realWidth.toString())
+      document.querySelector("#"+patternId)?.setAttribute("height", realHeight.toString())
+
+      document.querySelector("#"+patternId+" image")?.setAttribute("width", realWidth.toString())
+      document.querySelector("#"+patternId+" image")?.setAttribute("height", realHeight.toString())
+
+      var newBgHeight = realHeight * bgWRatio;
+      const translateY = (rectHeight - newBgHeight)/2;
+
+      document.querySelector("#"+patternId+" image")?.setAttribute("transform", `scale(${bgWRatio}) translate(0, ${translateY})`)
+
+
+    }
+    
+    else if(renderMode == MEDIA_RENDER_MODE.tile) // Tile
+    {
+      // document.querySelector('#gridSlider').value = baseScale;
+      var tileW = realWidth/tile, 
+          tileH = realHeight/tile;
+
+      document.querySelector("#"+patternId)?.setAttribute("width", tileW.toString())
+      document.querySelector("#"+patternId)?.setAttribute("height", tileH.toString())
+
+      document.querySelector("#"+patternId)?.setAttribute("baseWidth", realWidth.toString())
+      document.querySelector("#"+patternId)?.setAttribute("baseHeight", realHeight.toString())
+      document.querySelector("#"+patternId)?.setAttribute("hSpacing", "0")
+      document.querySelector("#"+patternId)?.setAttribute("vSpacing", "0")
+
+      document.querySelector("#"+patternId)?.setAttribute("width", tileW.toString())
+      document.querySelector("#"+patternId)?.setAttribute("height", tileH.toString())
+
+      // Spacing Sliders max values
+
+      // document.querySelector("#hSpacingSlider").setAttribute("maxSpacing", (rectWidth-tileW))
+      // document.querySelector("#vSpacingSlider").setAttribute("maxSpacing", (rectHeight-tileH))
+      
+
+    }
+
+  }
+
+  
 }

@@ -36,7 +36,7 @@ import Card from '@mui/material/Card';
 import { Button, CardActions, CardContent, CardMedia, IconButton } from '@mui/material';
 import { Typography } from 'antd';
 import { PlayIcon, UploadIcon } from '@radix-ui/react-icons';
-import { isMediaImage, isMediaVideo, mediaToBase64 } from '../../../lib/awa/awa.common.utils';
+import { initBg, isMediaImage, isMediaVideo, mediaToBase64 } from '../../../lib/awa/awa.common.utils';
 
 
 class AppPage extends Component<any, any> {
@@ -541,6 +541,7 @@ class AppPage extends Component<any, any> {
     this.onToggleColorPicker();
     this.onToggleMediaPicker();
 
+    
   }
 
   timelineOnUpdate(_anim, _timeline, _slider, _progressbarLength)

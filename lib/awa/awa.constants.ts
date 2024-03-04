@@ -68,6 +68,14 @@ export const MEDIA_PICKER_TYPES =
     video : 'video',
 }
 
+export const MEDIA_RENDER_MODE = 
+{
+    fill : 'fill',
+    fit : 'fit',
+    tile : 'tile',
+}
+
+
 export const NATIVE_ANIMATIONS = 
 {
     none : "none",

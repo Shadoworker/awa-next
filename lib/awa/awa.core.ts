@@ -27,7 +27,7 @@ import {
   SCENE_CLASS,
   DEFREFS_GROUP_ID_BODY,
 } from "./awa.constants";
-import { getGradientValues, isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement, isGradient } from "./awa.common.utils";
+import { getGradientValues, initBg, isCanvas, isCanvasClipElement, isCanvasContainer, isCanvasElement, isGradient } from "./awa.common.utils";
 import localDatabaseService from "../../services/localdatabase.service";
 import { AwaTypes } from "./awa.types";
 import userService from "../../services/user.service";
@@ -259,7 +259,7 @@ class awa {
 
     //-------------------------------------------
 
-
+ 
   }
 
   initializator()
@@ -1196,8 +1196,14 @@ class awa {
 
         case "background":
  
-          this.getSelectedElementBackground().setBackgroundElement(value.type, value.media);
+          var backgroundId = this.getSelectedElementBackground().setBackgroundElement(value.type, value.media);
             
+          var elementSize = {x: this.getSelectedElement().x(), y: this.getSelectedElement().y(), width : this.getSelectedElement().width(), height : this.getSelectedElement().height()}
+
+          console.log(elementSize)
+          
+          initBg(value.media, backgroundId, elementSize/* , _mode, _tile */)
+  
           // Define base background
           this.getSelectedElement().baseBackground(value.id, value.type, value.media);
 
