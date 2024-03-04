@@ -273,14 +273,11 @@ export function initBg(base64, patternId, elementSize, renderMode = MEDIA_RENDER
       document.querySelector("#"+patternId+" image")?.setAttribute("width", realWidth.toString())
       document.querySelector("#"+patternId+" image")?.setAttribute("height", realHeight.toString())
 
-      scaler = 0.5;
       var newBgWidth = realWidth * scaler;
       var newBgHeight = realHeight * scaler;
 
       const translateX = rectX + (rectWidth - newBgWidth)/2;
       const translateY = rectY + (rectHeight - newBgHeight)/2;
-      
-      var reverseScaler = 1-scaler;
       
       document.querySelector("#"+patternId)?.setAttribute("x", `${translateX}`)
       document.querySelector("#"+patternId)?.setAttribute("y", `${translateY}`)

@@ -541,7 +541,7 @@ class AppPage extends Component<any, any> {
     this.onToggleColorPicker();
     this.onToggleMediaPicker();
 
-    
+
   }
 
   timelineOnUpdate(_anim, _timeline, _slider, _progressbarLength)
@@ -614,7 +614,12 @@ class AppPage extends Component<any, any> {
 
     awaEventEmitter.on(awaEvents.TOGGLE_MEDIA_PICKER, (_data)=>{
  
-      this.setState({toggleMediaPicker : !this.state.toggleMediaPicker, toggleColorPicker : false})
+      this.setState({
+        toggleMediaPicker : !this.state.toggleMediaPicker, 
+        toggleColorPicker : false, 
+        mediaPickerType : _data.type || MEDIA_PICKER_TYPES.image, 
+        mediaPickerMedia : _data.media || null
+      })
 
     })
   }

@@ -1200,9 +1200,7 @@ class awa {
             
           var elementSize = {x: this.getSelectedElement().x(), y: this.getSelectedElement().y(), width : this.getSelectedElement().width(), height : this.getSelectedElement().height()}
 
-          console.log(elementSize)
-          
-          initBg(value.media, backgroundId, elementSize/* , _mode, _tile */)
+          initBg(value.media, backgroundId, elementSize, /* value.mode, value.tile */)
   
           // Define base background
           this.getSelectedElement().baseBackground(value.id, value.type, value.media);
@@ -1775,6 +1773,8 @@ class awa {
         var attrsTemp : any = {};
         var elementsDefsNode = this.m_svgInstance.defs(); 
 
+        // console.log(el)
+
         switch (type) {
           case ELEMENTS_TYPES.rect:
 
@@ -1850,9 +1850,27 @@ class awa {
         var defrefsGroupId = awaElementId+DEFREFS_GROUP_ID_BODY;
         var defrefsGroup = this.m_svgInstance.group().attr({id : defrefsGroupId});
   
-        var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: 'none'});
+        var bgFill = "none";
+
+        var defBackgroundItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBG_ID_BODY, fill: bgFill});
         var defBaseItem = this.m_svgInstance.use(sceneEl).attr({id: awaElementId+DEFBASE_ID_BODY, fill: el.node.baseFill.color, stroke: el.node.baseStroke.color});
   
+
+        if(el.node.baseBackground?.media)
+        {
+          var baseBackground = el.node.baseBackground
+
+          var backgroundId = defBackgroundItem.setBackgroundElement(baseBackground.type, baseBackground.media);
+            
+          var elementSize = {x: sceneEl.x(), y: sceneEl.y(), width : sceneEl.width(), height : sceneEl.height()}
+
+          initBg(baseBackground.media, backgroundId, elementSize, /* baseBackground.mode, baseBackground.tile */)
+  
+          // Define base background
+          sceneEl.baseBackground(baseBackground.id, baseBackground.type, baseBackground.media);
+        }
+
+     
         defrefsGroup.add(defBackgroundItem)
         defrefsGroup.add(defBaseItem)
   
@@ -2069,6 +2087,7 @@ class awa {
         attributes : attributes ? attributes : sceneEl.attr(),
         anchor : sceneEl.node.anchor,
         effects : sceneEl.node.effects,
+        baseBackground : sceneEl.baseBackground(),
         baseFill : sceneEl.baseFill(),
         baseStroke : sceneEl.baseStroke(),
       },

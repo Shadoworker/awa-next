@@ -43,6 +43,7 @@ export namespace AwaTypes {
     attributes : object|{},
     anchor : object|{},
     effects : any[],
+    baseBackground : object|{},
     baseFill : object|{},
     baseStroke : object|{},
   }
